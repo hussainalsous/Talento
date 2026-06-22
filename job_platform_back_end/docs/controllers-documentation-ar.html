@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>توثيق الكنترولرات — منصة TALENTO للتوظيف</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'Tajawal', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef4ff', 100: '#d9e6ff', 200: '#bcd2ff', 300: '#8eb4ff',
+                            400: '#598bff', 500: '#3563ff', 600: '#1f43f5', 700: '#1733e1',
+                            800: '#192cb6', 900: '#1a2c8f', 950: '#151b54',
+                        },
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Cairo', 'Tajawal', sans-serif; }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .method-card { scroll-margin-top: 2rem; }
+        section { scroll-margin-top: 1rem; }
+        /* HTTP verb badges */
+        .verb-get    { background:#dcfce7; color:#166534; }
+        .verb-post   { background:#dbeafe; color:#1e40af; }
+        .verb-patch  { background:#fef9c3; color:#854d0e; }
+        .verb-put    { background:#ffedd5; color:#9a3412; }
+        .verb-delete { background:#fee2e2; color:#991b1b; }
+        code, .mono { font-family: 'Consolas', 'Courier New', monospace; direction: ltr; unicode-bidi: embed; display: inline-block; }
+        .nav-link.active { background-color: #1f43f5; color: #fff; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased">
+
+<div class="flex min-h-screen">
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="hidden lg:block w-80 shrink-0 bg-slate-900 text-slate-200 sticky top-0 h-screen overflow-y-auto">
+        <div class="p-6 border-b border-slate-700">
+            <h1 class="text-xl font-extrabold text-white flex items-center gap-2">
+                <span class="inline-block w-3 h-3 rounded-full bg-brand-500"></span>
+                توثيق الكنترولرات
+            </h1>
+            <p class="text-xs text-slate-400 mt-1">منصة TALENTO للتوظيف — Laravel API v1</p>
+        </div>
+        <nav class="p-4 space-y-6 text-sm">
+
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 px-2">عام</p>
+                <ul class="space-y-1">
+                    <li><a href="#overview" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">نظرة عامة</a></li>
+                    <li><a href="#base-controller" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">Controller (الأساسي)</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 px-2">Api/V1 — المستوى العام</p>
+                <ul class="space-y-1">
+                    <li><a href="#c-jobpost" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">JobPostController</a></li>
+                    <li><a href="#c-course" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">CourseController</a></li>
+                    <li><a href="#c-notification" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">NotificationController</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 px-2">Api/V1/Auth</p>
+                <ul class="space-y-1">
+                    <li><a href="#c-auth" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">AuthController</a></li>
+                    <li><a href="#c-emailverify" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">EmailVerificationController</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 px-2">Api/V1/Admin</p>
+                <ul class="space-y-1">
+                    <li><a href="#c-admin-user" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">UserController</a></li>
+                    <li><a href="#c-admin-subscription" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">SubscriptionController</a></li>
+                    <li><a href="#c-admin-companyrequest" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">CompanyRequestController</a></li>
+                    <li><a href="#c-admin-course" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">CourseController</a></li>
+                    <li><a href="#c-admin-cv" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">CvAdminController</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 px-2">Api/V1/Company</p>
+                <ul class="space-y-1">
+                    <li><a href="#c-company-profile" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">ProfileController</a></li>
+                    <li><a href="#c-company-member" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">MemberController</a></li>
+                    <li><a href="#c-company-candidate" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">CandidateController</a></li>
+                    <li><a href="#c-company-invitation" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">InvitationController</a></li>
+                    <li><a href="#c-company-jobpost" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">JobPostController</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 px-2">Api/V1/JobSeeker</p>
+                <ul class="space-y-1">
+                    <li><a href="#c-seeker-profile" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">ProfileController</a></li>
+                    <li><a href="#c-seeker-cv" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">CvController</a></li>
+                    <li><a href="#c-seeker-application" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">ApplicationController</a></li>
+                    <li><a href="#c-seeker-savedjob" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">SavedJobController</a></li>
+                    <li><a href="#c-seeker-invitation" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">InvitationController</a></li>
+                    <li><a href="#c-seeker-matching" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">MatchingController</a></li>
+                </ul>
+            </div>
+
+        </nav>
+        <div class="p-4 text-xs text-slate-500 border-t border-slate-700">
+            تم التوليد من الكود الفعلي للمشروع — 22 كنترولر.
+        </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="flex-1 min-w-0">
+        <!-- Top bar (mobile) -->
+        <header class="lg:hidden bg-slate-900 text-white p-4 sticky top-0 z-20">
+            <h1 class="text-lg font-bold">توثيق الكنترولرات — TALENTO</h1>
+        </header>
+
+        <div class="max-w-5xl mx-auto px-5 sm:px-8 py-10 space-y-16">
+
+            <!-- ===================== OVERVIEW ===================== -->
+            <section id="overview">
+                <h1 class="text-4xl font-extrabold text-slate-900 mb-3">توثيق كنترولرات منصة TALENTO</h1>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    هذا المستند يوثّق كل كنترولر (Controller) داخل مجلد
+                    <code class="bg-slate-200 px-1.5 py-0.5 rounded text-brand-800 text-sm">app/Http/Controllers</code>
+                    في الواجهة البرمجية (API v1) لمنصة TALENTO للتوظيف، المبنية على إطار عمل Laravel.
+                    التوثيق مستخرَج من الكود الفعلي لكل دالة، ويشمل الغرض، المعاملات، القيمة المرجعة،
+                    الـ Route المرتبط، قواعد التحقق (Validation)، والخدمات والموديلات والموارد المستخدمة.
+                </p>
+
+                <div class="grid sm:grid-cols-3 gap-4 mt-8">
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                        <div class="text-3xl font-extrabold text-brand-600">22</div>
+                        <div class="text-sm text-slate-500 mt-1">كنترولر موثّق</div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                        <div class="text-3xl font-extrabold text-brand-600">v1</div>
+                        <div class="text-sm text-slate-500 mt-1">إصدار الـ API (البادئة <code class="text-xs">/api/v1</code>)</div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                        <div class="text-3xl font-extrabold text-brand-600">4</div>
+                        <div class="text-sm text-slate-500 mt-1">أدوار (Roles): admin، company، job_seeker، عام</div>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-amber-50 border-r-4 border-amber-400 rounded-lg p-5">
+                    <h3 class="font-bold text-amber-900 mb-2">ملاحظات معمارية عامة</h3>
+                    <ul class="list-disc pr-5 space-y-1 text-sm text-amber-900/90">
+                        <li>معظم الكنترولرات نحيفة (Thin) وتفوّض منطق العمل إلى طبقة الخدمات (Services).</li>
+                        <li>التحقق من المدخلات يتم عبر Form Requests منفصلة تحت <code class="text-xs">app/Http/Requests</code>.</li>
+                        <li>صياغة الاستجابات تتم عبر API Resources تحت <code class="text-xs">app/Http/Resources</code>.</li>
+                        <li>التخويل (Authorization) يتم عبر Policies باستخدام <code class="text-xs">$this->authorize()</code> أو عبر Middleware للأدوار.</li>
+                        <li>التخزين المؤقت (Caching) يتم عبر <code class="text-xs">RedisCacheService</code> في النقاط العامة عالية القراءة.</li>
+                        <li>جميع الكنترولرات (عدا <code class="text-xs">EmailVerificationController</code>) ترث من الكنترولر الأساسي <code class="text-xs">App\Http\Controllers\Controller</code>.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ===================== BASE CONTROLLER ===================== -->
+            <section id="base-controller" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">Controller — الكنترولر الأساسي</h2>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Base / abstract</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Controller.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <p class="text-slate-700 leading-relaxed">
+                        كلاس مجرّد (abstract) يُعدّ الأساس لجميع كنترولرات التطبيق. لا يحتوي على دوال مباشرة،
+                        لكنه يستخدم الـ trait المسمّى <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">AuthorizesRequests</code>
+                        من Laravel، ما يوفّر لكل كنترولر يرث منه إمكانية استدعاء
+                        <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">$this->authorize()</code>
+                        و <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">$this->authorizeForUser()</code>
+                        لتطبيق سياسات التخويل (Policies).
+                    </p>
+                    <div class="mt-4 bg-blue-50 border-r-4 border-blue-400 rounded p-4 text-sm text-blue-900">
+                        <strong>ملاحظة:</strong> كنترولر <code class="text-xs">EmailVerificationController</code> هو الاستثناء الوحيد —
+                        فهو يرث من <code class="text-xs">Illuminate\Routing\Controller</code> مباشرةً (وليس من الكلاس الأساسي للمشروع)
+                        لأنه لا يحتاج إلى قدرات التخويل.
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== JobPostController (public) ===================== -->
+            <section id="c-jobpost" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">JobPostController</h2>
+                    <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">عام / Public</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/JobPostController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">
+                        عرض إعلانات الوظائف المنشورة لعامة المستخدمين (سواء مسجّلين الدخول أم لا). يعتمد على
+                        <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">RedisCacheService</code>
+                        لتخزين نتائج القوائم المفلترة مؤقتاً لمدة 300 ثانية (5 دقائق) عبر الثابت <code class="text-xs">TTL</code>.
+                    </p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموديلات:</span> <code class="text-xs">JobPost</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الخدمات:</span> <code class="text-xs">RedisCacheService</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد (Resources):</span> <code class="text-xs">JobPostResource</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">Middleware:</span> لا يوجد (نقاط عامة)</div>
+                    </div>
+                </div>
+
+                <!-- index -->
+                <div id="m-jobpost-index" class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/job-posts</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">index()</span>
+                    </div>
+                    <div class="p-6 space-y-4 text-sm">
+                        <p class="text-slate-700 leading-relaxed">
+                            يعرض قائمة مُصفّحة (paginated) لإعلانات الوظائف المنشورة فقط (<code class="text-xs">JobPost::published()</code>).
+                            يبني مفتاح كاش من الفلاتر؛ فإن وُجدت نسخة مخزّنة يعيدها مباشرة، وإلا ينفّذ الاستعلام ثم يخزّن النتيجة.
+                            يدعم فلاتر البحث النصي في العنوان والوصف، والموقع، ونوع التوظيف، والمهارات، والحد الأدنى/الأقصى للراتب،
+                            بالإضافة إلى الفرز عبر حقول مسموح بها (<code class="text-xs">created_at, salary_min, salary_max, expires_at</code>).
+                        </p>
+                        <div>
+                            <p class="font-semibold text-slate-600 mb-1">المعاملات:</p>
+                            <ul class="list-disc pr-5 space-y-1 text-slate-700">
+                                <li><code class="text-xs">Request $request</code> — معاملات الاستعلام (Query): <code class="text-xs">search, location, employment_type, skill_ids, salary_min, salary_max, sort, dir, page, per_page</code> (الحد الأقصى لـ per_page هو 50).</li>
+                            </ul>
+                        </div>
+                        <p><span class="font-semibold text-slate-600">القيمة المرجعة:</span> <code class="text-xs">JsonResponse</code> تحتوي على <code class="text-xs">success</code> و <code class="text-xs">data</code> (مجموعة JobPostResource) و <code class="text-xs">meta</code> (بيانات الترقيم).</p>
+                        <p><span class="font-semibold text-slate-600">التحقق:</span> لا يوجد Form Request — تُقرأ الفلاتر مباشرة مع تطهير محدود (الحد الأقصى للصفحة + قائمة فرز بيضاء).</p>
+                    </div>
+                </div>
+
+                <!-- show -->
+                <div id="m-jobpost-show" class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/job-posts/{jobPost}</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">show()</span>
+                    </div>
+                    <div class="p-6 space-y-4 text-sm">
+                        <p class="text-slate-700 leading-relaxed">
+                            يعرض تفاصيل إعلان وظيفة واحد عبر Route Model Binding. يرفض الطلب بـ 404 إذا لم تكن حالة الإعلان
+                            <code class="text-xs">published</code> (عبر <code class="text-xs">abort_unless</code>)، ثم يحمّل العلاقات
+                            <code class="text-xs">company, skills, jobTitle</code>.
+                        </p>
+                        <div>
+                            <p class="font-semibold text-slate-600 mb-1">المعاملات:</p>
+                            <ul class="list-disc pr-5 space-y-1 text-slate-700">
+                                <li><code class="text-xs">JobPost $jobPost</code> — يُحقن تلقائياً من معرّف الـ URL.</li>
+                            </ul>
+                        </div>
+                        <p><span class="font-semibold text-slate-600">القيمة المرجعة:</span> <code class="text-xs">JsonResponse</code> تحتوي على <code class="text-xs">success</code> و <code class="text-xs">data</code> (JobPostResource واحد).</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== CourseController (public) ===================== -->
+            <section id="c-course" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">CourseController</h2>
+                    <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">عام + Job Seeker</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/CourseController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">
+                        إدارة تصفّح الدورات التدريبية للمستخدمين، إضافةً إلى التوصيات المخصّصة لباحثي العمل بناءً على فجوات المهارات.
+                        يستخدم التخزين المؤقت: ساعة كاملة (3600 ثانية) لقائمة الدورات العامة، و5 دقائق (300 ثانية) لتوصيات كل باحث عمل.
+                    </p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموديلات:</span> <code class="text-xs">Course</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الخدمات:</span> <code class="text-xs">CourseRecommendationService, JobSeekerService, RedisCacheService</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">CourseResource</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">Middleware:</span> <code class="text-xs">index</code> عام؛ <code class="text-xs">recommended</code> ضمن <code class="text-xs">auth:sanctum + role:job_seeker</code></div>
+                    </div>
+                </div>
+
+                <!-- index -->
+                <div id="m-course-index" class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/courses</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">index()</span>
+                    </div>
+                    <div class="p-6 space-y-4 text-sm">
+                        <p class="text-slate-700 leading-relaxed">
+                            يعرض قائمة مُصفّحة بالدورات مع تحميل علاقة <code class="text-xs">skills</code>. يدعم البحث النصي في العنوان أو المزوّد
+                            (<code class="text-xs">provider</code>). يستخدم الكاش بمفتاح مبني على الفلاتر، ويعيد النسخة المخزّنة عند توفّرها.
+                        </p>
+                        <div>
+                            <p class="font-semibold text-slate-600 mb-1">المعاملات:</p>
+                            <ul class="list-disc pr-5 space-y-1 text-slate-700">
+                                <li><code class="text-xs">Request $request</code> — <code class="text-xs">search, page, per_page</code> (الحد الأقصى لـ per_page = 50).</li>
+                            </ul>
+                        </div>
+                        <p><span class="font-semibold text-slate-600">القيمة المرجعة:</span> <code class="text-xs">JsonResponse</code> مع <code class="text-xs">data</code> (CourseResource collection) و <code class="text-xs">meta</code> للترقيم.</p>
+                    </div>
+                </div>
+
+                <!-- recommended -->
+                <div id="m-course-recommended" class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/recommended-courses</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">recommended()</span>
+                    </div>
+                    <div class="p-6 space-y-4 text-sm">
+                        <p class="text-slate-700 leading-relaxed">
+                            يعيد دورات مُوصى بها لباحث العمل الحالي بناءً على فجوات المهارات. يجلب ملف باحث العمل عبر
+                            <code class="text-xs">JobSeekerService::getProfileForUser()</code>، يحمّل مهاراته، ثم يستدعي
+                            <code class="text-xs">CourseRecommendationService::recommend()</code> بحدّ افتراضي 10 نتائج. النتيجة مخزّنة مؤقتاً لكل باحث ولكل قيمة <code class="text-xs">limit</code>.
+                        </p>
+                        <div>
+                            <p class="font-semibold text-slate-600 mb-1">المعاملات:</p>
+                            <ul class="list-disc pr-5 space-y-1 text-slate-700">
+                                <li><code class="text-xs">Request $request</code> — <code class="text-xs">limit</code> (افتراضي 10).</li>
+                            </ul>
+                        </div>
+                        <p><span class="font-semibold text-slate-600">القيمة المرجعة:</span> <code class="text-xs">JsonResponse</code> مع <code class="text-xs">data</code> (قائمة CourseResource).</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== NotificationController ===================== -->
+            <section id="c-notification" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">NotificationController</h2>
+                    <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full">جميع الأدوار المصادَق عليها</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/NotificationController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">
+                        إدارة إشعارات المستخدم المخزّنة في Supabase عبر
+                        <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">SupabaseNotificationService</code>.
+                        يوفّر القائمة، عدّاد غير المقروء، تعليم كمقروء (فردي/كلّي)، والحذف. كل النقاط محمية بـ
+                        <code class="text-xs">auth:sanctum</code> وتعمل على إشعارات المستخدم الحالي فقط (تمرير <code class="text-xs">user()->id</code>).
+                    </p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الخدمات:</span> <code class="text-xs">SupabaseNotificationService</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">Middleware:</span> <code class="text-xs">auth:sanctum</code></div>
+                    </div>
+                    <div class="mt-3 bg-amber-50 border-r-4 border-amber-400 rounded p-3 text-xs text-amber-900">
+                        <strong>ملاحظة:</strong> توجد عبارة <code class="text-xs">Log::debug</code> داخل <code class="text-xs">index()</code> موسومة بأنها مؤقتة للتأكد من ملكية الإشعارات («remove after confirming…»).
+                    </div>
+                </div>
+
+                <!-- index -->
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/notifications</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">index()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يعيد قائمة مُصفّحة بإشعارات المستخدم الحالي مع عدّاد غير المقروء. <code class="text-xs">per_page</code> محصور بين 1 و100 (افتراضي 20).</p>
+                        <p><span class="font-semibold text-slate-600">القيمة المرجعة:</span> <code class="text-xs">JsonResponse</code> مع <code class="text-xs">data</code> و <code class="text-xs">meta</code> (يشمل <code class="text-xs">unread_count</code>).</p>
+                    </div>
+                </div>
+
+                <!-- unreadCount -->
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/notifications/unread-count</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">unreadCount()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يعيد عدد الإشعارات غير المقروءة للمستخدم الحالي فقط.</p>
+                        <p><span class="font-semibold text-slate-600">القيمة المرجعة:</span> <code class="text-xs">JsonResponse</code> مع <code class="text-xs">data.unread_count</code>.</p>
+                    </div>
+                </div>
+
+                <!-- markAsRead -->
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/notifications/{id}/read</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">markAsRead()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يعلّم إشعاراً واحداً كمقروء (مقيّداً بملكية المستخدم). يعيد 404 إذا لم يُعثر على الإشعار أو تعذّر تحديثه.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">string $id</code> (من الـ URL)، <code class="text-xs">Request $request</code>.</p>
+                        <p><span class="font-semibold text-slate-600">القيمة المرجعة:</span> <code class="text-xs">JsonResponse</code> مع الإشعار المحدّث، أو 404.</p>
+                    </div>
+                </div>
+
+                <!-- markAllAsRead -->
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/notifications/read-all</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">markAllAsRead()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يعلّم جميع إشعارات المستخدم كمقروءة. <strong>ملاحظة توجيه:</strong> هذا المسار مُعرّف قبل <code class="text-xs">{id}/read</code> في ملف الـ routes لتجنّب تعارض المسارات.</p>
+                        <p><span class="font-semibold text-slate-600">القيمة المرجعة:</span> <code class="text-xs">JsonResponse</code> برسالة نجاح.</p>
+                    </div>
+                </div>
+
+                <!-- destroy -->
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-delete text-xs font-bold px-2.5 py-1 rounded">DELETE</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/notifications/{id}</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">destroy()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يحذف إشعاراً واحداً للمستخدم الحالي.</p>
+                        <p><span class="font-semibold text-slate-600">القيمة المرجعة:</span> <code class="text-xs">JsonResponse</code> برسالة نجاح.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== AuthController ===================== -->
+            <section id="c-auth" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">AuthController</h2>
+                    <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">عام + مصادَق</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/Auth/AuthController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">
+                        المسؤول عن المصادقة وإدارة الحساب: تسجيل باحثي العمل، تقديم طلبات تسجيل الشركات، تسجيل الدخول/الخروج،
+                        عرض المستخدم الحالي، تحديث كلمة المرور، ونسيان/إعادة تعيين كلمة المرور. يفوّض كامل منطق العمل إلى
+                        <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">AuthService</code>.
+                    </p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الخدمات:</span> <code class="text-xs">AuthService</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">UserResource, CompanyRegistrationRequestResource</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">Form Requests:</span> <code class="text-xs">JobSeekerRegisterRequest, CompanyRegistrationRequest, LoginRequest, UpdatePasswordRequest, ForgotPasswordRequest, ResetPasswordRequest</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">Middleware:</span> النقاط العامة بلا حماية؛ logout/me/password ضمن <code class="text-xs">auth:sanctum</code>؛ forgot/reset مع <code class="text-xs">throttle:6,1</code></div>
+                    </div>
+                </div>
+
+                <!-- registerJobSeeker -->
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/auth/job-seeker/register</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">registerJobSeeker()</span>
+                    </div>
+                    <div class="p-6 space-y-4 text-sm">
+                        <p class="text-slate-700 leading-relaxed">تسجيل ذاتي لباحث العمل. ينشئ المستخدم وملف باحث العمل عبر الخدمة، ويعيد المستخدم (مع علاقة <code class="text-xs">jobSeeker</code>) مع توكن وصول، برمز حالة 201.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">JobSeekerRegisterRequest $request</code>.</p>
+                        <p><span class="font-semibold text-slate-600">القيمة المرجعة:</span> <code class="text-xs">JsonResponse (201)</code> مع <code class="text-xs">data.user</code> و <code class="text-xs">data.token</code>.</p>
+                        <div class="bg-slate-50 rounded-lg p-4">
+                            <p class="font-semibold text-slate-600 mb-2">قواعد التحقق (JobSeekerRegisterRequest):</p>
+                            <ul class="list-disc pr-5 space-y-0.5 text-slate-700 text-xs">
+                                <li><code>first_name, last_name</code>: required, string, max:100</li>
+                                <li><code>email</code>: required, email, max:255, unique:users</li>
+                                <li><code>phone</code>: nullable, string, max:30</li>
+                                <li><code>password</code>: required, string, min:8, confirmed</li>
+                                <li><code>location</code>: nullable, string, max:200</li>
+                                <li><code>preferred_job_type</code>: nullable, in:full_time,part_time,remote,contract,internship,freelance</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- submitCompanyRegistration -->
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/auth/company-registration-requests</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">submitCompanyRegistration()</span>
+                    </div>
+                    <div class="p-6 space-y-4 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يقدّم طلب تسجيل شركة لمراجعة الأدمن (لا يُنشأ حساب مستخدم بعد). إن وُجد شعار يُخزَّن في القرص <code class="text-xs">public</code> تحت <code class="text-xs">company-logos</code>، ثم يُمرَّر المسار للخدمة. يعيد 201.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">CompanyRegistrationRequest $request</code>.</p>
+                        <p><span class="font-semibold text-slate-600">القيمة المرجعة:</span> <code class="text-xs">JsonResponse (201)</code> مع <code class="text-xs">CompanyRegistrationRequestResource</code>.</p>
+                        <div class="bg-slate-50 rounded-lg p-4">
+                            <p class="font-semibold text-slate-600 mb-2">قواعد التحقق (CompanyRegistrationRequest):</p>
+                            <ul class="list-disc pr-5 space-y-0.5 text-slate-700 text-xs">
+                                <li><code>company_name</code>: required, max:200</li>
+                                <li><code>registration_number</code>: required, max:100, unique عبر جدولي الطلبات والشركات</li>
+                                <li><code>website</code>: nullable, url; <code>address</code>: max:500; <code>country</code>: max:100; <code>description</code>: max:3000</li>
+                                <li><code>logo</code>: nullable, image, mimes:jpg,jpeg,png,webp, max:2048</li>
+                                <li><code>requester_first_name/last_name</code>: required, max:100</li>
+                                <li><code>requester_email</code>: required, email, unique عبر users والطلبات</li>
+                                <li><code>requester_phone</code>: nullable, max:30; <code>password</code>: required, min:8, confirmed</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- login -->
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/auth/login</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">login()</span>
+                    </div>
+                    <div class="p-6 space-y-4 text-sm">
+                        <p class="text-slate-700 leading-relaxed">تسجيل دخول لجميع الأدوار. يستدعي <code class="text-xs">AuthService::login()</code> ممرّراً البريد وكلمة المرور وعنوان IP. بعد النجاح يحمّل الملف المناسب حسب الدور عبر تعبير <code class="text-xs">match</code> (admin → admin، company_owner/member → companyMember.company، job_seeker → jobSeeker).</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">LoginRequest $request</code>.</p>
+                        <p><span class="font-semibold text-slate-600">القيمة المرجعة:</span> <code class="text-xs">JsonResponse</code> مع <code class="text-xs">data.user</code> و <code class="text-xs">data.token</code>.</p>
+                        <div class="bg-slate-50 rounded-lg p-4 text-xs">
+                            <p class="font-semibold text-slate-600 mb-2">قواعد التحقق (LoginRequest):</p>
+                            <ul class="list-disc pr-5 space-y-0.5 text-slate-700"><li><code>email</code>: required, email</li><li><code>password</code>: required, string</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- logout -->
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/auth/logout</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">logout()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يسجّل خروج المستخدم الحالي عبر <code class="text-xs">AuthService::logout()</code> (إبطال التوكن). محمي بـ <code class="text-xs">auth:sanctum</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">Request $request</code>. <span class="font-semibold text-slate-600">المرجعة:</span> <code class="text-xs">JsonResponse</code> برسالة نجاح.</p>
+                    </div>
+                </div>
+
+                <!-- me -->
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/auth/me</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">me()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يعيد بيانات المستخدم الحالي محمّلةً بالملف المناسب حسب الدور (job_seeker يُحمّل أيضاً <code class="text-xs">jobSeeker.skills</code>). محمي بـ <code class="text-xs">auth:sanctum</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المرجعة:</span> <code class="text-xs">JsonResponse</code> مع <code class="text-xs">UserResource</code>.</p>
+                    </div>
+                </div>
+
+                <!-- updatePassword -->
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/auth/password</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">updatePassword()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يحدّث كلمة مرور المستخدم الحالي. محمي بـ <code class="text-xs">auth:sanctum</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">UpdatePasswordRequest $request</code>.</p>
+                        <div class="bg-slate-50 rounded-lg p-4 text-xs">
+                            <p class="font-semibold text-slate-600 mb-2">قواعد التحقق:</p>
+                            <ul class="list-disc pr-5 space-y-0.5 text-slate-700"><li><code>current_password</code>: required, current_password</li><li><code>password</code>: required, min:8, confirmed</li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- forgotPassword -->
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/auth/forgot-password</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">forgotPassword()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يرسل رابط إعادة تعيين كلمة المرور. يعيد دائماً رسالة نجاح عامة لمنع كشف البريد المسجّل (مكافحة التعداد). محمي بـ <code class="text-xs">throttle:6,1</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">ForgotPasswordRequest $request</code> — <code>email</code>: required, email.</p>
+                    </div>
+                </div>
+
+                <!-- resetPassword -->
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/auth/reset-password</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">resetPassword()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يتحقق من توكن إعادة التعيين ويضبط كلمة المرور الجديدة. محمي بـ <code class="text-xs">throttle:6,1</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">ResetPasswordRequest $request</code> — <code>token</code>, <code>email</code>, <code>password</code> (min:8, confirmed).</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== EmailVerificationController ===================== -->
+            <section id="c-emailverify" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">EmailVerificationController</h2>
+                    <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">روابط موقّعة (Signed)</span>
+                    <span class="text-xs bg-rose-100 text-rose-700 px-2 py-1 rounded-full">extends Illuminate\Routing\Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/Auth/EmailVerificationController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">
+                        التحقق من البريد الإلكتروني. <strong>يرث استثنائياً</strong> من
+                        <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">Illuminate\Routing\Controller</code>
+                        وليس من الكنترولر الأساسي للمشروع (لا يحتاج التخويل). يعتمد على توقيع HMAC للرابط الموقّع
+                        (<code class="text-xs">hasValidSignature()</code>) كبديل عن المصادقة. يدعم إعادة التوجيه إلى واجهة React عند ضبط
+                        <code class="text-xs">APP_FRONTEND_URL</code>، وإلا يعيد JSON (لدعم عملاء API مثل Flutter) عبر الدالة الخاصة <code class="text-xs">respond()</code>.
+                    </p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموديلات:</span> <code class="text-xs">User, CompanyRegistrationRequest</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">Middleware:</span> verify/verify-registration بلا حماية (التوقيع هو الاعتماد)؛ resend ضمن <code class="text-xs">auth:sanctum + throttle:6,1</code></div>
+                    </div>
+                </div>
+
+                <!-- verify -->
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/email/verify/{id}/{hash}</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">verify()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">
+                            يتحقق من صحة الرابط الموقّع ويعلّم بريد المستخدم كمُتحقَّق منه. يميّز بين الرابط المنتهي والمُلاعَب به لرسائل أوضح،
+                            ويتحقق من تطابق الـ hash مع <code class="text-xs">sha1(email)</code>. يعالج حالات: توقيع غير صالح (403)، مستخدم غير موجود (404)،
+                            رابط غير صالح (403)، بريد متحقَّق مسبقاً (200)، أو نجاح التحقق (200).
+                        </p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">Request $request</code>, <code class="text-xs">int $id</code>, <code class="text-xs">string $hash</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المرجعة:</span> <code class="text-xs">JsonResponse | RedirectResponse</code>.</p>
+                    </div>
+                </div>
+
+                <!-- verifyRegistration -->
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/email/verify-registration/{id}/{hash}</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">verifyRegistration()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">
+                            يتحقق من بريد طلب تسجيل الشركة <em>قبل</em> مراجعة الأدمن. يطابق الـ hash مع <code class="text-xs">sha1(requester_email)</code>،
+                            ويضبط <code class="text-xs">email_verified_at</code> على الطلب، لينتقل هذا التحقق لاحقاً إلى حساب المستخدم عند الموافقة.
+                        </p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">Request $request</code>, <code class="text-xs">int $id</code>, <code class="text-xs">string $hash</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المرجعة:</span> <code class="text-xs">JsonResponse | RedirectResponse</code>.</p>
+                    </div>
+                </div>
+
+                <!-- resend -->
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span>
+                        <code class="text-sm font-bold text-slate-800">/api/v1/email/verification-notification</code>
+                        <span class="text-slate-400">·</span>
+                        <span class="font-bold text-brand-700">resend()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يعيد إرسال بريد التحقق للمستخدم الحالي. يعيد دائماً JSON. إن كان البريد متحقَّقاً مسبقاً يعيد رسالة بذلك دون إرسال. محمي بـ <code class="text-xs">auth:sanctum + throttle:6,1</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">Request $request</code>. <span class="font-semibold text-slate-600">المرجعة:</span> <code class="text-xs">JsonResponse</code>.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== Admin/UserController ===================== -->
+            <section id="c-admin-user" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">Admin · UserController</h2>
+                    <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">role:admin</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/Admin/UserController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">إدارة المستخدمين من قبل الأدمن: العرض، التفعيل/التعطيل، إنشاء موظفي نظام (أدمن جدد)، وتحديث صلاحياتهم. يفوّض المنطق إلى <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">AdminService</code>.</p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموديلات:</span> <code class="text-xs">User, Admin</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الخدمات:</span> <code class="text-xs">AdminService</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">UserResource, AdminResource</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">Middleware:</span> <code class="text-xs">auth:sanctum, role:admin</code></div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/users</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">index()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">قائمة مُصفّحة بالمستخدمين مع فلاتر <code class="text-xs">role, search, is_active, per_page</code> عبر الخدمة.</p>
+                        <p><span class="font-semibold text-slate-600">المرجعة:</span> <code class="text-xs">JsonResponse</code> مع <code class="text-xs">UserResource</code> collection و <code class="text-xs">meta</code>.</p>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/users/{user}</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">show()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يعرض مستخدماً واحداً محمّلاً بالعلاقات <code class="text-xs">admin, jobSeeker.skills, companyMember.company</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">User $user</code> (Route binding). <span class="font-semibold text-slate-600">المرجعة:</span> <code class="text-xs">UserResource</code>.</p>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/users/{user}/activate</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">activate()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يفعّل المستخدم عبر <code class="text-xs">AdminService::activateUser()</code> ويعيد نسخته المحدّثة (<code class="text-xs">fresh()</code>).</p>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/users/{user}/deactivate</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">deactivate()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يعطّل المستخدم ويُبطل جلساته (وفق رسالة «sessions revoked»)، ويعيد نسخته المحدّثة.</p>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/system-employees</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">createSystemEmployee()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">ينشئ موظف نظام (أدمن) ويعيده محمّلاً بعلاقة <code class="text-xs">admin</code>، برمز 201.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">CreateSystemEmployeeRequest</code>.</p>
+                        <div class="bg-slate-50 rounded-lg p-4 text-xs">
+                            <p class="font-semibold text-slate-600 mb-2">قواعد التحقق:</p>
+                            <ul class="list-disc pr-5 space-y-0.5 text-slate-700">
+                                <li><code>first_name/last_name</code>: required, max:100; <code>email</code>: required, email, unique:users</li>
+                                <li><code>phone</code>: nullable; <code>password</code>: required, min:8</li>
+                                <li><code>permissions</code>: nullable, array; <code>permissions.*</code>: string</li>
+                                <li><strong>authorize():</strong> <code>$user->isAdmin()</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/system-employees/{admin}/permissions</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">updatePermissions()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يحدّث صلاحيات أدمن محدّد ويعيد <code class="text-xs">AdminResource</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">UpdatePermissionsRequest</code>, <code class="text-xs">Admin $admin</code>.</p>
+                        <div class="bg-slate-50 rounded-lg p-4 text-xs">
+                            <p class="font-semibold text-slate-600 mb-2">قواعد التحقق:</p>
+                            <ul class="list-disc pr-5 space-y-0.5 text-slate-700"><li><code>permissions</code>: required, array; <code>permissions.*</code>: string</li><li><strong>authorize():</strong> <code>$user->isAdmin()</code></li></ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== Admin/SubscriptionController ===================== -->
+            <section id="c-admin-subscription" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">Admin · SubscriptionController</h2>
+                    <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">role:admin</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/Admin/SubscriptionController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">إدارة الخطط (Plans) والاشتراكات (Subscriptions) من قبل الأدمن، وإسناد اشتراك لشركة. يفوّض إلى <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">AdminService</code>.</p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموديلات:</span> <code class="text-xs">Company</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">PlanResource, SubscriptionResource</code></div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/plans</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">plans()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يعيد جميع الخطط عبر <code class="text-xs">PlanResource</code>. لا معاملات.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/subscriptions</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">index()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">قائمة مُصفّحة بالاشتراكات مع فلاتر <code class="text-xs">status, company_id, per_page</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المرجعة:</span> <code class="text-xs">JsonResponse</code> مع <code class="text-xs">SubscriptionResource</code> و <code class="text-xs">meta</code>.</p>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/companies/{company}/subscriptions</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">assign()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يُسند اشتراكاً لشركة، ويعيده محمّلاً بـ <code class="text-xs">plan, company</code> برمز 201.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">ManageSubscriptionRequest</code>, <code class="text-xs">Company $company</code>.</p>
+                        <div class="bg-slate-50 rounded-lg p-4 text-xs">
+                            <p class="font-semibold text-slate-600 mb-2">قواعد التحقق:</p>
+                            <ul class="list-disc pr-5 space-y-0.5 text-slate-700">
+                                <li><code>plan_id</code>: required, exists:plans; <code>status</code>: sometimes, in:active,cancelled,expired,pending</li>
+                                <li><code>starts_at</code>: nullable, date; <code>ends_at</code>: nullable, date, after_or_equal:starts_at</li>
+                                <li><strong>authorize():</strong> <code>$user->isAdmin()</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== Admin/CompanyRequestController ===================== -->
+            <section id="c-admin-companyrequest" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">Admin · CompanyRequestController</h2>
+                    <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">role:admin</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/Admin/CompanyRequestController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">مراجعة طلبات تسجيل الشركات: العرض، الموافقة (تُنشئ حساب الشركة والمالك)، والرفض. القوائم مخزّنة مؤقتاً داخل <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">AdminService</code>.</p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموديلات:</span> <code class="text-xs">CompanyRegistrationRequest</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">CompanyRegistrationRequestResource, CompanyResource</code></div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/company-registration-requests</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">index()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">قائمة مُصفّحة بطلبات التسجيل مع فلاتر <code class="text-xs">status, search, per_page</code> (مُخزّنة مؤقتاً حسب الفلتر+الصفحة).</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/redis/company-registration-requests</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">redisIndex()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">اسم بديل (alias) لـ <code class="text-xs">index()</code> يفوّض لنفس دالة الخدمة المخزّنة مؤقتاً، مع إضافة <code class="text-xs">cached: true</code> في الاستجابة. مُبقىً للتوافق مع نداءات العملاء القديمة.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/company-registration-requests/{companyRegistrationRequest}</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">show()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يعرض طلب تسجيل واحداً عبر Route binding.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/company-registration-requests/{...}/approve</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">approve()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يوافق على الطلب عبر <code class="text-xs">AdminService::approveRegistrationRequest()</code> (ممرّراً الأدمن الحالي <code class="text-xs">request()->user()</code>)، ما يُنشئ حساب الشركة. يعيد <code class="text-xs">CompanyResource</code> محمّلاً بـ <code class="text-xs">owner</code>.</p>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/company-registration-requests/{...}/reject</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">reject()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يرفض الطلب مع تسجيل سبب الرفض. يعيد <code class="text-xs">CompanyRegistrationRequestResource</code> المحدّث.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">ReviewCompanyRequestRequest</code>, <code class="text-xs">CompanyRegistrationRequest</code>.</p>
+                        <div class="bg-slate-50 rounded-lg p-4 text-xs">
+                            <p class="font-semibold text-slate-600 mb-2">قواعد التحقق:</p>
+                            <ul class="list-disc pr-5 space-y-0.5 text-slate-700"><li><code>rejection_reason</code>: required, string, max:1000</li><li><strong>authorize():</strong> <code>$user->isAdmin()</code></li></ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== Admin/CourseController ===================== -->
+            <section id="c-admin-course" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">Admin · CourseController</h2>
+                    <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">role:admin · apiResource</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/Admin/CourseController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">
+                        إدارة كاملة (CRUD) للدورات من قبل الأدمن، مُسجّلة عبر <code class="text-xs">Route::apiResource</code>. يستخدم
+                        <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">RedisCacheService</code> للقراءة (TTL = 120 ثانية)،
+                        ويُبطل أنماط الكاش <code class="text-xs">public:courses:*</code> و <code class="text-xs">admin:courses:*</code> عند أي تعديل.
+                        يتعامل الكنترولر مع الموديل <code class="text-xs">Course</code> مباشرةً ويزامن المهارات (<code class="text-xs">skill_ids</code>).
+                    </p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموديلات:</span> <code class="text-xs">Course</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">CourseResource</code></div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/courses</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">index()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">قائمة مُصفّحة بالدورات مع بحث في العنوان/المزوّد/الوصف/التصنيف وفلتر <code class="text-xs">category</code>، مرتّبة بالأحدث. مع كاش (HIT/MISS مسجّلة عبر Log).</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/courses</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">store()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">ينشئ دورة (باستثناء <code class="text-xs">skill_ids</code>) ثم يزامن المهارات إن وُجدت، ويُبطل الكاش. يعيد <code class="text-xs">CourseResource</code> برمز 201.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">StoreCourseRequest</code>.</p>
+                        <div class="bg-slate-50 rounded-lg p-4 text-xs">
+                            <p class="font-semibold text-slate-600 mb-2">قواعد التحقق (StoreCourseRequest):</p>
+                            <ul class="list-disc pr-5 space-y-0.5 text-slate-700">
+                                <li><code>title</code>: required, max:255; <code>category</code>: required, max:100; <code>language</code>: required, max:100; <code>duration</code>: required, max:100</li>
+                                <li><code>level</code>: required, in:beginner,intermediate,advanced</li>
+                                <li><code>provider, teacher</code>: nullable, max:255; <code>price</code>: nullable, numeric, min:0</li>
+                                <li><code>link, course_image_url</code>: nullable, url, max:500; <code>description</code>: nullable, max:5000</li>
+                                <li><code>learning_material</code>: nullable, array; <code>skill_ids.*</code>: integer, exists:skills</li>
+                                <li><strong>authorize():</strong> <code>$user->isAdmin()</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/courses/{course}</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">show()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يعيد دورة واحدة محمّلةً بالمهارات. <span class="font-semibold text-slate-600">المرجعة:</span> <code class="text-xs">CourseResource</code> مباشرةً (وليس JsonResponse).</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PUT/PATCH</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/courses/{course}</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">update()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يحدّث الدورة ويزامن المهارات إن وُجدت ويُبطل الكاش. يعيد <code class="text-xs">CourseResource</code> محدّثاً.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">UpdateCourseRequest</code>, <code class="text-xs">Course $course</code>. القواعد مماثلة لـ store لكن جميعها <code class="text-xs">sometimes</code>.</p>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-delete text-xs font-bold px-2.5 py-1 rounded">DELETE</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/courses/{course}</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">destroy()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يفصل المهارات (<code class="text-xs">detach</code>) ثم يحذف الدورة ويُبطل الكاش. يعيد رسالة نجاح.</p></div>
+                </div>
+            </section>
+
+            <!-- ===================== Admin/CvAdminController ===================== -->
+            <section id="c-admin-cv" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">Admin · CvAdminController</h2>
+                    <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">role:admin</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/Admin/CvAdminController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">رقابة الأدمن على السير الذاتية: عرض أي سيرة (بغضّ النظر عن إعداد الظهور) وحذف أي سيرة غير لائقة نهائياً. يفوّض الحذف إلى <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">AdminService</code>.</p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموديلات:</span> <code class="text-xs">CV</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">CvResource</code></div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/cvs/{cv}</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">show()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يعرض أي سيرة ذاتية محمّلةً بعلاقة <code class="text-xs">jobSeeker</code> بغضّ النظر عن إعداد الظهور. <span class="font-semibold text-slate-600">المرجعة:</span> <code class="text-xs">CvResource</code>.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-delete text-xs font-bold px-2.5 py-1 rounded">DELETE</span><code class="text-sm font-bold text-slate-800">/api/v1/admin/cvs/{cv}</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">destroy()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يحذف السيرة الذاتية نهائياً عبر <code class="text-xs">AdminService::deleteCV()</code>. يعيد رسالة نجاح.</p></div>
+                </div>
+            </section>
+
+            <!-- ===================== Company/ProfileController ===================== -->
+            <section id="c-company-profile" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">Company · ProfileController</h2>
+                    <span class="text-xs bg-cyan-100 text-cyan-700 px-2 py-1 rounded-full">role:company_owner, company_member</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/Company/ProfileController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">إدارة ملف الشركة لعضو الشركة الحالي: العرض، التحديث، ورفع الشعار. يجلب الشركة عبر <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">CompanyService::getCompanyForUser()</code> ويطبّق سياسات التخويل (Policy) عبر <code class="text-xs">$this->authorize()</code>.</p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الخدمات:</span> <code class="text-xs">CompanyService</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">CompanyResource</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">التخويل:</span> <code class="text-xs">view, update</code> (CompanyPolicy)</div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">Middleware:</span> <code class="text-xs">auth:sanctum, role:company_owner,company_member</code></div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/company/profile</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">show()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يعرض ملف الشركة بعد <code class="text-xs">authorize('view')</code>، محمّلاً بـ <code class="text-xs">owner, activeSubscription.plan</code>.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span><code class="text-sm font-bold text-slate-800">/api/v1/company/profile</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">update()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يحدّث ملف الشركة بعد <code class="text-xs">authorize('update')</code> عبر الخدمة.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">UpdateCompanyProfileRequest</code>.</p>
+                        <div class="bg-slate-50 rounded-lg p-4 text-xs">
+                            <p class="font-semibold text-slate-600 mb-2">قواعد التحقق:</p>
+                            <ul class="list-disc pr-5 space-y-0.5 text-slate-700"><li><code>name</code>: sometimes, max:200; <code>website</code>: nullable, url; <code>address</code>: max:500; <code>country</code>: max:100; <code>description</code>: max:3000</li><li><strong>authorize():</strong> <code>$user->isCompanyMember()</code></li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span><code class="text-sm font-bold text-slate-800">/api/v1/company/logo</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">uploadLogo()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يرفع شعار الشركة بعد <code class="text-xs">authorize('update')</code> عبر <code class="text-xs">CompanyService::uploadLogo()</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">UploadLogoRequest</code> — <code>logo</code>: required, image, mimes:jpg,jpeg,png,webp, max:2048.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== Company/MemberController ===================== -->
+            <section id="c-company-member" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">Company · MemberController</h2>
+                    <span class="text-xs bg-cyan-100 text-cyan-700 px-2 py-1 rounded-full">role:company_*</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/Company/MemberController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">إدارة أعضاء الشركة (عرض/إضافة/تعديل/حذف). تستخدم سياسة <code class="text-xs">manageMembers</code> للتقييد على المالك، وتتحقق يدوياً من انتماء العضو لنفس الشركة عبر <code class="text-xs">abort_unless</code>، وتمنع المستخدم من حذف نفسه.</p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموديلات:</span> <code class="text-xs">CompanyMember</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الخدمات:</span> <code class="text-xs">CompanyService</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">CompanyMemberResource</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">التخويل:</span> <code class="text-xs">view, manageMembers</code></div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/company/members</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">index()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يعرض أعضاء الشركة بعد <code class="text-xs">authorize('view')</code>. يعيد <code class="text-xs">CompanyMemberResource</code> collection (غير مُصفّحة).</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span><code class="text-sm font-bold text-slate-800">/api/v1/company/members</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">store()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يضيف عضواً بعد <code class="text-xs">authorize('manageMembers')</code>. يعيد العضو محمّلاً بـ <code class="text-xs">user</code> برمز 201.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">CreateMemberRequest</code>.</p>
+                        <div class="bg-slate-50 rounded-lg p-4 text-xs">
+                            <p class="font-semibold text-slate-600 mb-2">قواعد التحقق:</p>
+                            <ul class="list-disc pr-5 space-y-0.5 text-slate-700"><li><code>first_name/last_name</code>: required, max:100; <code>email</code>: required, email, unique:users; <code>phone</code>: nullable; <code>password</code>: required, min:8; <code>role_in_company</code>: nullable, max:100</li><li><strong>authorize():</strong> <code>hasRole(['admin','company_owner'])</code></li></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span><code class="text-sm font-bold text-slate-800">/api/v1/company/members/{companyMember}</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">update()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يحدّث بيانات عضو بعد <code class="text-xs">authorize('manageMembers')</code> والتأكد من انتمائه لنفس الشركة (وإلا 403).</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">UpdateMemberRequest</code>, <code class="text-xs">CompanyMember</code> — القواعد: <code>first_name/last_name/role_in_company</code>: sometimes, max:100.</p>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-delete text-xs font-bold px-2.5 py-1 rounded">DELETE</span><code class="text-sm font-bold text-slate-800">/api/v1/company/members/{companyMember}</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">destroy()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يحذف عضواً بعد التخويل والتأكد من انتمائه للشركة (403)، ومنع حذف الذات (422). يعيد رسالة نجاح.</p></div>
+                </div>
+            </section>
+
+            <!-- ===================== Company/CandidateController ===================== -->
+            <section id="c-company-candidate" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">Company · CandidateController</h2>
+                    <span class="text-xs bg-cyan-100 text-cyan-700 px-2 py-1 rounded-full">company + admin (oversight)</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/Company/CandidateController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">
+                        بحث الشركات عن المرشّحين (باحثي العمل) واحترام إعدادات الخصوصية عبر
+                        <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">CandidateSearchService</code>.
+                        يُستخدم نفس الكنترولر للأدمن أيضاً (مسارات <code class="text-xs">/admin/candidates</code>) حيث يتجاوز الأدمن مرشّحات الخصوصية.
+                    </p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموديلات:</span> <code class="text-xs">JobSeeker, Invitation</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الخدمات:</span> <code class="text-xs">CandidateSearchService</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">JobSeekerResource, InvitationResource</code></div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/company/candidates</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">index()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">بحث مُصفّح عن المرشّحين عبر الخدمة، ممرّراً المستخدم الحالي لتطبيق صلاحيات/الخصوصية. الفلاتر: <code class="text-xs">search, location, preferred_job_type, skill_ids, salary_max, per_page</code>.</p>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/company/candidates/{jobSeeker}</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">show()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يعرض مرشّحاً واحداً عبر <code class="text-xs">getCandidate()</code>؛ إن كان الملف خاصاً يعيد 403 برسالة مناسبة.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span><code class="text-sm font-bold text-slate-800">/api/v1/company/candidates/{jobSeeker}/request-cv-access</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">requestCvAccess()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">
+                            يطلب الوصول إلى السيرة الذاتية عندما تكون رؤيتها <code class="text-xs">upon_request</code>. إن كانت <code class="text-xs">public</code> يعيد 422 (متاحة أصلاً)،
+                            وإن كانت <code class="text-xs">private</code> يعيد 403. خلاف ذلك يُنشئ <code class="text-xs">Invitation</code> بحالة <code class="text-xs">pending</code> كطلب وصول، ويعيد <code class="text-xs">InvitationResource</code> برمز 201.
+                        </p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">Request $request</code> (<code>message</code> اختياري), <code class="text-xs">JobSeeker $jobSeeker</code>.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== Company/InvitationController ===================== -->
+            <section id="c-company-invitation" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">Company · InvitationController</h2>
+                    <span class="text-xs bg-cyan-100 text-cyan-700 px-2 py-1 rounded-full">role:company_*</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/Company/InvitationController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">إدارة الدعوات الصادرة من الشركة لباحثي العمل. يعتمد على <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">InvitationService</code> و <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">CompanyService</code>.</p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الخدمات:</span> <code class="text-xs">InvitationService, CompanyService</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">InvitationResource</code></div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/company/invitations</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">index()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">قائمة مُصفّحة بدعوات الشركة الحالية مع فلاتر <code class="text-xs">status, per_page</code>.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span><code class="text-sm font-bold text-slate-800">/api/v1/company/invitations</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">store()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يرسل دعوة عبر الخدمة، ويعيدها محمّلةً بـ <code class="text-xs">jobSeeker.user, jobPost</code> برمز 201.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">SendInvitationRequest</code>.</p>
+                        <div class="bg-slate-50 rounded-lg p-4 text-xs">
+                            <p class="font-semibold text-slate-600 mb-2">قواعد التحقق:</p>
+                            <ul class="list-disc pr-5 space-y-0.5 text-slate-700"><li><code>job_seeker_id</code>: required, exists:job_seekers; <code>job_post_id</code>: nullable, exists:job_posts; <code>message</code>: nullable, max:2000</li><li><strong>authorize():</strong> <code>$user->isCompanyMember()</code></li></ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== Company/JobPostController ===================== -->
+            <section id="c-company-jobpost" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">Company · JobPostController</h2>
+                    <span class="text-xs bg-cyan-100 text-cyan-700 px-2 py-1 rounded-full">role:company_*</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/Company/JobPostController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">إدارة إعلانات وظائف الشركة (CRUD) إضافةً إلى عرض المتقدّمين وتحديث حالة الطلبات. يستخدم سياسات <code class="text-xs">JobPostPolicy</code> و <code class="text-xs">JobApplicationPolicy</code> عبر <code class="text-xs">$this->authorize()</code> ويفوّض المنطق إلى <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">CompanyService</code>.</p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموديلات:</span> <code class="text-xs">JobPost, JobApplication</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الخدمات:</span> <code class="text-xs">CompanyService</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">JobPostResource, JobApplicationResource</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">التخويل:</span> <code class="text-xs">createJobPost, view, update, delete, viewApplicants, updateStatus</code></div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/company/job-posts</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">index()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">قائمة مُصفّحة بإعلانات وظائف الشركة مع فلاتر <code class="text-xs">status, per_page</code>.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span><code class="text-sm font-bold text-slate-800">/api/v1/company/job-posts</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">store()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">ينشئ إعلان وظيفة بعد <code class="text-xs">authorize('createJobPost')</code>. يعيد <code class="text-xs">JobPostResource</code> برمز 201.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">CreateJobPostRequest</code>.</p>
+                        <div class="bg-slate-50 rounded-lg p-4 text-xs">
+                            <p class="font-semibold text-slate-600 mb-2">قواعد التحقق (CreateJobPostRequest):</p>
+                            <ul class="list-disc pr-5 space-y-0.5 text-slate-700">
+                                <li><code>title</code>: required, max:200; <code>description</code>: required, string</li>
+                                <li><code>job_title_id</code>: nullable, exists:job_titles; <code>location</code>: nullable, max:200</li>
+                                <li><code>employment_type</code>: required, in:full_time,part_time,remote,contract,internship,freelance</li>
+                                <li><code>salary_min</code>: nullable, numeric, min:0; <code>salary_max</code>: nullable, numeric, gte:salary_min (شرطياً)</li>
+                                <li><code>responsibilities, requirements</code>: required, array; <code>experience_years</code>: nullable, integer, min:0</li>
+                                <li><code>level</code>: in:Fresh graduate,Junior,Mid-level,Senior; <code>job_type</code>: in:Full-time,Part-time,Contract,Remotely,Internship</li>
+                                <li><code>status</code>: in:draft,published,closed,archived; <code>expires_at</code>: nullable, date, after:today</li>
+                                <li><code>skill_ids.*, skill_ids_required.*</code>: integer, exists:skills</li>
+                                <li><strong>authorize():</strong> <code>$user->isCompanyMember()</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/company/job-posts/{jobPost}</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">show()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يعرض إعلاناً بعد <code class="text-xs">authorize('view')</code> محمّلاً بالمهارات.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span><code class="text-sm font-bold text-slate-800">/api/v1/company/job-posts/{jobPost}</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">update()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يحدّث إعلاناً بعد <code class="text-xs">authorize('update')</code> عبر الخدمة.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">UpdateJobPostRequest</code> — نفس قواعد الإنشاء لكن جميعها <code class="text-xs">sometimes</code> و <code class="text-xs">expires_at</code> بلا <code class="text-xs">after:today</code>.</p>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-delete text-xs font-bold px-2.5 py-1 rounded">DELETE</span><code class="text-sm font-bold text-slate-800">/api/v1/company/job-posts/{jobPost}</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">destroy()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يحذف إعلاناً بعد <code class="text-xs">authorize('delete')</code>. يعيد رسالة نجاح.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/company/job-posts/{jobPost}/applicants</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">applicants()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">قائمة مُصفّحة بالمتقدّمين على الإعلان بعد <code class="text-xs">authorize('viewApplicants')</code> مع فلاتر <code class="text-xs">status, sort, dir, per_page</code>. يعيد <code class="text-xs">JobApplicationResource</code>.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span><code class="text-sm font-bold text-slate-800">/api/v1/company/applications/{jobApplication}/status</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">updateApplicationStatus()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يحدّث حالة طلب توظيف بعد <code class="text-xs">authorize('updateStatus')</code> عبر الخدمة، ويعيد الطلب محمّلاً بـ <code class="text-xs">jobSeeker, jobPost</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">UpdateApplicationStatusRequest</code>, <code class="text-xs">JobApplication</code>.</p>
+                        <div class="bg-slate-50 rounded-lg p-4 text-xs">
+                            <p class="font-semibold text-slate-600 mb-2">قواعد التحقق:</p>
+                            <ul class="list-disc pr-5 space-y-0.5 text-slate-700"><li><code>status</code>: required, in:&lt;JobApplication::COMPANY_ALLOWED_STATUSES&gt;</li><li><code>score</code>: sometimes, nullable, integer, min:0, max:100</li><li><strong>authorize():</strong> <code>$user->isCompanyMember()</code></li></ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== JobSeeker/ProfileController ===================== -->
+            <section id="c-seeker-profile" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">JobSeeker · ProfileController</h2>
+                    <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">role:job_seeker</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/JobSeeker/ProfileController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">إدارة ملف باحث العمل: العرض، التحديث، إعدادات الخصوصية، ومزامنة المهارات. يجلب الملف عبر <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">JobSeekerService::getProfileForUser()</code>.</p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الخدمات:</span> <code class="text-xs">JobSeekerService</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">JobSeekerResource</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">Middleware:</span> <code class="text-xs">auth:sanctum, role:job_seeker</code></div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/profile</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">show()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يعرض ملف باحث العمل محمّلاً بـ <code class="text-xs">skills, primaryCv, user</code>.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span><code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/profile</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">update()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يحدّث الملف عبر الخدمة ويعيده محمّلاً بـ <code class="text-xs">skills, user</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">UpdateProfileRequest</code>.</p>
+                        <div class="bg-slate-50 rounded-lg p-4 text-xs">
+                            <p class="font-semibold text-slate-600 mb-2">قواعد التحقق:</p>
+                            <ul class="list-disc pr-5 space-y-0.5 text-slate-700">
+                                <li><code>first_name/last_name</code>: sometimes, max:100; <code>professional_title, current_job, location</code>: nullable, max:200</li>
+                                <li><code>open_to_work</code>: boolean; <code>preferred_job_type</code>: in:full_time,part_time,remote,contract,internship,freelance</li>
+                                <li><code>desired_salary</code>: nullable, numeric, min:0; <code>phone</code>: nullable, max:30 (يحدّث سجل المستخدم)</li>
+                                <li><strong>authorize():</strong> <code>$user->isJobSeeker()</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span><code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/privacy</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">updatePrivacy()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يحدّث إعدادات الخصوصية ويعيد <code class="text-xs">profile_visibility, cv_visibility, open_to_work</code> فقط.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">UpdatePrivacyRequest</code> — <code>profile_visibility</code>: in:public,limited,private; <code>cv_visibility</code>: in:public,upon_request,private; <code>open_to_work</code>: boolean.</p>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-put text-xs font-bold px-2.5 py-1 rounded">PUT</span><code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/skills</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">updateSkills()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يستبدل مجموعة المهارات بالكامل عبر <code class="text-xs">syncSkills()</code>. يعيد <code class="text-xs">JobSeekerResource</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">UpdateSkillsRequest</code> — <code>skills</code>: required, array; <code>skills.*.id</code>: exists:skills; <code>skills.*.level</code>: in:beginner,intermediate,advanced,expert.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== JobSeeker/CvController ===================== -->
+            <section id="c-seeker-cv" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">JobSeeker · CvController</h2>
+                    <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">role:job_seeker</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/JobSeeker/CvController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">إدارة السير الذاتية لباحث العمل (عرض/رفع/تحديث/حذف/تحليل). يستخدم <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">JobSeekerService</code> و <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">CvAnalysisService</code>، وسياسات <code class="text-xs">CvPolicy</code> (update, delete, analyze).</p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموديلات:</span> <code class="text-xs">CV</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الخدمات:</span> <code class="text-xs">JobSeekerService, CvAnalysisService</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">CvResource</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">Middleware:</span> <code class="text-xs">store</code> يتطلب أيضاً <code class="text-xs">verified</code></div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/cvs</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">index()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يعرض جميع السير الذاتية لباحث العمل الحالي (<code class="text-xs">CvResource</code> collection).</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span><code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/cvs</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">store()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يرفع سيرة ذاتية عبر الخدمة، برمز 201. يتطلب بريداً مُتحقَّقاً (<code class="text-xs">verified</code>).</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">UploadCvRequest</code> — <code>title</code>: required, max:200; <code>file</code>: nullable, mimes:pdf,doc,docx, max:5120; <code>visibility</code>: in:public,upon_request,private; <code>is_primary</code>: boolean.</p>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span><code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/cvs/{cv}</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">update()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يحدّث سيرة ذاتية بعد <code class="text-xs">authorize('update')</code> عبر الخدمة.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">UpdateCvRequest</code> (نفس قواعد الرفع لكن <code class="text-xs">sometimes</code>), <code class="text-xs">CV $cv</code>.</p>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-delete text-xs font-bold px-2.5 py-1 rounded">DELETE</span><code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/cvs/{cv}</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">destroy()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يحذف سيرة ذاتية بعد <code class="text-xs">authorize('delete')</code>. يعيد رسالة نجاح.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span><code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/cvs/{cv}/analyze</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">analyze()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يحلّل السيرة الذاتية بعد <code class="text-xs">authorize('analyze')</code> عبر <code class="text-xs">CvAnalysisService::analyze()</code> (يستخرج بيانات منظّمة من الملف). يعيد السيرة المحدّثة مع <code class="text-xs">analysis</code>.</p></div>
+                </div>
+            </section>
+
+            <!-- ===================== JobSeeker/ApplicationController ===================== -->
+            <section id="c-seeker-application" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">JobSeeker · ApplicationController</h2>
+                    <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">role:job_seeker</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/JobSeeker/ApplicationController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">إدارة طلبات التوظيف لباحث العمل: التقديم، القائمة، التفاصيل، والسحب. يستخدم <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">JobSeekerService</code> وسياسة <code class="text-xs">JobApplicationPolicy</code> (view, withdraw).</p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموديلات:</span> <code class="text-xs">JobApplication, JobPost</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">JobApplicationResource</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">Middleware:</span> <code class="text-xs">apply</code> يتطلب أيضاً <code class="text-xs">verified</code></div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span><code class="text-sm font-bold text-slate-800">/api/v1/job-posts/{jobPost}/apply</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">apply()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يقدّم طلب توظيف على إعلان. يعيد الطلب محمّلاً بـ <code class="text-xs">jobPost.company</code> برمز 201. يتطلب بريداً مُتحقَّقاً.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">ApplyJobRequest</code> — <code>cv_id</code>: nullable, exists:cvs; <code>cover_letter</code>: nullable, max:5000.</p>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/applications</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">index()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">قائمة مُصفّحة بطلبات باحث العمل مع فلاتر <code class="text-xs">status, per_page</code>.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/applications/{jobApplication}</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">show()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يعرض طلباً بعد <code class="text-xs">authorize('view')</code> محمّلاً بـ <code class="text-xs">jobPost.company, cv</code>.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span><code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/applications/{jobApplication}/withdraw</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">withdraw()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يسحب الطلب بعد <code class="text-xs">authorize('withdraw')</code> عبر الخدمة. يعيد الطلب المحدّث.</p></div>
+                </div>
+            </section>
+
+            <!-- ===================== JobSeeker/SavedJobController ===================== -->
+            <section id="c-seeker-savedjob" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">JobSeeker · SavedJobController</h2>
+                    <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">role:job_seeker</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/JobSeeker/SavedJobController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">إدارة الوظائف المحفوظة لباحث العمل (عرض/حفظ/إلغاء حفظ) عبر <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">JobSeekerService</code>.</p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموديلات:</span> <code class="text-xs">JobPost</code> (عبر pivot SavedJob)</div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">JobPostResource</code></div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/saved-jobs</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">index()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">قائمة مُصفّحة بالوظائف المحفوظة. يستخرج إعلانات الوظائف من pivot <code class="text-xs">SavedJob</code> ويعيدها كـ <code class="text-xs">JobPostResource</code> مع <code class="text-xs">meta</code> الترقيم الأصلي.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-post text-xs font-bold px-2.5 py-1 rounded">POST</span><code class="text-sm font-bold text-slate-800">/api/v1/job-posts/{jobPost}/save</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">save()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يحفظ إعلان وظيفة لباحث العمل الحالي. يعيد رسالة نجاح.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-delete text-xs font-bold px-2.5 py-1 rounded">DELETE</span><code class="text-sm font-bold text-slate-800">/api/v1/job-posts/{jobPost}/save</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">unsave()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">يزيل إعلان وظيفة من قائمة المحفوظات. يعيد رسالة نجاح.</p></div>
+                </div>
+            </section>
+
+            <!-- ===================== JobSeeker/InvitationController ===================== -->
+            <section id="c-seeker-invitation" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">JobSeeker · InvitationController</h2>
+                    <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">role:job_seeker</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/JobSeeker/InvitationController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">عرض الدعوات الواردة لباحث العمل والاستجابة لها (قبول/رفض). يستخدم <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">InvitationService</code> و <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">JobSeekerService</code>، وسياسة <code class="text-xs">respond</code>.</p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموديلات:</span> <code class="text-xs">Invitation</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">InvitationResource</code></div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/invitations</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">index()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm"><p class="text-slate-700 leading-relaxed">قائمة مُصفّحة بدعوات باحث العمل مع فلاتر <code class="text-xs">status, per_page</code>.</p></div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-patch text-xs font-bold px-2.5 py-1 rounded">PATCH</span><code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/invitations/{invitation}/respond</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">respond()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يسجّل الاستجابة بعد <code class="text-xs">authorize('respond')</code>. يحوّل فعل <code class="text-xs">accept→accepted</code> و <code class="text-xs">decline→declined</code>، ويعيد الدعوة محمّلةً بـ <code class="text-xs">company, jobPost</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المعاملات:</span> <code class="text-xs">RespondInvitationRequest</code> — <code>action</code>: required, in:accept,decline. <strong>authorize():</strong> <code>$user->isJobSeeker()</code>.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== JobSeeker/MatchingController ===================== -->
+            <section id="c-seeker-matching" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900">JobSeeker · MatchingController</h2>
+                    <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">role:job_seeker</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">extends Controller</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">app/Http/Controllers/Api/V1/JobSeeker/MatchingController.php</p>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 class="font-bold text-slate-900 mb-2">نظرة عامة</h3>
+                    <p class="text-slate-700 leading-relaxed">مطابقة الوظائف مع ملف باحث العمل عبر <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">JobMatchingService</code> و <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-800">JobSeekerService</code>.</p>
+                    <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الخدمات:</span> <code class="text-xs">JobMatchingService, JobSeekerService</code></div>
+                        <div class="bg-slate-50 rounded-lg p-3"><span class="font-semibold text-slate-600">الموارد:</span> <code class="text-xs">JobPostResource</code></div>
+                    </div>
+                </div>
+
+                <div class="method-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                    <div class="bg-slate-50 px-6 py-3 border-b border-slate-200 flex items-center gap-3 flex-wrap">
+                        <span class="verb-get text-xs font-bold px-2.5 py-1 rounded">GET</span><code class="text-sm font-bold text-slate-800">/api/v1/job-seeker/suitable-jobs</code><span class="text-slate-400">·</span><span class="font-bold text-brand-700">suitableJobs()</span>
+                    </div>
+                    <div class="p-6 space-y-3 text-sm">
+                        <p class="text-slate-700 leading-relaxed">يعيد الإعلانات المنشورة مرتّبة حسب درجة المطابقة مع ملف باحث العمل (يُحمّل مهاراته أولاً). يدعم فلاتر <code class="text-xs">search, location, employment_type, per_page</code>.</p>
+                        <p><span class="font-semibold text-slate-600">المرجعة:</span> <code class="text-xs">JsonResponse</code> مع <code class="text-xs">JobPostResource</code> و <code class="text-xs">meta</code>.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== FOOTER ===================== -->
+            <footer class="border-t border-slate-200 pt-8 pb-4 text-center text-sm text-slate-500">
+                <p>تم توليد هذا التوثيق من الكود الفعلي لمشروع منصة TALENTO للتوظيف — جميع الكنترولرات الـ 22 موثّقة.</p>
+                <p class="mt-1">Laravel API v1 · بادئة <code class="text-xs">/api/v1</code></p>
+            </footer>
+
+        </div>
+    </main>
+</div>
+
+<!-- ScrollSpy: highlight active sidebar link -->
+<script>
+    (function () {
+        const links = Array.from(document.querySelectorAll('.nav-link'));
+        const map = {};
+        links.forEach(l => {
+            const id = l.getAttribute('href').slice(1);
+            const el = document.getElementById(id);
+            if (el) map[id] = l;
+        });
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    links.forEach(l => l.classList.remove('active'));
+                    const active = map[entry.target.id];
+                    if (active) active.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-10% 0px -80% 0px', threshold: 0 });
+        Object.keys(map).forEach(id => {
+            const el = document.getElementById(id);
+            if (el) observer.observe(el);
+        });
+    })();
+</script>
+
+</body>
+</html>

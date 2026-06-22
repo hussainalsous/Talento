@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>توثيق السياسات والخدمات والمزوّدين — منصة TALENTO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Cairo', 'Tajawal', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            50:'#eef4ff',100:'#d9e6ff',200:'#bcd2ff',300:'#8eb4ff',400:'#598bff',
+                            500:'#3563ff',600:'#1f43f5',700:'#1733e1',800:'#192cb6',900:'#1a2c8f',950:'#151b54',
+                        },
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Cairo', 'Tajawal', sans-serif; }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        section { scroll-margin-top: 1rem; }
+        code, .mono { font-family: 'Consolas', 'Courier New', monospace; direction: ltr; unicode-bidi: embed; display: inline-block; }
+        .nav-link.active { background-color: #1f43f5; color: #fff; }
+        /* badges */
+        .b-allow   { background:#dcfce7; color:#166534; }
+        .b-deny    { background:#fee2e2; color:#991b1b; }
+        .b-cond    { background:#fef9c3; color:#854d0e; }
+        .b-singleton { background:#ede9fe; color:#5b21b6; }
+        .b-event     { background:#cffafe; color:#155e75; }
+        .b-method    { background:#e0e7ff; color:#3730a3; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased">
+
+<div class="flex min-h-screen">
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="hidden lg:block w-80 shrink-0 bg-slate-900 text-slate-200 sticky top-0 h-screen overflow-y-auto">
+        <div class="p-6 border-b border-slate-700">
+            <h1 class="text-xl font-extrabold text-white flex items-center gap-2">
+                <span class="inline-block w-3 h-3 rounded-full bg-brand-500"></span>
+                Policies · Services · Providers
+            </h1>
+            <p class="text-xs text-slate-400 mt-1">منصة TALENTO للتوظيف</p>
+        </div>
+        <nav class="p-4 space-y-6 text-sm">
+            <div>
+                <ul class="space-y-1">
+                    <li><a href="#overview" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">نظرة عامة</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2 px-2">① السياسات (Policies)</p>
+                <ul class="space-y-1">
+                    <li><a href="#p-company" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">CompanyPolicy</a></li>
+                    <li><a href="#p-jobpost" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">JobPostPolicy</a></li>
+                    <li><a href="#p-jobapplication" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">JobApplicationPolicy</a></li>
+                    <li><a href="#p-cv" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">CvPolicy</a></li>
+                    <li><a href="#p-invitation" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">InvitationPolicy</a></li>
+                    <li><a href="#p-user" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">UserPolicy</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-brand-300 mb-2 px-2">② الخدمات (Services)</p>
+                <ul class="space-y-1">
+                    <li><a href="#s-auth" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">AuthService</a></li>
+                    <li><a href="#s-admin" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">AdminService</a></li>
+                    <li><a href="#s-company" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">CompanyService</a></li>
+                    <li><a href="#s-jobseeker" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">JobSeekerService</a></li>
+                    <li><a href="#s-invitation" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">InvitationService</a></li>
+                    <li><a href="#s-candidate" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">CandidateSearchService</a></li>
+                    <li><a href="#s-courserec" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">CourseRecommendationService</a></li>
+                    <li><a href="#s-jobmatching" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">JobMatchingService</a></li>
+                    <li><a href="#s-cvanalysis" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">CvAnalysisService</a></li>
+                    <li><a href="#s-redis" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">RedisCacheService</a></li>
+                    <li><a href="#s-supabase" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">SupabaseNotificationService</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2 px-2">③ المزوّدون (Providers)</p>
+                <ul class="space-y-1">
+                    <li><a href="#pr-app" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">AppServiceProvider</a></li>
+                </ul>
+            </div>
+        </nav>
+        <div class="p-4 text-xs text-slate-500 border-t border-slate-700">
+            6 سياسات · 11 خدمة · 1 مزوّد — مولّدة من الكود الفعلي.
+        </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="flex-1 min-w-0">
+        <header class="lg:hidden bg-slate-900 text-white p-4 sticky top-0 z-20">
+            <h1 class="text-lg font-bold">Policies · Services · Providers — TALENTO</h1>
+        </header>
+
+        <div class="max-w-5xl mx-auto px-5 sm:px-8 py-10 space-y-16">
+
+            <!-- ===================== OVERVIEW ===================== -->
+            <section id="overview">
+                <h1 class="text-4xl font-extrabold text-slate-900 mb-3">السياسات والخدمات ومزوّدو الخدمة</h1>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    يوثّق هذا المستند طبقات منطق الأعمال والتخويل والإعداد في منصة TALENTO للتوظيف (Laravel):
+                    <strong>السياسات (Policies)</strong> التي تحكم التخويل لكل موديل،
+                    <strong>الخدمات (Services)</strong> التي تحوي منطق الأعمال وتُحقَن في الكنترولرز،
+                    و<strong>مزوّدي الخدمة (Service Providers)</strong> الذين يربطون ويُهيّئون التطبيق.
+                </p>
+
+                <div class="grid sm:grid-cols-3 gap-4 mt-8">
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5"><div class="text-3xl font-extrabold text-emerald-600">6</div><div class="text-sm text-slate-500 mt-1">سياسات (app/Policies)</div></div>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5"><div class="text-3xl font-extrabold text-brand-600">11</div><div class="text-sm text-slate-500 mt-1">خدمات (app/Services)</div></div>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5"><div class="text-3xl font-extrabold text-amber-600">1</div><div class="text-sm text-slate-500 mt-1">مزوّد خدمة (app/Providers)</div></div>
+                </div>
+
+                <div class="mt-8 bg-amber-50 border-r-4 border-amber-400 rounded-lg p-5">
+                    <h3 class="font-bold text-amber-900 mb-2">ملاحظات معمارية عامة</h3>
+                    <ul class="list-disc pr-5 space-y-1 text-sm text-amber-900/90">
+                        <li><strong>تسجيل السياسات:</strong> لا يوجد <code class="text-xs">AuthServiceProvider</code> ولا تسجيل يدوي؛ تعتمد السياسات على <strong>الاكتشاف التلقائي (Auto-discovery)</strong> في Laravel — كل <code class="text-xs">App\Models\X</code> يرتبط تلقائياً بـ <code class="text-xs">App\Policies\XPolicy</code> (ما عدا CV الذي يطابق <code class="text-xs">CvPolicy</code>).</li>
+                        <li><strong>المزوّد الوحيد المسجّل</strong> في <code class="text-xs">bootstrap/providers.php</code> هو <code class="text-xs">AppServiceProvider</code>.</li>
+                        <li>الخدمتان <code class="text-xs">SupabaseNotificationService</code> و <code class="text-xs">RedisCacheService</code> مسجّلتان كـ <span class="b-singleton px-1.5 py-0.5 rounded text-xs font-semibold">Singleton</span> وتُحقنان في معظم الخدمات الأخرى.</li>
+                        <li>الكنترولرز نحيفة وتفوّض منطق الأعمال إلى هذه الخدمات عبر حقن المُنشئ (Constructor Injection).</li>
+                        <li>الإشعارات تُكتب في قاعدة بيانات <strong>Supabase</strong> منفصلة (اتصال <code class="text-xs">supabase</code>)، والبريد يُرسَل عبر مهمة الطابور <code class="text-xs">SendEmail</code>.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ============================================================= -->
+            <!-- ===================== ① POLICIES ============================ -->
+            <!-- ============================================================= -->
+            <div class="bg-emerald-600 text-white rounded-2xl px-6 py-5 shadow-md">
+                <h2 class="text-2xl font-extrabold">① السياسات (Policies)</h2>
+                <p class="text-emerald-50 text-sm mt-1">طبقة التخويل لكل موديل — تُستدعى عبر <code class="text-xs bg-emerald-700/50 px-1 rounded">$this->authorize()</code> في الكنترولرز. كل دالة تُرجع <code class="text-xs bg-emerald-700/50 px-1 rounded">bool</code>.</p>
+            </div>
+
+            <!-- ===================== CompanyPolicy ===================== -->
+            <section id="p-company" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-2xl font-extrabold text-slate-900">CompanyPolicy</h2>
+                    <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">Model: Company</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-2 mono">app/Policies/CompanyPolicy.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm text-slate-700 leading-relaxed">
+                    <p>تحكم الوصول إلى الشركة وملفها وأعضائها. دالة خاصة مساعدة <code class="text-xs">isMemberOf()</code> تتحقق من انتماء المستخدم لأعضاء الشركة عبر استعلام <code class="text-xs">members()->where('user_id', ...)->exists()</code>.</p>
+                    <p class="mt-2 text-xs text-slate-500"><strong>الاستخدام:</strong> <code class="text-xs">Company\ProfileController</code> (view, update)، <code class="text-xs">Company\MemberController</code> (view, manageMembers)، <code class="text-xs">Company\JobPostController@store</code> (createJobPost).</p>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي</span><code class="font-bold text-emerald-700">view(User, Company): bool</code></div>
+                        <p class="text-sm text-slate-700">يسمح إذا كان المستخدم أدمن، <strong>أو</strong> مالك الشركة (<code class="text-xs">id === owner_user_id</code>)، <strong>أو</strong> عضواً فيها.</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي</span><code class="font-bold text-emerald-700">update(User, Company): bool</code></div>
+                        <p class="text-sm text-slate-700">يسمح فقط إذا كان المستخدم أدمن <strong>أو</strong> مالك الشركة (الأعضاء لا يستطيعون التعديل).</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي</span><code class="font-bold text-emerald-700">approve(User): bool</code></div>
+                        <p class="text-sm text-slate-700">يسمح فقط للأدمن (<code class="text-xs">isAdmin()</code>) — اعتماد/رفض الشركات. لا يأخذ معامل Company.</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي</span><code class="font-bold text-emerald-700">manageMembers(User, Company): bool</code></div>
+                        <p class="text-sm text-slate-700">يسمح للأدمن <strong>أو</strong> مالك الشركة فقط — إدارة الأعضاء.</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي</span><code class="font-bold text-emerald-700">createJobPost(User, Company): bool</code></div>
+                        <p class="text-sm text-slate-700">يسمح للأدمن <strong>أو</strong> المالك <strong>أو</strong> أي عضو في الشركة — نشر الوظائف.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== JobPostPolicy ===================== -->
+            <section id="p-jobpost" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-2xl font-extrabold text-slate-900">JobPostPolicy</h2>
+                    <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">Model: JobPost</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-2 mono">app/Policies/JobPostPolicy.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm text-slate-700 leading-relaxed">
+                    <p>تحكم الوصول إلى إعلانات الوظائف. الدالة الخاصة <code class="text-xs">isCompanyStaff()</code> تتحقق من أن المستخدم عضو شركة وأن <code class="text-xs">companyMember.company_id</code> يطابق <code class="text-xs">jobPost.company_id</code>. الدوال الأربع متطابقة في الشرط.</p>
+                    <p class="mt-2 text-xs text-slate-500"><strong>الاستخدام:</strong> <code class="text-xs">Company\JobPostController</code> (view, update, delete, viewApplicants).</p>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي</span><code class="font-bold text-emerald-700">view / update / delete / viewApplicants (User, JobPost): bool</code></div>
+                        <p class="text-sm text-slate-700">جميعها تسمح إذا كان المستخدم أدمن <strong>أو</strong> من طاقم الشركة المالكة للإعلان (نفس <code class="text-xs">company_id</code>).</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== JobApplicationPolicy ===================== -->
+            <section id="p-jobapplication" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-2xl font-extrabold text-slate-900">JobApplicationPolicy</h2>
+                    <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">Model: JobApplication</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-2 mono">app/Policies/JobApplicationPolicy.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm text-slate-700 leading-relaxed">
+                    <p>تحكم عرض طلبات التوظيف وسحبها وتحديث حالتها — بمنطق يختلف حسب دور المستخدم (باحث عمل / طاقم شركة / أدمن).</p>
+                    <p class="mt-2 text-xs text-slate-500"><strong>الاستخدام:</strong> <code class="text-xs">JobSeeker\ApplicationController</code> (view, withdraw)، <code class="text-xs">Company\JobPostController@updateApplicationStatus</code> (updateStatus).</p>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي حسب الدور</span><code class="font-bold text-emerald-700">view(User, JobApplication): bool</code></div>
+                        <p class="text-sm text-slate-700">الأدمن: دائماً. باحث العمل: فقط إذا كان صاحب الطلب (<code class="text-xs">jobSeeker?->id === job_seeker_id</code>). طاقم الشركة: إذا كان <code class="text-xs">companyMember?->company_id</code> يطابق شركة الإعلان (<code class="text-xs">application->jobPost->company_id</code>).</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي</span><code class="font-bold text-emerald-700">withdraw(User, JobApplication): bool</code></div>
+                        <p class="text-sm text-slate-700">يسمح فقط لباحث العمل صاحب الطلب <strong>وبشرط</strong> أن الحالة ليست <code class="text-xs">withdrawn</code> أصلاً.</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي</span><code class="font-bold text-emerald-700">updateStatus(User, JobApplication): bool</code></div>
+                        <p class="text-sm text-slate-700">الأدمن: دائماً. وإلا يجب أن يكون عضو شركة (<code class="text-xs">isCompanyMember()</code>) ينتمي لنفس شركة الإعلان.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== CvPolicy ===================== -->
+            <section id="p-cv" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-2xl font-extrabold text-slate-900">CvPolicy</h2>
+                    <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">Model: CV</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-2 mono">app/Policies/CvPolicy.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm text-slate-700 leading-relaxed">
+                    <p>تحكم الوصول إلى السير الذاتية مع مراعاة مستوى الظهور (<code class="text-xs">visibility</code>).</p>
+                    <p class="mt-2 text-xs text-slate-500"><strong>الاستخدام:</strong> <code class="text-xs">JobSeeker\CvController</code> (update, delete, analyze). دالة <code class="text-xs">view</code> معرّفة لاستخدام طبقة العرض/البحث.</p>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي حسب الظهور</span><code class="font-bold text-emerald-700">view(User, CV): bool</code></div>
+                        <p class="text-sm text-slate-700">الأدمن: دائماً. صاحب السيرة (<code class="text-xs">jobSeeker?->id === job_seeker_id</code>): دائماً. عضو الشركة: فقط إذا كانت <code class="text-xs">visibility === 'public'</code>. غير ذلك: <span class="b-deny px-1.5 py-0.5 rounded text-xs">رفض</span>.</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي</span><code class="font-bold text-emerald-700">update(User, CV): bool</code></div>
+                        <p class="text-sm text-slate-700">يسمح للأدمن <strong>أو</strong> صاحب السيرة فقط.</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي</span><code class="font-bold text-emerald-700">delete(User, CV): bool</code></div>
+                        <p class="text-sm text-slate-700">يسمح للأدمن (لحذف المحتوى غير اللائق) <strong>أو</strong> صاحب السيرة.</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي</span><code class="font-bold text-emerald-700">analyze(User, CV): bool</code></div>
+                        <p class="text-sm text-slate-700">يسمح <strong>فقط</strong> لصاحب السيرة (حتى الأدمن لا يحلّل سيرة غيره عبر هذه الدالة).</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== InvitationPolicy ===================== -->
+            <section id="p-invitation" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-2xl font-extrabold text-slate-900">InvitationPolicy</h2>
+                    <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">Model: Invitation</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-2 mono">app/Policies/InvitationPolicy.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm text-slate-700 leading-relaxed">
+                    <p>تحكم الردّ على الدعوات وعرضها. التحقق من كون الدعوة «معلّقة» (pending) يُفرَض في طبقة الخدمة (يعيد 422)، وليس هنا.</p>
+                    <p class="mt-2 text-xs text-slate-500"><strong>الاستخدام:</strong> <code class="text-xs">JobSeeker\InvitationController@respond</code> (respond). دالة <code class="text-xs">view</code> معرّفة لطبقة العرض.</p>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي</span><code class="font-bold text-emerald-700">respond(User, Invitation): bool</code></div>
+                        <p class="text-sm text-slate-700">يسمح فقط لباحث العمل المُرسَلة إليه الدعوة (<code class="text-xs">jobSeeker?->id === invitation->job_seeker_id</code>).</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي حسب الدور</span><code class="font-bold text-emerald-700">view(User, Invitation): bool</code></div>
+                        <p class="text-sm text-slate-700">الأدمن: دائماً. باحث العمل: إذا كان المدعوّ. طاقم الشركة: إذا كانت الدعوة صادرة من شركته (<code class="text-xs">companyMember?->company_id === invitation->company_id</code>).</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== UserPolicy ===================== -->
+            <section id="p-user" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-2xl font-extrabold text-slate-900">UserPolicy</h2>
+                    <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">Model: User</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-2 mono">app/Policies/UserPolicy.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm text-slate-700 leading-relaxed">
+                    <p>تحكم إدارة المستخدمين وعرضهم. عملياً تعتمد مسارات الأدمن أيضاً على middleware <code class="text-xs">role:admin</code> كطبقة حماية أساسية، وهذه السياسة متاحة للاستخدام البرمجي.</p>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي</span><code class="font-bold text-emerald-700">manage(User $currentUser, User $targetUser): bool</code></div>
+                        <p class="text-sm text-slate-700">يسمح فقط إذا كان المستخدم الحالي أدمن.</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-cond text-xs font-bold px-2 py-0.5 rounded">شرطي</span><code class="font-bold text-emerald-700">view(User $currentUser, User $targetUser): bool</code></div>
+                        <p class="text-sm text-slate-700">يسمح إذا كان أدمن <strong>أو</strong> يعرض ملفه الشخصي نفسه (<code class="text-xs">id === targetUser->id</code>).</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================= -->
+            <!-- ===================== ② SERVICES ============================ -->
+            <!-- ============================================================= -->
+            <div class="bg-brand-600 text-white rounded-2xl px-6 py-5 shadow-md">
+                <h2 class="text-2xl font-extrabold">② الخدمات (Services)</h2>
+                <p class="text-brand-50 text-sm mt-1">طبقة منطق الأعمال — تُحقَن في الكنترولرز عبر المُنشئ. تتعامل مع الموديلات والكاش والإشعارات ومهام الطابور.</p>
+            </div>
+
+            <!-- ===================== AuthService ===================== -->
+            <section id="s-auth" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-2xl font-extrabold text-slate-900">AuthService</h2>
+                </div>
+                <p class="text-sm text-slate-500 mb-3 mono">app/Services/AuthService.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm leading-relaxed">
+                    <p class="text-slate-700">منطق المصادقة وإدارة الحساب: التسجيل، الدخول مع حماية ضد التعداد والتخمين، الخروج، تغيير/إعادة تعيين كلمة المرور.</p>
+                    <div class="mt-3 grid sm:grid-cols-2 gap-3 text-xs">
+                        <div class="bg-slate-50 rounded p-3"><span class="font-semibold text-slate-600">Dependencies:</span> <code class="text-xs">SupabaseNotificationService</code>، <code class="text-xs">RedisCacheService</code></div>
+                        <div class="bg-slate-50 rounded p-3"><span class="font-semibold text-slate-600">يُستخدم في:</span> <code class="text-xs">Auth\AuthController</code></div>
+                    </div>
+                    <div class="mt-3 bg-rose-50 border-r-4 border-rose-300 rounded p-3 text-xs text-rose-900">
+                        <strong>أمان:</strong> ثابت <code class="text-xs">DUMMY_HASH</code> لمعادلة زمن الاستجابة (timing guard)، وحدّ محاولات عبر <code class="text-xs">RateLimiter</code> (5 محاولات / 900 ثانية)، ورسائل فشل موحّدة لمنع تعداد الحسابات.
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">registerJobSeeker(array $data): array</code></div>
+                        <p class="text-sm text-slate-700">داخل معاملة DB: ينشئ <code class="text-xs">User</code> (دور job_seeker) + <code class="text-xs">JobSeeker</code> + توكن Sanctum. ثم يُبطل كاش <code class="text-xs">admin:users:*</code>، يُنشئ إشعار ترحيب، ويُرسل بريد التحقق. يعيد user/jobSeeker/token.</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">submitCompanyRegistrationRequest(array $data, ?string $logoPath): CompanyRegistrationRequest</code></div>
+                        <p class="text-sm text-slate-700">ينشئ طلب تسجيل شركة (كلمة مرور مُجزّأة، حالة pending)، يُبطل كاش الطلبات، يُشعر جميع الأدمن، ويُرسل بريدين عبر <code class="text-xs">SendEmail</code>: تأكيد الاستلام + رابط تحقق موقّع صالح 48 ساعة (<code class="text-xs">URL::temporarySignedRoute</code>).</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">login(string $email, string $password, string $ip): array</code></div>
+                        <p class="text-sm text-slate-700">يفحص حدّ المحاولات (يعيد 429 عند التجاوز)، يستدعي <code class="text-xs">Hash::check</code> دائماً (حتى لمستخدم غير موجود) عبر DUMMY_HASH. يحدّد سبب الفشل داخلياً (user_not_found / invalid_credentials / inactive_user) ويسجّله، لكنه يرمي رسالة موحّدة. عند النجاح يصفّر العدّاد، يحدّث <code class="text-xs">last_login_at</code>، ويصدر توكناً.</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">logout(User $user): void</code></div>
+                        <p class="text-sm text-slate-700">يحذف التوكن الحالي (<code class="text-xs">currentAccessToken()->delete()</code>).</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">updatePassword(User $user, string $newPassword): void</code></div>
+                        <p class="text-sm text-slate-700">يحدّث كلمة المرور، يبطل جميع التوكنات <strong>عدا الحالية</strong>، ويُنشئ إشعار «Password Changed».</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">sendPasswordResetLink(string $email): void</code></div>
+                        <p class="text-sm text-slate-700">يتجاهل بصمت المستخدمين غير الموجودين/غير النشطين (مكافحة التعداد). يولّد توكناً عبر <code class="text-xs">Password::broker()</code>، يبني رابطاً للواجهة، ويُرسل بريد إعادة التعيين عبر <code class="text-xs">SendEmail</code>.</p>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">resetPassword(array $credentials): void</code></div>
+                        <p class="text-sm text-slate-700">يتحقق من التوكن عبر <code class="text-xs">Password::broker()->reset()</code>، يضبط كلمة المرور، يحذف <strong>جميع</strong> التوكنات، يُنشئ إشعاراً، ويُطلق حدث <code class="text-xs">PasswordReset</code>. يرمي <code class="text-xs">ValidationException</code> عند فشل التوكن.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== AdminService ===================== -->
+            <section id="s-admin" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2"><h2 class="text-2xl font-extrabold text-slate-900">AdminService</h2></div>
+                <p class="text-sm text-slate-500 mb-3 mono">app/Services/AdminService.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm leading-relaxed">
+                    <p class="text-slate-700">منطق لوحة الأدمن: إدارة المستخدمين وموظفي النظام، مراجعة طلبات تسجيل الشركات، حذف السير الذاتية، وإدارة الخطط والاشتراكات. يعتمد على كاش Redis (TTL: users=120، requests=30، plans=3600 ثانية).</p>
+                    <div class="mt-3 grid sm:grid-cols-2 gap-3 text-xs">
+                        <div class="bg-slate-50 rounded p-3"><span class="font-semibold text-slate-600">Dependencies:</span> <code class="text-xs">SupabaseNotificationService</code>، <code class="text-xs">RedisCacheService</code></div>
+                        <div class="bg-slate-50 rounded p-3"><span class="font-semibold text-slate-600">يُستخدم في:</span> <code class="text-xs">Admin\UserController، SubscriptionController، CompanyRequestController، CvAdminController</code></div>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">listUsers(array $filters): LengthAwarePaginator</code></div><p class="text-sm text-slate-700">قائمة مستخدمين مفلترة (role، search عبر العلاقات، is_active) مع كاش cache-aside وإعادة بناء <code class="text-xs">LengthAwarePaginator</code> من البيانات المخزّنة عبر <code class="text-xs">User::hydrate()</code>.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">activateUser / deactivateUser(User $user): void</code></div><p class="text-sm text-slate-700">يفعّل/يعطّل المستخدم. التعطيل يحذف جميع توكناته. كلاهما يُبطل كاش <code class="text-xs">admin:users:*</code> ويُنشئ إشعاراً.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">createSystemEmployee(array $data): array</code></div><p class="text-sm text-slate-700">داخل معاملة: ينشئ <code class="text-xs">User</code> (دور admin) + <code class="text-xs">Admin</code> بصلاحياته. يُبطل الكاش ويُنشئ إشعاراً.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">updateAdminPermissions(Admin $admin, array $permissions): Admin</code></div><p class="text-sm text-slate-700">يحدّث صلاحيات أدمن ويُنشئ إشعاراً له.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">listRegistrationRequests(array $filters): LengthAwarePaginator</code></div><p class="text-sm text-slate-700">قائمة طلبات التسجيل مفلترة (status، search) مع كاش <code class="text-xs">admin:company_requests:*</code>.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">invalidateRequestsCache(): void</code></div><p class="text-sm text-slate-700">يُبطل نمط كاش طلبات التسجيل يدوياً.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">approveRegistrationRequest(CompanyRegistrationRequest, User): array</code></div><p class="text-sm text-slate-700">يرفض إن كان الطلب غير معلّق (409). داخل معاملة: ينشئ <code class="text-xs">User</code> (company_owner، ينقل <code class="text-xs">email_verified_at</code> إن سبق التحقق) + <code class="text-xs">Company</code> (approved) + <code class="text-xs">CompanyMember</code> (owner)، ويحدّث الطلب. يُبطل كاشّي الطلبات والمستخدمين، يحذف الإشعارات القديمة لتجنّب إعادة استخدام المعرّفات، يُنشئ إشعار موافقة، ويُرسل بريداً (ورابط تحقق فقط إن لم يكن مُتحقَّقاً مسبقاً).</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">rejectRegistrationRequest(CompanyRegistrationRequest, User, string $reason): CompanyRegistrationRequest</code></div><p class="text-sm text-slate-700">يرفض إن لم يكن معلّقاً (409). يحدّث الحالة لـ rejected مع السبب، يحذف الشعار المرفوع من القرص، يُبطل الكاش، ويُرسل بريد رفض عبر <code class="text-xs">SendEmail</code>.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">deleteCV(CV $cv): void</code></div><p class="text-sm text-slate-700">يحذف ملف السيرة من القرص ثم <code class="text-xs">forceDelete()</code> (حذف نهائي يتجاوز الحذف الناعم)، ويُشعر صاحبها بأن أدمن أزالها.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">listPlans(): Collection</code></div><p class="text-sm text-slate-700">يعيد الخطط النشطة مع كاش <code class="text-xs">admin:plans</code> (ساعة).</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">assignSubscription(Company $company, array $data): Subscription</code></div><p class="text-sm text-slate-700">داخل معاملة: يُلغي الاشتراكات النشطة الحالية (cancelled) ثم ينشئ اشتراكاً جديداً. يُنشئ إشعاراً لمالك الشركة.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">listSubscriptions(array $filters): LengthAwarePaginator</code></div><p class="text-sm text-slate-700">قائمة اشتراكات مفلترة (status، company_id) مع تحميل <code class="text-xs">company, plan</code> (بدون كاش).</p></div>
+                </div>
+            </section>
+
+            <!-- ===================== CompanyService ===================== -->
+            <section id="s-company" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2"><h2 class="text-2xl font-extrabold text-slate-900">CompanyService</h2></div>
+                <p class="text-sm text-slate-500 mb-3 mono">app/Services/CompanyService.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm leading-relaxed">
+                    <p class="text-slate-700">منطق الشركة: الملف، الأعضاء، إعلانات الوظائف، والمتقدّمون. يُبطل كاش <code class="text-xs">public:job_posts:*</code> و <code class="text-xs">company:job_posts:*</code> عند تغيّر الإعلانات (TTL=120).</p>
+                    <div class="mt-3 grid sm:grid-cols-2 gap-3 text-xs">
+                        <div class="bg-slate-50 rounded p-3"><span class="font-semibold text-slate-600">Dependencies:</span> <code class="text-xs">SupabaseNotificationService</code>، <code class="text-xs">RedisCacheService</code></div>
+                        <div class="bg-slate-50 rounded p-3"><span class="font-semibold text-slate-600">يُستخدم في:</span> <code class="text-xs">Company\ProfileController، MemberController، JobPostController</code></div>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">getCompanyForUser(User $user): Company</code></div><p class="text-sm text-slate-700">يعيد شركة المستخدم عبر <code class="text-xs">companyMember->company</code> أو يرمي 404.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">updateProfile(Company, array $data): Company</code></div><p class="text-sm text-slate-700">يحدّث ملف الشركة (يتجاهل القيم null) ويُنشئ إشعاراً للمالك.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">uploadLogo(Company, $file): Company</code></div><p class="text-sm text-slate-700">يحذف الشعار القديم إن وُجد، يخزّن الجديد في <code class="text-xs">company-logos</code> (قرص public)، ويُنشئ إشعاراً.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">listMembers(Company): Collection</code></div><p class="text-sm text-slate-700">يعيد أعضاء الشركة مع تحميل <code class="text-xs">user</code>.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">addMember(Company, array $data, User $invitedBy): CompanyMember</code></div><p class="text-sm text-slate-700">داخل معاملة: ينشئ <code class="text-xs">User</code> (company_member) + <code class="text-xs">CompanyMember</code>. يُبطل كاش المستخدمين ويُشعر العضو الجديد.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">updateMember(CompanyMember, array $data): CompanyMember</code></div><p class="text-sm text-slate-700">يحدّث بيانات العضو ويُشعره.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">removeMember(CompanyMember): void</code></div><p class="text-sm text-slate-700">داخل معاملة: يحذف العضو وتوكناته وحساب المستخدم المرتبط. يُبطل كاش المستخدمين ويُشعر مالك الشركة.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">createJobPost(Company, User $creator, array $data): JobPost</code></div><p class="text-sm text-slate-700">داخل معاملة: ينشئ الإعلان ويزامن المهارات مع تحديد <code class="text-xs">is_required</code> من <code class="text-xs">skill_ids_required</code>. يُشعر المُنشئ ويُبطل كاشّي الإعلانات.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">updateJobPost(JobPost, array $data): JobPost</code></div><p class="text-sm text-slate-700">داخل معاملة: يحدّث الإعلان ويزامن المهارات إن وُرّدت (كلها is_required=true). يُشعر المالك ويُبطل الكاش.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">deleteJobPost(JobPost): void</code></div><p class="text-sm text-slate-700">حذف ناعم للإعلان، إشعار المالك، وإبطال الكاش.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">listCompanyJobPosts(Company, array $filters): LengthAwarePaginator</code></div><p class="text-sm text-slate-700">قائمة إعلانات الشركة مع <code class="text-xs">withCount('applications')</code> وكاش. يخزّن <code class="text-xs">getAttributes()</code> (القيم الخام) لتفادي تعطّل فك تشفير JSON عند الـ hydration.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">listApplicants(JobPost, array $filters): LengthAwarePaginator</code></div><p class="text-sm text-slate-700">متقدّمو الإعلان مع تحميل <code class="text-xs">jobSeeker.skills, cv</code>، فلتر status، وفرز ضمن قائمة بيضاء (applied_at، status، score).</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">updateApplicationStatus(JobApplication, string $status, ?int $score): JobApplication</code></div><p class="text-sm text-slate-700">يحدّث الحالة والدرجة، ويُشعر باحث العمل بالتغيير.</p></div>
+                </div>
+            </section>
+
+            <!-- ===================== JobSeekerService ===================== -->
+            <section id="s-jobseeker" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2"><h2 class="text-2xl font-extrabold text-slate-900">JobSeekerService</h2></div>
+                <p class="text-sm text-slate-500 mb-3 mono">app/Services/JobSeekerService.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm leading-relaxed">
+                    <p class="text-slate-700">منطق باحث العمل: الملف، الخصوصية، المهارات، السير الذاتية، الطلبات، والوظائف المحفوظة.</p>
+                    <div class="mt-3 grid sm:grid-cols-2 gap-3 text-xs">
+                        <div class="bg-slate-50 rounded p-3"><span class="font-semibold text-slate-600">Dependencies:</span> <code class="text-xs">SupabaseNotificationService</code>، <code class="text-xs">RedisCacheService</code></div>
+                        <div class="bg-slate-50 rounded p-3"><span class="font-semibold text-slate-600">يُستخدم في:</span> <code class="text-xs">JobSeeker\ProfileController، CvController، ApplicationController، SavedJobController، MatchingController</code>، و<code class="text-xs">CourseController</code></div>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">getProfileForUser(User): JobSeeker</code></div><p class="text-sm text-slate-700">يعيد ملف باحث العمل أو يرمي 404.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">updateProfile(JobSeeker, array $data): JobSeeker</code></div><p class="text-sm text-slate-700">يحدّث <code class="text-xs">phone</code> على سجل <code class="text-xs">User</code> منفصلاً، ثم باقي الحقول و<code class="text-xs">last_updated_at</code>، ويُنشئ إشعاراً.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">updatePrivacy(JobSeeker, array $data): JobSeeker</code></div><p class="text-sm text-slate-700">يحدّث انتقائياً <code class="text-xs">profile_visibility, cv_visibility, open_to_work</code> فقط إن وُجدت، ويُنشئ إشعاراً.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">syncSkills(JobSeeker, array $skills): JobSeeker</code></div><p class="text-sm text-slate-700">يزامن المهارات مع مستوى كل واحدة (pivot level)، ثم <strong>يُبطل كاش الدورات المُوصى بها</strong> لهذا الباحث (لأن فجوة المهارات تغيّرت)، ويُنشئ إشعاراً.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">listCvs(JobSeeker): Collection</code></div><p class="text-sm text-slate-700">يعيد سير الباحث الذاتية مرتّبة بالأحدث.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">uploadCv(JobSeeker, array $data, $file): CV</code></div><p class="text-sm text-slate-700">داخل معاملة: يخزّن الملف في <code class="text-xs">cvs/{id}</code>، يلغي علم الأساسية عن البقية إن طُلبت أساسية، وينشئ السيرة (تصبح أساسية تلقائياً إن كانت الأولى). يُنشئ إشعاراً.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">updateCv(CV, array $data, $file): CV</code></div><p class="text-sm text-slate-700">داخل معاملة: يستبدل الملف (يحذف القديم)، يدير علم الأساسية، يحدّث الحقول. يُنشئ إشعاراً.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">deleteCv(CV): void</code></div><p class="text-sm text-slate-700">يحذف الملف من القرص و<code class="text-xs">delete()</code> (حذف ناعم)، ويُنشئ إشعاراً.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">applyToJob(JobSeeker, JobPost, array $data): JobApplication</code></div><p class="text-sm text-slate-700">يمنع التقديم المكرّر (409) ويتطلّب أن الإعلان <code class="text-xs">published</code> (422). ينشئ الطلب (يستخدم السيرة الأساسية إن لم تُحدَّد)، ويُشعر <strong>كل أعضاء الشركة</strong> بالطلب الجديد.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">listApplications(JobSeeker, array $filters): LengthAwarePaginator</code></div><p class="text-sm text-slate-700">طلبات الباحث مع تحميل <code class="text-xs">jobPost.company, cv</code> وفلتر status.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">withdrawApplication(JobApplication): JobApplication</code></div><p class="text-sm text-slate-700">يمنع السحب المكرّر (409)، يضبط الحالة withdrawn، ويُشعر <strong>الباحث وكل أعضاء الشركة</strong>.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">listSavedJobs(JobSeeker, array $filters): LengthAwarePaginator</code></div><p class="text-sm text-slate-700">الوظائف المحفوظة مع تحميل <code class="text-xs">jobPost.company, jobPost.skills</code>.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">saveJob(JobSeeker, JobPost): SavedJob</code></div><p class="text-sm text-slate-700"><code class="text-xs">firstOrCreate</code> لتفادي التكرار؛ يُنشئ إشعاراً فقط إذا كان الحفظ جديداً (<code class="text-xs">wasRecentlyCreated</code>).</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">unsaveJob(JobSeeker, JobPost): void</code></div><p class="text-sm text-slate-700">يحذف سجل الحفظ ويُنشئ إشعاراً.</p></div>
+                </div>
+            </section>
+
+            <!-- ===================== InvitationService ===================== -->
+            <section id="s-invitation" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2"><h2 class="text-2xl font-extrabold text-slate-900">InvitationService</h2></div>
+                <p class="text-sm text-slate-500 mb-3 mono">app/Services/InvitationService.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm leading-relaxed">
+                    <p class="text-slate-700">منطق دعوات الشركات لباحثي العمل: الإرسال (مع منع التكرار والتحقق من ملكية الإعلان)، الردّ، والقوائم.</p>
+                    <div class="mt-3 grid sm:grid-cols-2 gap-3 text-xs">
+                        <div class="bg-slate-50 rounded p-3"><span class="font-semibold text-slate-600">Dependencies:</span> <code class="text-xs">SupabaseNotificationService</code></div>
+                        <div class="bg-slate-50 rounded p-3"><span class="font-semibold text-slate-600">يُستخدم في:</span> <code class="text-xs">Company\InvitationController، JobSeeker\InvitationController</code></div>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">sendInvitation(Company, User $sender, array $data): Invitation</code></div><p class="text-sm text-slate-700">يتحقق أن الإعلان (إن وُجد) يخصّ الشركة، ويمنع وجود دعوة نشطة مكرّرة (pending/accepted) — كلاهما يرمي <code class="text-xs">ValidationException</code>. ينشئ الدعوة (pending) ويُشعر باحث العمل.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">respondToInvitation(Invitation, string $status): Invitation</code></div><p class="text-sm text-slate-700">يرمي <code class="text-xs">ValidationException</code> إن لم تكن الدعوة معلّقة. يحدّث الحالة و<code class="text-xs">responded_at</code>، ويُشعر مُرسِل الدعوة (<code class="text-xs">invited_by</code>) بالردّ.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">listForJobSeeker(JobSeeker, array $filters): LengthAwarePaginator</code></div><p class="text-sm text-slate-700">دعوات الباحث مع تحميل <code class="text-xs">company, jobPost, invitedBy</code> وفلتر status.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">listForCompany(Company, array $filters): LengthAwarePaginator</code></div><p class="text-sm text-slate-700">دعوات الشركة مع تحميل <code class="text-xs">jobSeeker.user, jobPost</code> وفلتر status.</p></div>
+                </div>
+            </section>
+
+            <!-- ===================== CandidateSearchService ===================== -->
+            <section id="s-candidate" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2"><h2 class="text-2xl font-extrabold text-slate-900">CandidateSearchService</h2></div>
+                <p class="text-sm text-slate-500 mb-3 mono">app/Services/CandidateSearchService.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm leading-relaxed">
+                    <p class="text-slate-700">بحث المرشّحين مع مراعاة الخصوصية. <strong>لا dependencies</strong> في المُنشئ (يعمل على الموديلات مباشرة).</p>
+                    <div class="mt-3 bg-slate-50 rounded p-3 text-xs"><span class="font-semibold text-slate-600">يُستخدم في:</span> <code class="text-xs">Company\CandidateController</code></div>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">search(array $filters, User $viewer): LengthAwarePaginator</code></div><p class="text-sm text-slate-700">يبحث في باحثي العمل النشطين فقط. <strong>غير الأدمن</strong> يرى فقط <code class="text-xs">profile_visibility</code> ضمن (public, limited). يدعم فلاتر: بحث نصي (الاسم/الوظيفة/الموقع)، location، preferred_job_type، skill_ids، salary_max. الحد الأقصى per_page = 50.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">getCandidate(JobSeeker, User $viewer): ?JobSeeker</code></div><p class="text-sm text-slate-700">يعيد <code class="text-xs">null</code> إن لم يكن الملف مرئياً للمشاهِد (<code class="text-xs">isProfileVisibleTo()</code>). يحمّل المهارات والمستخدم، ويحمّل السيرة الأساسية فقط إذا كانت متاحة مباشرة (<code class="text-xs">isCvDirectlyAccessibleTo()</code>).</p></div>
+                </div>
+            </section>
+
+            <!-- ===================== CourseRecommendationService ===================== -->
+            <section id="s-courserec" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2"><h2 class="text-2xl font-extrabold text-slate-900">CourseRecommendationService</h2></div>
+                <p class="text-sm text-slate-500 mb-3 mono">app/Services/CourseRecommendationService.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm leading-relaxed">
+                    <p class="text-slate-700">توصية الدورات بناءً على المهارات الناقصة لدى باحث العمل. <strong>لا dependencies</strong>. الواجهة مصمّمة لاستبدالها بخدمة ML مستقبلاً دون لمس الكنترولرز.</p>
+                    <div class="mt-3 bg-slate-50 rounded p-3 text-xs"><span class="font-semibold text-slate-600">يُستخدم في:</span> <code class="text-xs">CourseController@recommended</code></div>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">recommend(JobSeeker, int $limit = 10): Collection</code></div><p class="text-sm text-slate-700">يجلب مهارات الباحث الحالية، يبحث عن دورات تغطّي مهارات <strong>ليست</strong> لديه (<code class="text-xs">whereNotIn</code>)، يجلب ضعف الحد ثم يحسب لكل دورة عدد المهارات الناقصة التي تغطّيها (<code class="text-xs">_score</code>) ويضيف <code class="text-xs">recommendation_reason</code> نصيّاً، ثم يرتّب تنازلياً ويأخذ <code class="text-xs">limit</code>.</p></div>
+                </div>
+            </section>
+
+            <!-- ===================== JobMatchingService ===================== -->
+            <section id="s-jobmatching" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2"><h2 class="text-2xl font-extrabold text-slate-900">JobMatchingService</h2></div>
+                <p class="text-sm text-slate-500 mb-3 mono">app/Services/JobMatchingService.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm leading-relaxed">
+                    <p class="text-slate-700">مطابقة الإعلانات المنشورة مع ملف باحث العمل (الموقع، نوع التوظيف، الراتب، تداخل المهارات). <strong>لا dependencies</strong>.</p>
+                    <div class="mt-3 bg-slate-50 rounded p-3 text-xs"><span class="font-semibold text-slate-600">يُستخدم في:</span> <code class="text-xs">JobSeeker\MatchingController@suitableJobs</code></div>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">suitableJobs(JobSeeker, array $filters = []): LengthAwarePaginator</code></div><p class="text-sm text-slate-700">يحسب <code class="text-xs">matched_skills_count</code> عبر <code class="text-xs">withCount</code> المشروط بمهارات الباحث. يفضّل نفس نوع التوظيف والموقع عبر <code class="text-xs">orderByRaw(CASE WHEN...)</code>، يفلتر الراتب ضمن توقّع الباحث + هامش 20%، ويطبّق فلاتر الطلب (search، location، employment_type). الترتيب النهائي: الأكثر تطابقاً في المهارات ثم الأحدث.</p></div>
+                </div>
+            </section>
+
+            <!-- ===================== CvAnalysisService ===================== -->
+            <section id="s-cvanalysis" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2"><h2 class="text-2xl font-extrabold text-slate-900">CvAnalysisService</h2><span class="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full">Stub</span></div>
+                <p class="text-sm text-slate-500 mb-3 mono">app/Services/CvAnalysisService.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm leading-relaxed">
+                    <p class="text-slate-700">تحليل السيرة الذاتية — <strong>تنفيذ وهمي (stub)</strong> حالياً؛ مُصمَّم ليُستبدَل بخدمة AI/NLP حقيقية دون تغيير عقد البيانات أو نقطة النهاية.</p>
+                    <div class="mt-3 grid sm:grid-cols-2 gap-3 text-xs">
+                        <div class="bg-slate-50 rounded p-3"><span class="font-semibold text-slate-600">Dependencies:</span> <code class="text-xs">SupabaseNotificationService</code></div>
+                        <div class="bg-slate-50 rounded p-3"><span class="font-semibold text-slate-600">يُستخدم في:</span> <code class="text-xs">JobSeeker\CvController@analyze</code></div>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">analyze(CV $cv): array</code></div><p class="text-sm text-slate-700">يرمي 422 إن لم يكن هناك ملف. يبني بيانات منظّمة وهمية (ملخّص، مهارات، خبرة، تعليم، لغات، <code class="text-xs">engine: stub_v1</code>)، يخزّنها في <code class="text-xs">parsed_data</code>، ويُنشئ إشعار «CV Analysis Complete». يعيد مصفوفة التحليل.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="bg-slate-200 text-slate-600 text-xs font-bold px-2 py-0.5 rounded">private</span><code class="font-bold text-slate-600">extractSkillsStub(CV $cv): array</code></div><p class="text-sm text-slate-700">محاكاة لاستخراج المهارات: يعيد 5 مهارات عشوائية من جدول <code class="text-xs">Skill</code> (بديل مؤقت عن مُحلّل AI).</p></div>
+                </div>
+            </section>
+
+            <!-- ===================== RedisCacheService ===================== -->
+            <section id="s-redis" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2"><h2 class="text-2xl font-extrabold text-slate-900">RedisCacheService</h2><span class="b-singleton text-xs font-bold px-2 py-1 rounded-full">Singleton</span></div>
+                <p class="text-sm text-slate-500 mb-3 mono">app/Services/RedisCacheService.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm leading-relaxed">
+                    <p class="text-slate-700">غلاف آمن حول Redis: <strong>كل الدوال تبتلع استثناءات Redis وتسجّلها</strong> — المستدعي يتلقّى null/false ويعود إلى MySQL، فلا يفشل الطلب أبداً بسبب Redis. مسجّل كـ Singleton في <code class="text-xs">AppServiceProvider</code>. <strong>لا dependencies</strong>.</p>
+                    <div class="mt-3 bg-slate-50 rounded p-3 text-xs"><span class="font-semibold text-slate-600">يُستخدم في:</span> <code class="text-xs">JobPostController، CourseController، Admin\CourseController</code> وفي الخدمات <code class="text-xs">AdminService، CompanyService، AuthService، JobSeekerService</code>.</div>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">get(string $key): mixed</code></div><p class="text-sm text-slate-700">يجلب قيمة ويفكّها من JSON؛ يعيد null عند الغياب أو فشل Redis.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">remember(string $key, int $ttl, callable $callback): mixed</code></div><p class="text-sm text-slate-700">نمط cache-aside: يعيد المخزّن إن وُجد، وإلا ينفّذ الـ callback ويخزّن نتيجته ثم يعيدها.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">set(string $key, mixed $value, int $ttl): void</code></div><p class="text-sm text-slate-700">يخزّن قيمة بـ TTL (ثوانٍ) عبر <code class="text-xs">SETEX</code>؛ يفشل بصمت عند خطأ Redis.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">del(string ...$keys): void</code></div><p class="text-sm text-slate-700">يحذف مفاتيح محدّدة بالضبط.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">delPattern(string $pattern): void</code></div><p class="text-sm text-slate-700">يحذف كل المفاتيح المطابقة لنمط عبر <code class="text-xs">SCAN</code> (آمن للإنتاج، لا يستخدم <code class="text-xs">KEYS *</code>). يعالج بادئة المفاتيح (prefix) يدوياً: يضيفها لنمط SCAN ويزيلها قبل <code class="text-xs">del()</code> لتفادي ازدواج البادئة.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">filterKey(string $prefix, array $filters): string</code></div><p class="text-sm text-slate-700">يبني مفتاح كاش حتمي (deterministic): يرتّب الفلاتر (<code class="text-xs">ksort</code>) ويزيل الفارغة ثم <code class="text-xs">md5(json)</code> — فتنتج الاستعلامات المتطابقة نفس المفتاح بغضّ النظر عن ترتيب المعاملات.</p></div>
+                </div>
+            </section>
+
+            <!-- ===================== SupabaseNotificationService ===================== -->
+            <section id="s-supabase" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2"><h2 class="text-2xl font-extrabold text-slate-900">SupabaseNotificationService</h2><span class="b-singleton text-xs font-bold px-2 py-1 rounded-full">Singleton</span></div>
+                <p class="text-sm text-slate-500 mb-3 mono">app/Services/SupabaseNotificationService.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm leading-relaxed">
+                    <p class="text-slate-700">إدارة الإشعارات المخزّنة في قاعدة <strong>Supabase</strong> منفصلة (اتصال <code class="text-xs">supabase</code>، جدول <code class="text-xs">notifications</code>) عبر <code class="text-xs">DB::connection()</code> المباشر (بدون موديل Eloquent). <strong>كل الدوال تبتلع الاستثناءات وتسجّلها</strong> فلا يفشل الطلب الأساسي بسبب الإشعارات. مسجّل كـ Singleton. <strong>لا dependencies</strong>.</p>
+                    <div class="mt-3 bg-slate-50 rounded p-3 text-xs"><span class="font-semibold text-slate-600">يُستخدم في:</span> <code class="text-xs">NotificationController</code> وفي جميع الخدمات تقريباً (Auth، Admin، Company، JobSeeker، Invitation، CvAnalysis).</div>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">createNotification(int $userId, string $title, string $message, array $data = [], bool $isRead = false, ...): ?int</code></div><p class="text-sm text-slate-700">يُدرج إشعاراً (مع <code class="text-xs">data</code> كـ JSON) ويعيد المعرّف، أو null عند الفشل. هو الدالة الأساسية لبقية الدوال المساعدة.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">helpers</span><code class="font-bold text-brand-700">notifyCompany / notifyJobSeeker / notifyAdmin(int, string, string, array): void</code></div><p class="text-sm text-slate-700">أغلفة قصيرة قابلة للقراءة فوق <code class="text-xs">createNotification</code> لإشعار مستخدم واحد حسب دوره.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">createForUsers(iterable $users, ...) / notifyMany(iterable $userIds, ...): void</code></div><p class="text-sm text-slate-700">إشعار جماعي: الأولى تأخذ موديلات User، والثانية تأخذ معرّفات خام.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">listNotifications(int $userId, int $page = 1, int $perPage = 20): array</code></div><p class="text-sm text-slate-700">قائمة مُصفّحة لإشعارات المستخدم مرتّبة بالأحدث؛ تعيد بنية ترقيم كاملة (مع <code class="text-xs">last_page</code>)، أو نتيجة فارغة عند الفشل. تحوي تسجيل تتبّع مؤقت (DEBUG).</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">unreadCount(int $userId): int</code></div><p class="text-sm text-slate-700">عدد الإشعارات غير المقروءة للمستخدم؛ 0 عند الفشل.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">markAsRead(int $notificationId, int $userId): ?array</code></div><p class="text-sm text-slate-700">يعلّم إشعاراً واحداً مقروءاً (مقيّداً بملكية المستخدم)؛ يعيد الصف المنسّق أو null إن لم يتأثّر شيء.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">markAllAsRead(int $userId): void</code></div><p class="text-sm text-slate-700">يعلّم كل إشعارات المستخدم غير المقروءة كمقروءة.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">deleteNotification(int $notificationId, int $userId): void</code></div><p class="text-sm text-slate-700">يحذف إشعاراً واحداً مقيّداً بملكية المستخدم.</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">method</span><code class="font-bold text-brand-700">deleteAllForUser(int $userId): void</code></div><p class="text-sm text-slate-700">يحذف كل إشعارات معرّف مستخدم — يُستدعى عند إنشاء حساب جديد لتنظيف إشعارات قديمة قد تنتج عن إعادة استخدام المعرّفات بعد إعادة ضبط القاعدة (no-op في الإنتاج).</p></div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5"><div class="flex items-center gap-2 mb-1"><span class="bg-slate-200 text-slate-600 text-xs font-bold px-2 py-0.5 rounded">private</span><code class="font-bold text-slate-600">formatRow / emptyPaginatedResult</code></div><p class="text-sm text-slate-700"><code class="text-xs">formatRow</code> يفكّ حقل <code class="text-xs">data</code> من JSON ويُطبّع <code class="text-xs">is_read</code> إلى bool (PostgreSQL يعيد 't'/'f'). <code class="text-xs">emptyPaginatedResult</code> يبني بنية ترقيم فارغة عند الفشل.</p></div>
+                </div>
+            </section>
+
+            <!-- ============================================================= -->
+            <!-- ===================== ③ PROVIDERS =========================== -->
+            <!-- ============================================================= -->
+            <div class="bg-amber-600 text-white rounded-2xl px-6 py-5 shadow-md">
+                <h2 class="text-2xl font-extrabold">③ مزوّدو الخدمة (Service Providers)</h2>
+                <p class="text-amber-50 text-sm mt-1">ربط الخدمات في الحاوية (Container) وتهيئة التطبيق عند الإقلاع.</p>
+            </div>
+
+            <!-- ===================== AppServiceProvider ===================== -->
+            <section id="pr-app" class="border-t border-slate-200 pt-10">
+                <div class="flex items-center gap-3 flex-wrap mb-2"><h2 class="text-2xl font-extrabold text-slate-900">AppServiceProvider</h2></div>
+                <p class="text-sm text-slate-500 mb-3 mono">app/Providers/AppServiceProvider.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-5 text-sm leading-relaxed">
+                    <p class="text-slate-700">مزوّد الخدمة الوحيد المسجّل في <code class="text-xs">bootstrap/providers.php</code>. يربط الخدمات المشتركة كـ Singleton ويهيّئ مستمعي أحداث الإشعارات وطول السلاسل الافتراضي.</p>
+                </div>
+                <div class="space-y-4">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="bg-slate-50 px-5 py-3 border-b border-slate-200 font-bold text-slate-800">register()</div>
+                        <div class="p-5 space-y-2 text-sm text-slate-700">
+                            <div class="flex items-center gap-2"><span class="b-singleton text-xs font-bold px-2 py-0.5 rounded">singleton</span><code class="text-xs">SupabaseNotificationService</code></div>
+                            <div class="flex items-center gap-2"><span class="b-singleton text-xs font-bold px-2 py-0.5 rounded">singleton</span><code class="text-xs">RedisCacheService</code></div>
+                            <p class="text-xs text-slate-500 mt-2">تسجيلهما كـ Singleton يضمن نسخة واحدة مشتركة عبر كل الطلب — مناسب لأغلفة عديمة الحالة (stateless) تُحقَن في خدمات متعدّدة.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="bg-slate-50 px-5 py-3 border-b border-slate-200 font-bold text-slate-800">boot()</div>
+                        <div class="p-5 space-y-3 text-sm text-slate-700">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1"><span class="b-method text-xs font-bold px-2 py-0.5 rounded">config</span><code class="text-xs">Schema::defaultStringLength(191)</code></div>
+                                <p class="text-xs text-slate-600">يضبط الطول الافتراضي للسلاسل إلى 191 (توافق فهارس MySQL/utf8mb4 القديمة).</p>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 mb-1"><span class="b-event text-xs font-bold px-2 py-0.5 rounded">event listener</span><code class="text-xs">NotificationSending → LogNotificationToEmailLog@sending</code></div>
+                                <div class="flex items-center gap-2 mb-1"><span class="b-event text-xs font-bold px-2 py-0.5 rounded">event listener</span><code class="text-xs">NotificationSent → LogNotificationToEmailLog@sent</code></div>
+                                <div class="flex items-center gap-2 mb-1"><span class="b-event text-xs font-bold px-2 py-0.5 rounded">event listener</span><code class="text-xs">NotificationFailed → LogNotificationToEmailLog@failed</code></div>
+                                <p class="text-xs text-slate-600">يربط أحداث قناة الإشعارات الثلاثة بالمستمع <code class="text-xs">LogNotificationToEmailLog</code> لعكس رسائل البريد المُرسَلة عبر قناة الإشعارات إلى جدول التدقيق <code class="text-xs">email_logs</code> — لتشترك في نفس سجلّ الرسائل المُرسَلة عبر <code class="text-xs">SendEmail</code>.</p>
+                            </div>
+                            <div class="bg-blue-50 border-r-4 border-blue-300 rounded p-3 text-xs text-blue-900">
+                                <strong>لا يوجد</strong> تسجيل يدوي للسياسات (Policies) أو البوّابات (Gates) أو المراقبين (Observers) في هذا المزوّد — السياسات تُكتشف تلقائياً بالاصطلاح.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== FOOTER ===================== -->
+            <footer class="border-t border-slate-200 pt-8 pb-4 text-center text-sm text-slate-500">
+                <p>تم توليد هذا التوثيق من الكود الفعلي — 6 سياسات، 11 خدمة، ومزوّد خدمة واحد.</p>
+                <p class="mt-1">منصة TALENTO للتوظيف · Laravel</p>
+            </footer>
+
+        </div>
+    </main>
+</div>
+
+<!-- ScrollSpy: highlight active sidebar link -->
+<script>
+    (function () {
+        const links = Array.from(document.querySelectorAll('.nav-link'));
+        const map = {};
+        links.forEach(l => {
+            const id = l.getAttribute('href').slice(1);
+            const el = document.getElementById(id);
+            if (el) map[id] = l;
+        });
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    links.forEach(l => l.classList.remove('active'));
+                    const active = map[entry.target.id];
+                    if (active) active.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-10% 0px -80% 0px', threshold: 0 });
+        Object.keys(map).forEach(id => {
+            const el = document.getElementById(id);
+            if (el) observer.observe(el);
+        });
+    })();
+</script>
+
+</body>
+</html>

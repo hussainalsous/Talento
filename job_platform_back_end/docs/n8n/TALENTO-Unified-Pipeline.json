@@ -1,0 +1,1487 @@
+{
+  "name": "TALENTO — Unified CV & Job Matching Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# TALENTO — Unified CV & Job Matching Pipeline\n\nThree pipelines merged into one workflow:\n- **Lane A** — CV ingestion (Google Drive → embed → Qdrant + Laravel) → auto-matches the new candidate against open jobs\n- **Lane B** — Job published (Laravel webhook → embed → Qdrant → match candidates)\n- **Lane C** — CV → Job matching (shared; reachable from Lane A or the /cv-match webhook)\n- **Lane E** — Unified error handling → /api/n8n/log-error",
+        "height": 260,
+        "width": 760,
+        "color": 6
+      },
+      "id": "node-00",
+      "name": "Sticky: Title",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -340
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Lane A — CV Ingestion",
+        "height": 700,
+        "width": 2360,
+        "color": 7
+      },
+      "id": "node-01",
+      "name": "Sticky: Lane A",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Lane C — CV → Job Matching (shared)",
+        "height": 360,
+        "width": 2360,
+        "color": 4
+      },
+      "id": "node-02",
+      "name": "Sticky: Lane C",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Lane B — Job Published → Embed + Match",
+        "height": 360,
+        "width": 2160,
+        "color": 5
+      },
+      "id": "node-03",
+      "name": "Sticky: Lane B",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        1020
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Lane E — Unified Error Handling",
+        "height": 220,
+        "width": 760,
+        "color": 3
+      },
+      "id": "node-04",
+      "name": "Sticky: Lane E",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        1420
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1hmfFOij2HfnfTxZf_tpcDUcHcpCa0prf",
+          "mode": "list",
+          "cachedResultName": "talento_resume",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1hmfFOij2HfnfTxZf_tpcDUcHcpCa0prf"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "node-05",
+      "name": "Google Drive Trigger",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        320,
+        0
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iGUOI5mKcNHt0PfW",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "meta-001",
+              "name": "candidateId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "meta-002",
+              "name": "fileName",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "meta-003",
+              "name": "mimeType",
+              "value": "={{ $json.mimeType }}",
+              "type": "string"
+            },
+            {
+              "id": "meta-004",
+              "name": "uploadedAt",
+              "value": "={{ new Date().toISOString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node-06",
+      "name": "Set: File Metadata",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        540,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.candidateId }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "node-07",
+      "name": "Download file",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        760,
+        0
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iGUOI5mKcNHt0PfW",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "binaryProperty": "=data",
+        "options": {}
+      },
+      "id": "node-08",
+      "name": "Extract CV Text",
+      "type": "n8n-nodes-base.mistralAi",
+      "typeVersion": 1,
+      "position": [
+        980,
+        0
+      ],
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "UZ2giX82UM1hUCPZ",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an advanced CV and resume extraction engine.\n\nYour task is to analyze OCR extracted CV text and return a clean, structured JSON object, and Generate a professional CV summary covering all aspects of the CV in this summary then add it in a JSON field the is labeled by \"cv_summary\".\n\nFollow these rules:\n- Extract only information that is explicitly present in the text\n- Do not hallucinate or invent missing data\n- Normalize formatting and remove OCR noise such as headers, footers, and page numbers\n- Return only valid JSON with no markdown, no explanation, and no extra text\n- Use null for missing values and empty arrays when no data exists\n- Keep job titles, company names, degrees, and certifications in original wording\n- Format dates in ISO style when possible (YYYY-MM-DD)\n\nRules for extraction:\nOnly extract real information from the CV text. Do not guess missing values. Ignore decorative text, repeated OCR artifacts, and irrelevant content. Group information into the correct sections and keep the structure clean and consistent.\n\nCV TEXT:\n{{ $json.extractedText }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "id": "node-09",
+      "name": "CV classification",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1200,
+        0
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "id": "node-10",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1140,
+        240
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "wICjhgEuc7ogThGA",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "node-11",
+      "name": "Auto-fixing Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "model": "voxtral-small-latest",
+        "options": {}
+      },
+      "id": "node-12",
+      "name": "Mistral Cloud Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        460
+      ],
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "UZ2giX82UM1hUCPZ",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"personal_information\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"full_name\": { \"type\": \"string\" },\n        \"headline\": { \"type\": \"string\" },\n        \"email\": { \"type\": \"string\" },\n        \"location\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"country\": { \"type\": \"string\" },\n            \"city\": { \"type\": \"string\" }\n          },\n          \"required\": [\"country\", \"city\"]\n        },\n        \"links\": { \"type\": \"array\", \"items\": { \"type\": \"string\" } }\n      },\n      \"required\": [\"full_name\", \"headline\", \"email\", \"location\", \"links\"]\n    },\n    \"summary\": { \"type\": \"string\" },\n    \"skills\": { \"type\": \"array\", \"items\": { \"type\": \"string\" } },\n    \"languages\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"language\": { \"type\": \"string\" },\n          \"proficiency\": { \"type\": \"string\" }\n        },\n        \"required\": [\"language\", \"proficiency\"]\n      }\n    },\n    \"experience\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"job_title\": { \"type\": \"string\" },\n          \"highlights\": { \"type\": \"array\", \"items\": { \"type\": \"string\" } },\n          \"company\": { \"type\": \"string\" },\n          \"location\": { \"type\": \"string\" },\n          \"start_date\": { \"type\": \"string\" },\n          \"end_date\": { \"type\": \"string\" },\n          \"description\": { \"type\": \"string\" }\n        },\n        \"required\": [\"job_title\", \"highlights\", \"company\", \"location\", \"start_date\", \"end_date\", \"description\"]\n      }\n    },\n    \"education\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"degree\": { \"type\": \"string\" },\n          \"institution\": { \"type\": \"string\" },\n          \"location\": { \"type\": \"string\" },\n          \"start_date\": { \"type\": \"string\" },\n          \"end_date\": { \"type\": \"string\" }\n        },\n        \"required\": [\"degree\", \"institution\", \"location\", \"start_date\", \"end_date\"]\n      }\n    },\n    \"certifications\": { \"type\": \"array\", \"items\": { \"type\": \"string\" } },\n    \"cv_summary\": { \"type\": \"string\" }\n  },\n  \"required\": [\"personal_information\", \"summary\", \"skills\", \"languages\", \"experience\", \"education\", \"certifications\", \"cv_summary\"]\n}"
+      },
+      "id": "node-13",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1480,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// INPUT: AI agent output parsed as JSON. Grab structured CV object.\nconst raw = $input.first().json;\nconst cv = raw.output || raw;\n\nif (!cv || typeof cv !== 'object') {\n  throw new Error('CV data is missing or not an object. Check the AI agent output.');\n}\n\n// candidate_id = Google Drive file id captured at the start of the run.\nlet candidateId = null;\ntry {\n  candidateId = $('Set: File Metadata').first().json.candidateId || null;\n} catch (e) {\n  candidateId = cv.personal_information?.email || 'unknown';\n}\n\n// Skills chunk\nconst skillsChunk = {\n  candidate_id: candidateId,\n  chunk_type: 'skills',\n  content: Array.isArray(cv.skills) && cv.skills.length > 0\n    ? 'Skills: ' + cv.skills.join(', ')\n    : 'Skills: Not specified'\n};\n\n// Education chunk\nconst educationLines = (cv.education || []).map(e =>\n  [e.degree, e.institution, e.location, e.start_date?.slice(0,4), e.end_date?.slice(0,4)]\n  .filter(Boolean).join(' | ')\n);\nconst educationChunk = {\n  candidate_id: candidateId,\n  chunk_type: 'education',\n  content: educationLines.length > 0\n    ? 'Education:\\n' + educationLines.join('\\n')\n    : 'Education: Not specified'\n};\n\n// Experience chunk\nconst experienceLines = (cv.experience || []).map(exp => {\n  const dates = [exp.start_date?.slice(0,7), exp.end_date?.slice(0,7)].filter(Boolean).join(' to ');\n  const highlights = Array.isArray(exp.highlights) && exp.highlights.length > 0\n    ? exp.highlights.join('. ')\n    : exp.description || '';\n  return `${exp.job_title} at ${exp.company} (${exp.location}) [${dates}]: ${highlights}`;\n});\nconst experienceChunk = {\n  candidate_id: candidateId,\n  chunk_type: 'experience',\n  content: experienceLines.length > 0\n    ? 'Experience:\\n' + experienceLines.join('\\n')\n    : 'Experience: Not specified'\n};\n\n// Additional information chunk\nconst additionalParts = [];\nif (cv.certifications?.length > 0) {\n  additionalParts.push('Certifications: ' + cv.certifications.join(', '));\n}\nif (cv.languages?.length > 0) {\n  additionalParts.push('Languages: ' + cv.languages.map(l => l.language + ' (' + l.proficiency + ')').join(', '));\n}\nif (cv.cv_summary) {\n  additionalParts.push('Profile Summary: ' + cv.cv_summary);\n}\nconst additionalChunk = {\n  candidate_id: candidateId,\n  chunk_type: 'additional_information',\n  content: additionalParts.length > 0 ? additionalParts.join('\\n') : 'Additional information: Not specified'\n};\n\nreturn [\n  { json: skillsChunk },\n  { json: educationChunk },\n  { json: experienceChunk },\n  { json: additionalChunk }\n];"
+      },
+      "id": "node-14",
+      "name": "Fn: Extract Structured CV",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1700,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const { candidate_id, chunk_type, content } = $json;\n\nif (!chunk_type) throw new Error('chunk_type is missing');\nif (!content || content.trim().length < 5) {\n  throw new Error(`Chunk '${chunk_type}' has empty or trivial content`);\n}\n\nconst MAX_CHARS = 8000;\nconst truncated = content.length > MAX_CHARS\n  ? content.slice(0, MAX_CHARS) + '... [truncated]'\n  : content;\n\nreturn {\n  json: {\n    candidate_id,\n    chunk_type,\n    content: truncated,\n    char_count: truncated.length,\n    validated_at: new Date().toISOString()\n  }\n};"
+      },
+      "id": "node-15",
+      "name": "Fn: Validate Chunks",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/embeddings",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"mistralai/mistral-embed-2312\",\n  \"input\":  {{ $json.content.toJsonString() }}\n}",
+        "options": {}
+      },
+      "id": "node-16",
+      "name": "HTTP: Embed Chunk",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2140,
+        0
+      ],
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "t8ZylFsOh1f68Ps8",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Pull the embedding from the HTTP response\nconst embedding = $json.data?.[0]?.embedding;\nif (!embedding || !Array.isArray(embedding) || embedding.length === 0) { throw new Error(`No embedding returned for chunk. Response: ${JSON.stringify($json).slice(0, 200)}`); }\nconst prev = $('Fn: Validate Chunks').item.json;\nfunction sha1Bytes(bytes) { function rol(n,s){return (n<<s)|(n>>>(32-s));} let h0=0x67452301,h1=0xEFCDAB89,h2=0x98BADCFE,h3=0x10325476,h4=0xC3D2E1F0; const ml=bytes.length*8; const withOne=bytes.concat([0x80]); while(withOne.length%64!==56){withOne.push(0);} for(let i=7;i>=0;i--){withOne.push((ml/Math.pow(2,i*8))&0xff);} for(let i=0;i<withOne.length;i+=64){ const w=new Array(80); for(let j=0;j<16;j++){w[j]=(withOne[i+j*4]<<24)|(withOne[i+j*4+1]<<16)|(withOne[i+j*4+2]<<8)|(withOne[i+j*4+3]);} for(let j=16;j<80;j++){w[j]=rol(w[j-3]^w[j-8]^w[j-14]^w[j-16],1);} let a=h0,b=h1,c=h2,d=h3,e=h4; for(let j=0;j<80;j++){ let f,k; if(j<20){f=(b&c)|((~b)&d);k=0x5A827999;} else if(j<40){f=b^c^d;k=0x6ED9EBA1;} else if(j<60){f=(b&c)|(b&d)|(c&d);k=0x8F1BBCDC;} else {f=b^c^d;k=0xCA62C1D6;} const t=(rol(a,5)+f+e+k+w[j])|0; e=d;d=c;c=rol(b,30);b=a;a=t; } h0=(h0+a)|0;h1=(h1+b)|0;h2=(h2+c)|0;h3=(h3+d)|0;h4=(h4+e)|0; } const out=[]; [h0,h1,h2,h3,h4].forEach(function(hh){out.push((hh>>>24)&0xff,(hh>>>16)&0xff,(hh>>>8)&0xff,hh&0xff);}); return out; }\nfunction uuidv5(name) { const ns=[0x6b,0xa7,0xb8,0x10,0x9d,0xad,0x11,0xd1,0x80,0xb4,0x00,0xc0,0x4f,0xd4,0x30,0xc8]; const nameBytes=[]; for(let i=0;i<name.length;i++){nameBytes.push(name.charCodeAt(i)&0xff);} const hash=sha1Bytes(ns.concat(nameBytes)).slice(0,16); hash[6]=(hash[6]&0x0f)|0x50; hash[8]=(hash[8]&0x3f)|0x80; const hex=hash.map(function(x){return ('0'+x.toString(16)).slice(-2);}).join(''); return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20,32)}`; }\nconst chunkKey = String(prev.candidate_id).replace(/[^a-zA-Z0-9]/g, '_') + '_' + prev.chunk_type;\nconst pointId = uuidv5(chunkKey);\nreturn { json: { point_id: pointId, candidate_id: prev.candidate_id, chunk_type: prev.chunk_type, content: prev.content, embedding: embedding, model: $json.model || 'mistralai/mistral-embed-2312', dimensions: embedding.length, char_count: prev.char_count, embedded_at: new Date().toISOString() } };"
+      },
+      "id": "node-17",
+      "name": "Fn: Attach Embedding to Chunk",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2360,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=http://host.docker.internal:6333/collections/talento_cv_embeddings/points",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": []
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{  JSON.stringify({ points: [ { id: $json.point_id, vector: $json.embedding, payload: { candidate_id: $json.candidate_id, chunk_type: $json.chunk_type, content: $json.content } } ] })  }}",
+        "options": {}
+      },
+      "id": "node-18",
+      "name": "Qdrant: Upsert CV Point",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2580,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://host.docker.internal:8000/api/v1/resumes/chunks",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer 1|36Q6qj4mAa9vVRKsX6zV2UFOq8BaDwrknDbEAUGf30bddb64"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{  JSON.stringify({ candidate_id: $json.candidate_id, chunk_type: $json.chunk_type, content: $json.content, char_count: $json.char_count, validated_at: $json.embedded_at })  }}",
+        "options": {}
+      },
+      "id": "node-19",
+      "name": "Laravel: Store CV Chunk",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2580,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://host.docker.internal:8000/api/v1/resumes/embeddings",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer 1|36Q6qj4mAa9vVRKsX6zV2UFOq8BaDwrknDbEAUGf30bddb64"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{  JSON.stringify({ candidate_id: $json.candidate_id, chunk_type: $json.chunk_type, model: $json.model, dimensions: $json.dimensions, char_count: $json.char_count, embedded_at: $json.embedded_at, qdrant_collection: 'talento_cv_embeddings', qdrant_point_id: $json.point_id })  }}",
+        "options": {}
+      },
+      "id": "node-20",
+      "name": "Laravel: Store CV Embedding",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2580,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Runs once after every CV chunk has been upserted to Qdrant.\n// Emits a single item that drives the shared CV -> Job matching lane.\nconst candidateId = $('Set: File Metadata').first().json.candidateId;\nif (!candidateId) throw new Error('candidate_id missing for CV->Job matching');\n\nreturn [{\n  json: {\n    candidate_id: candidateId,\n    trigger: 'cv_upload',\n    callback: {\n      match_done: 'http://host.docker.internal:8000/api/n8n/match/done',\n      log_error:  'http://host.docker.internal:8000/api/n8n/log-error'\n    }\n  }\n}];"
+      },
+      "id": "node-21",
+      "name": "Fn: Collect Candidate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2800,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cv-match",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-22",
+      "name": "Webhook: CV Match",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        320,
+        760
+      ],
+      "webhookId": "0425422e-0b6f-491a-ab32-dba52d02b1ac"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"received\": true }",
+        "options": {}
+      },
+      "id": "node-23",
+      "name": "Respond: CV Match 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        540,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body ?? $input.first().json;\nif (!body.candidate_id) throw new Error('Missing candidate_id in webhook payload');\n\nreturn [{\n  json: {\n    candidate_id: body.candidate_id,\n    trigger:      body.trigger ?? 'cv_upload',\n    callback:     body.callback ?? {\n      match_done:  'http://host.docker.internal:8000/api/n8n/match/done',\n      log_error:   'http://host.docker.internal:8000/api/n8n/log-error',\n    },\n  }\n}];"
+      },
+      "id": "node-24",
+      "name": "Fn: Validate CV Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        540,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return { json: $json };"
+      },
+      "id": "node-25",
+      "name": "Fn: Match Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        760,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://host.docker.internal:6333/collections/talento_cv_embeddings/points/scroll",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ filter: { must: [{ key: 'candidate_id', match: { value: $json.candidate_id } }] }, limit: 10, with_vectors: true, with_payload: true }) }}",
+        "options": {}
+      },
+      "id": "node-26",
+      "name": "Qdrant: Fetch Candidate Chunks",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        980,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const WEIGHTS = {\n  skills:                 0.40,\n  experience:             0.35,\n  education:              0.15,\n  additional_information: 0.10,\n};\n\nconst scrollResult = $input.first().json;\nconst points = scrollResult.result?.points ?? [];\n\nif (points.length === 0) {\n  throw new Error(`No embeddings found in Qdrant for candidate_id: ${$('Fn: Match Context').first().json.candidate_id}`);\n}\n\nconst dims = points[0].vector?.length;\nif (!dims) throw new Error('Vector missing from Qdrant scroll result — ensure with_vectors: true');\n\nconst avgVector = new Array(dims).fill(0);\nlet totalWeight = 0;\n\nfor (const point of points) {\n  const chunkType = point.payload?.chunk_type;\n  const vector    = point.vector;\n  if (!vector || !chunkType) continue;\n\n  const weight = WEIGHTS[chunkType] ?? 0.10;\n  for (let i = 0; i < dims; i++) {\n    avgVector[i] += vector[i] * weight;\n  }\n  totalWeight += weight;\n}\n\nif (totalWeight === 0) throw new Error('No valid chunks to average');\n\nconst normVector = avgVector.map(v => v / totalWeight);\nconst meta = $('Fn: Match Context').first().json;\n\nreturn [{\n  json: {\n    candidate_id:   meta.candidate_id,\n    trigger:        meta.trigger,\n    callback:       meta.callback,\n    avg_vector:     normVector,\n    chunk_count:    points.length,\n  }\n}];"
+      },
+      "id": "node-27",
+      "name": "Fn: Average CV Vectors",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://host.docker.internal:6333/collections/talento_job_embeddings/points/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ vector: $json.avg_vector, limit: 50, with_payload: true, score_threshold: 0.55 }) }}",
+        "options": {}
+      },
+      "id": "node-28",
+      "name": "Qdrant: Search Job Embeddings",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1420,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = $input.first().json.result ?? [];\nconst meta    = $('Fn: Match Context').first().json;\n\nif (results.length === 0) {\n  return [{ json: {\n    batches: [{\n      job_post_id: null,\n      trigger:     meta.trigger,\n      callback:    meta.callback,\n      matches:     [],\n      empty:       true,\n    }]\n  }}];\n}\n\nconst batches = results.map(point => ({\n  job_post_id: point.payload?.job_post_id,\n  trigger:     meta.trigger,\n  callback:    meta.callback,\n  matches: [{\n    candidate_id:    meta.candidate_id,\n    match_score:     parseFloat((point.score ?? 0).toFixed(4)),\n    score_breakdown: { overall: parseFloat((point.score ?? 0).toFixed(4)) },\n  }],\n})).filter(b => b.job_post_id != null);\n\nreturn [{ json: { batches } }];"
+      },
+      "id": "node-29",
+      "name": "Fn: Build Job Match Batches",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1640,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const { batches } = $input.first().json;\nif (!batches || batches.length === 0) return [];\nreturn batches.map(b => ({ json: b }));"
+      },
+      "id": "node-30",
+      "name": "Fn: Split Into Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1860,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Drop the empty-sentinel batch; pass real job-match batches through.\nreturn $input.all().filter(item => item.json.empty !== true);"
+      },
+      "id": "node-31",
+      "name": "Fn: Skip If Empty",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2080,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.callback.match_done }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer 1|36Q6qj4mAa9vVRKsX6zV2UFOq8BaDwrknDbEAUGf30bddb64"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-N8N-Webhook-Secret",
+              "value": "talento-secret-2026"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ job_post_id: $json.job_post_id, trigger: $json.trigger, matches: $json.matches }) }}",
+        "options": {}
+      },
+      "id": "node-32",
+      "name": "Laravel: Store Match Per Job",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2300,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cv-secret",
+              "leftValue": "={{ ($json.headers && $json.headers['x-n8n-webhook-secret']) || '' }}",
+              "rightValue": "talento-secret-2026",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "node-33",
+      "name": "Auth: CV Match Secret",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        430,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"error\": \"Invalid or missing webhook secret\" }",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "node-34",
+      "name": "Respond: CV Match 401",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        650,
+        980
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "job-embed",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-35",
+      "name": "Webhook: Job Published",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        320,
+        1160
+      ],
+      "webhookId": "bdd5582b-5cf3-465a-be1d-43501db145c7"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"received\": true }",
+        "options": {}
+      },
+      "id": "node-36",
+      "name": "Respond: Job 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        540,
+        1300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body ?? $input.first().json;\n\nif (!body.job_post_id) throw new Error('Missing job_post_id in webhook payload');\nif (!body.title)       throw new Error('Missing title in webhook payload');\n\n// Laravel's listener already builds the embeddable text (JobPost::embeddableText()).\n// Use it directly; only rebuild from raw fields if it is absent.\nconst parts = [body.title, body.description, body.requirements, body.responsibilities].filter(Boolean);\nlet textToEmbed = body.text_to_embed && String(body.text_to_embed).trim().length > 0\n  ? String(body.text_to_embed)\n  : parts.join('\\n\\n');\n\nif (!textToEmbed || textToEmbed.trim().length === 0) {\n  throw new Error('No embeddable text found in job post payload');\n}\n\nconst MAX_CHARS = 8000;\nif (textToEmbed.length > MAX_CHARS) {\n  textToEmbed = textToEmbed.slice(0, MAX_CHARS) + '... [truncated]';\n}\n\nfunction sha1Bytes(bytes) { function rol(n,s){return (n<<s)|(n>>>(32-s));} let h0=0x67452301,h1=0xEFCDAB89,h2=0x98BADCFE,h3=0x10325476,h4=0xC3D2E1F0; const ml=bytes.length*8; const withOne=bytes.concat([0x80]); while(withOne.length%64!==56){withOne.push(0);} for(let i=7;i>=0;i--){withOne.push((ml/Math.pow(2,i*8))&0xff);} for(let i=0;i<withOne.length;i+=64){ const w=new Array(80); for(let j=0;j<16;j++){w[j]=(withOne[i+j*4]<<24)|(withOne[i+j*4+1]<<16)|(withOne[i+j*4+2]<<8)|(withOne[i+j*4+3]);} for(let j=16;j<80;j++){w[j]=rol(w[j-3]^w[j-8]^w[j-14]^w[j-16],1);} let a=h0,b=h1,c=h2,d=h3,e=h4; for(let j=0;j<80;j++){ let f,k; if(j<20){f=(b&c)|((~b)&d);k=0x5A827999;} else if(j<40){f=b^c^d;k=0x6ED9EBA1;} else if(j<60){f=(b&c)|(b&d)|(c&d);k=0x8F1BBCDC;} else {f=b^c^d;k=0xCA62C1D6;} const t=(rol(a,5)+f+e+k+w[j])|0; e=d;d=c;c=rol(b,30);b=a;a=t; } h0=(h0+a)|0;h1=(h1+b)|0;h2=(h2+c)|0;h3=(h3+d)|0;h4=(h4+e)|0; } const out=[]; [h0,h1,h2,h3,h4].forEach(function(hh){out.push((hh>>>24)&0xff,(hh>>>16)&0xff,(hh>>>8)&0xff,hh&0xff);}); return out; }\nfunction uuidv5(name) { const ns=[0x6b,0xa7,0xb8,0x10,0x9d,0xad,0x11,0xd1,0x80,0xb4,0x00,0xc0,0x4f,0xd4,0x30,0xc8]; const nameBytes=[]; for(let i=0;i<name.length;i++){nameBytes.push(name.charCodeAt(i)&0xff);} const hash=sha1Bytes(ns.concat(nameBytes)).slice(0,16); hash[6]=(hash[6]&0x0f)|0x50; hash[8]=(hash[8]&0x3f)|0x80; const hex=hash.map(function(x){return ('0'+x.toString(16)).slice(-2);}).join(''); return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20,32)}`; }\n\nconst pointId = uuidv5('job_post_' + String(body.job_post_id));\n\nreturn [{\n  json: {\n    job_post_id:    body.job_post_id,\n    company_id:     body.company_id ?? null,\n    title:          body.title,\n    text_to_embed:  textToEmbed,\n    char_count:     textToEmbed.length,\n    trigger:        body.trigger ?? 'job_publish',\n    point_id:       pointId,\n    callback:       body.callback ?? {\n      embedding_done: 'http://host.docker.internal:8000/api/n8n/job-embedding/done',\n      match_done:     'http://host.docker.internal:8000/api/n8n/match/done',\n      log_error:      'http://host.docker.internal:8000/api/n8n/log-error',\n    },\n  }\n}];"
+      },
+      "id": "node-37",
+      "name": "Fn: Build & Validate Job Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        540,
+        1160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/embeddings",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"mistralai/mistral-embed-2312\",\n  \"input\":  {{ $json.text_to_embed.toJsonString() }}\n}",
+        "options": {}
+      },
+      "id": "node-38",
+      "name": "OpenRouter: Embed Job Text",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        760,
+        1160
+      ],
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "t8ZylFsOh1f68Ps8",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const embedding = $input.first().json.data?.[0]?.embedding;\nif (!embedding || !Array.isArray(embedding) || embedding.length === 0) {\n  throw new Error(`No embedding returned. Response: ${JSON.stringify($input.first().json).slice(0, 200)}`);\n}\n\nconst prev = $('Fn: Build & Validate Job Text').first().json;\n\nreturn [{\n  json: {\n    ...prev,\n    embedding,\n    model:      'mistralai/mistral-embed-2312',\n    dimensions: embedding.length,\n    embedded_at: new Date().toISOString(),\n  }\n}];"
+      },
+      "id": "node-39",
+      "name": "Fn: Attach Embedding to Job",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        980,
+        1160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=http://host.docker.internal:6333/collections/talento_job_embeddings/points",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": []
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ points: [ { id: $json.point_id, vector: $json.embedding, payload: { job_post_id: $json.job_post_id, company_id: $json.company_id, title: $json.title, model: $json.model, dimensions: $json.dimensions } } ] }) }}",
+        "options": {}
+      },
+      "id": "node-40",
+      "name": "Qdrant: Upsert Job Point",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1200,
+        1160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Fn: Build & Validate Job Text').first().json.callback.embedding_done }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer 1|36Q6qj4mAa9vVRKsX6zV2UFOq8BaDwrknDbEAUGf30bddb64"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-N8N-Webhook-Secret",
+              "value": "talento-secret-2026"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ job_post_id: $('Fn: Attach Embedding to Job').first().json.job_post_id, qdrant_point_id: $('Fn: Attach Embedding to Job').first().json.point_id, model: $('Fn: Attach Embedding to Job').first().json.model, dimensions: $('Fn: Attach Embedding to Job').first().json.dimensions, char_count: $('Fn: Attach Embedding to Job').first().json.char_count }) }}",
+        "options": {}
+      },
+      "id": "node-41",
+      "name": "Laravel: Confirm Embedding",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1420,
+        1160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://host.docker.internal:6333/collections/talento_cv_embeddings/points/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ vector: $('Fn: Attach Embedding to Job').first().json.embedding, limit: 50, with_payload: true, score_threshold: 0.55 }) }}",
+        "options": {}
+      },
+      "id": "node-42",
+      "name": "Qdrant: Search CV Embeddings",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1640,
+        1160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const WEIGHTS = {\n  skills:                 0.40,\n  experience:             0.35,\n  education:              0.15,\n  additional_information: 0.10,\n};\n\nconst results = $input.first().json.result ?? [];\n\nif (results.length === 0) {\n  const meta = $('Fn: Build & Validate Job Text').first().json;\n  return [{ json: { job_post_id: meta.job_post_id, trigger: meta.trigger, callback: meta.callback, matches: [] } }];\n}\n\nconst byCandidate = {};\n\nfor (const point of results) {\n  const candidateId = point.payload?.candidate_id;\n  const chunkType   = point.payload?.chunk_type;\n  const score       = point.score ?? 0;\n\n  if (!candidateId || !chunkType) continue;\n\n  if (!byCandidate[candidateId]) {\n    byCandidate[candidateId] = { breakdown: {}, weightedSum: 0, totalWeight: 0 };\n  }\n\n  const weight = WEIGHTS[chunkType] ?? 0.10;\n\n  if (!byCandidate[candidateId].breakdown[chunkType] ||\n       score > byCandidate[candidateId].breakdown[chunkType]) {\n    if (byCandidate[candidateId].breakdown[chunkType]) {\n      byCandidate[candidateId].weightedSum -= byCandidate[candidateId].breakdown[chunkType] * weight;\n      byCandidate[candidateId].totalWeight -= weight;\n    }\n    byCandidate[candidateId].breakdown[chunkType] = score;\n    byCandidate[candidateId].weightedSum  += score * weight;\n    byCandidate[candidateId].totalWeight  += weight;\n  }\n}\n\nconst matches = Object.entries(byCandidate).map(([candidateId, data]) => ({\n  candidate_id:    candidateId,\n  match_score:     data.totalWeight > 0\n                     ? parseFloat((data.weightedSum / data.totalWeight).toFixed(4))\n                     : 0,\n  score_breakdown: data.breakdown,\n}));\n\nmatches.sort((a, b) => b.match_score - a.match_score);\nconst top = matches.slice(0, 100);\n\nconst meta = $('Fn: Build & Validate Job Text').first().json;\n\nreturn [{\n  json: {\n    job_post_id: meta.job_post_id,\n    trigger:     meta.trigger,\n    callback:    meta.callback,\n    matches:     top,\n  }\n}];"
+      },
+      "id": "node-43",
+      "name": "Fn: Aggregate Candidate Scores",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1860,
+        1160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.callback.match_done }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer 1|36Q6qj4mAa9vVRKsX6zV2UFOq8BaDwrknDbEAUGf30bddb64"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-N8N-Webhook-Secret",
+              "value": "talento-secret-2026"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ job_post_id: $json.job_post_id, trigger: $json.trigger, matches: $json.matches }) }}",
+        "options": {}
+      },
+      "id": "node-44",
+      "name": "Laravel: Store Match Results",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2080,
+        1160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "job-secret",
+              "leftValue": "={{ ($json.headers && $json.headers['x-n8n-webhook-secret']) || '' }}",
+              "rightValue": "talento-secret-2026",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "node-45",
+      "name": "Auth: Job Embed Secret",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        430,
+        1160
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"error\": \"Invalid or missing webhook secret\" }",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "node-46",
+      "name": "Respond: Job 401",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        650,
+        1380
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "node-47",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        320,
+        1500
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://host.docker.internal:8000/api/n8n/log-error",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer 1|36Q6qj4mAa9vVRKsX6zV2UFOq8BaDwrknDbEAUGf30bddb64"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-N8N-Webhook-Secret",
+              "value": "talento-secret-2026"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"workflow\":  \"TALENTO Unified Pipeline\",\n  \"node\":      \"{{ $json.execution.error.node.name }}\",\n  \"error\":     \"{{ $json.execution.error.message }}\",\n  \"failed_at\": \"{{ new Date().toISOString() }}\"\n}",
+        "options": {}
+      },
+      "id": "node-48",
+      "name": "Log Error to Laravel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        540,
+        1500
+      ]
+    }
+  ],
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set: File Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set: File Metadata": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract CV Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract CV Text": {
+      "main": [
+        [
+          {
+            "node": "CV classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CV classification": {
+      "main": [
+        [
+          {
+            "node": "Fn: Extract Structured CV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "CV classification",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto-fixing Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "CV classification",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Cloud Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fn: Extract Structured CV": {
+      "main": [
+        [
+          {
+            "node": "Fn: Validate Chunks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fn: Validate Chunks": {
+      "main": [
+        [
+          {
+            "node": "HTTP: Embed Chunk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP: Embed Chunk": {
+      "main": [
+        [
+          {
+            "node": "Fn: Attach Embedding to Chunk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fn: Attach Embedding to Chunk": {
+      "main": [
+        [
+          {
+            "node": "Qdrant: Upsert CV Point",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Laravel: Store CV Chunk",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Laravel: Store CV Embedding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant: Upsert CV Point": {
+      "main": [
+        [
+          {
+            "node": "Fn: Collect Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: CV Match": {
+      "main": [
+        [
+          {
+            "node": "Auth: CV Match Secret",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auth: CV Match Secret": {
+      "main": [
+        [
+          {
+            "node": "Respond: CV Match 200",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fn: Validate CV Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond: CV Match 401",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fn: Validate CV Payload": {
+      "main": [
+        [
+          {
+            "node": "Fn: Match Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fn: Collect Candidate": {
+      "main": [
+        [
+          {
+            "node": "Fn: Match Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fn: Match Context": {
+      "main": [
+        [
+          {
+            "node": "Qdrant: Fetch Candidate Chunks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant: Fetch Candidate Chunks": {
+      "main": [
+        [
+          {
+            "node": "Fn: Average CV Vectors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fn: Average CV Vectors": {
+      "main": [
+        [
+          {
+            "node": "Qdrant: Search Job Embeddings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant: Search Job Embeddings": {
+      "main": [
+        [
+          {
+            "node": "Fn: Build Job Match Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fn: Build Job Match Batches": {
+      "main": [
+        [
+          {
+            "node": "Fn: Split Into Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fn: Split Into Items": {
+      "main": [
+        [
+          {
+            "node": "Fn: Skip If Empty",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fn: Skip If Empty": {
+      "main": [
+        [
+          {
+            "node": "Laravel: Store Match Per Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: Job Published": {
+      "main": [
+        [
+          {
+            "node": "Auth: Job Embed Secret",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auth: Job Embed Secret": {
+      "main": [
+        [
+          {
+            "node": "Respond: Job 200",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fn: Build & Validate Job Text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond: Job 401",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fn: Build & Validate Job Text": {
+      "main": [
+        [
+          {
+            "node": "OpenRouter: Embed Job Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter: Embed Job Text": {
+      "main": [
+        [
+          {
+            "node": "Fn: Attach Embedding to Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fn: Attach Embedding to Job": {
+      "main": [
+        [
+          {
+            "node": "Qdrant: Upsert Job Point",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant: Upsert Job Point": {
+      "main": [
+        [
+          {
+            "node": "Laravel: Confirm Embedding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Laravel: Confirm Embedding": {
+      "main": [
+        [
+          {
+            "node": "Qdrant: Search CV Embeddings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant: Search CV Embeddings": {
+      "main": [
+        [
+          {
+            "node": "Fn: Aggregate Candidate Scores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fn: Aggregate Candidate Scores": {
+      "main": [
+        [
+          {
+            "node": "Laravel: Store Match Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Log Error to Laravel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "27fbcdd2cc59f598442309c29147333a5c0a8b71d6d6ca1bd797ec0316903451"
+  },
+  "tags": []
+}

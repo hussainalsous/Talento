@@ -1,0 +1,153 @@
+/* ============================================================
+   THEME TOKENS — Job Portal
+   ============================================================ */
+
+:root {
+  /* Base colors */
+  --clr-dark-a0: #000000;
+  --clr-light-a0: #ffffff;
+
+  /* Primary colors */
+  --clr-primary-a0: #05611b;
+  --clr-primary-a10: #2e7233;
+  --clr-primary-a20: #4a834b;
+  --clr-primary-a30: #649463;
+  --clr-primary-a40: #7da57b;
+  --clr-primary-a50: #97b794;
+
+  /* Surface colors */
+  --clr-surface-a0: #121212;
+  --clr-surface-a10: #282828;
+  --clr-surface-a20: #3f3f3f;
+  --clr-surface-a30: #575757;
+  --clr-surface-a40: #717171;
+  --clr-surface-a50: #8b8b8b;
+
+  /* Tonal surface colors */
+  --clr-surface-tonal-a0: #162116;
+  --clr-surface-tonal-a10: #2b362b;
+  --clr-surface-tonal-a20: #424c42;
+  --clr-surface-tonal-a30: #5a635a;
+  --clr-surface-tonal-a40: #747b73;
+  --clr-surface-tonal-a50: #8e948d;
+
+  /* Success colors */
+  --clr-success-a0: #22946e;
+  --clr-success-a10: #47d5a6;
+  --clr-success-a20: #9ae8ce;
+
+  /* Warning colors */
+  --clr-warning-a0: #a87a2a;
+  --clr-warning-a10: #d7ac61;
+  --clr-warning-a20: #ecd7b2;
+
+  /* Danger colors */
+  --clr-danger-a0: #9c2121;
+  --clr-danger-a10: #d94a4a;
+  --clr-danger-a20: #eb9e9e;
+
+  /* Info colors */
+  --clr-info-a0: #21498a;
+  --clr-info-a10: #4077d1;
+  --clr-info-a20: #92b2e5;
+}
+
+/* ============================================================
+   LIGHT THEME — Semantic tokens
+   ============================================================ */
+[data-theme="light"] {
+  --bg-page: #f5f6f8;
+  --bg-card: #ffffff;
+  --bg-sidebar: #ffffff;
+  --bg-header: #ffffff;
+  --bg-input: #ffffff;
+  --bg-hover: #f0f4f0;
+  --bg-active: #e8f0e8;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+
+  --border-default: #e2e8e2;
+  --border-strong: #c8d4c8;
+  --border-input: #d1d9d1;
+
+  --text-primary: #0f1f0f;
+  --text-secondary: #4a5e4a;
+  --text-muted: #7a8e7a;
+  --text-inverse: #ffffff;
+  --text-on-primary: #ffffff;
+
+  --primary: #05611b;
+  --primary-hover: #2e7233;
+  --primary-light: #e8f4ea;
+  --primary-muted: #97b794;
+
+  --sidebar-item-hover: #f0f4f0;
+  --sidebar-item-active: #e8f4ea;
+  --sidebar-item-active-text: #05611b;
+  --sidebar-item-text: #4a5e4a;
+  --sidebar-border: #e2e8e2;
+
+  --status-active-bg: #e8f4ea;
+  --status-active-text: #05611b;
+  --status-inactive-bg: #f5f5f5;
+  --status-inactive-text: #717171;
+  --status-pending-bg: #fef8ec;
+  --status-pending-text: #a87a2a;
+  --status-rejected-bg: #fdf0f0;
+  --status-rejected-text: #9c2121;
+  --status-info-bg: #eef4fd;
+  --status-info-text: #21498a;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.10);
+}
+
+/* ============================================================
+   DARK THEME — Semantic tokens
+   ============================================================ */
+[data-theme="dark"] {
+  --bg-page: #0d1a0d;
+  --bg-card: #162116;
+  --bg-sidebar: #0f1a0f;
+  --bg-header: #162116;
+  --bg-input: #1f2e1f;
+  --bg-hover: #1f2e1f;
+  --bg-active: #2b362b;
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+
+  --border-default: #2b362b;
+  --border-strong: #424c42;
+  --border-input: #424c42;
+
+  --text-primary: #e8f0e8;
+  --text-secondary: #8e948d;
+  --text-muted: #5a635a;
+  --text-inverse: #0f1f0f;
+  --text-on-primary: #ffffff;
+
+  --primary: #4a834b;
+  --primary-hover: #649463;
+  --primary-light: #1f2e1f;
+  --primary-muted: #2b362b;
+
+  --sidebar-item-hover: #1f2e1f;
+  --sidebar-item-active: #2b362b;
+  --sidebar-item-active-text: #97b794;
+  --sidebar-item-text: #8e948d;
+  --sidebar-border: #2b362b;
+
+  --status-active-bg: #162116;
+  --status-active-text: #47d5a6;
+  --status-inactive-bg: #282828;
+  --status-inactive-text: #8b8b8b;
+  --status-pending-bg: #1f1a0f;
+  --status-pending-text: #d7ac61;
+  --status-rejected-bg: #1f0f0f;
+  --status-rejected-text: #d94a4a;
+  --status-info-bg: #0f1520;
+  --status-info-text: #4077d1;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.30);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.30);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.40);
+}

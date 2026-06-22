@@ -1,0 +1,31 @@
+# Laravel
+
+job_platform_back_end/vendor/
+
+job_platform_back_end/node_modules/
+
+job_platform_back_end/.env
+
+job_platform_back_end/storage/*.key
+
+job_platform_back_end/public/storage
+
+# React / Vite
+
+job_front/node_modules/
+
+job_front/dist/
+
+job_front/.env
+
+# IDE
+
+.vscode/
+
+.idea/
+
+# OS
+
+Thumbs.db
+
+.DS_Store

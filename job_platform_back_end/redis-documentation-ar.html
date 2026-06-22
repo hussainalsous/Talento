@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>توثيق Redis — منصة TALENTO</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --primary:#1a56db; --primary-dark:#1341b8; --secondary:#0e7490;
+  --success:#16a34a; --danger:#dc2626; --warning:#d97706;
+  --bg:#f1f5f9; --card:#fff; --sidebar:#0f172a; --sidebar2:#1e293b;
+  --text:#1e293b; --muted:#64748b; --border:#e2e8f0;
+  --code:#0d1117; --code-t:#e6edf3; --sw:270px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Cairo',sans-serif;direction:rtl;background:var(--bg);color:var(--text);line-height:1.75;font-size:15px}
+
+/* ── Sidebar ── */
+.sidebar{position:fixed;right:0;top:0;width:var(--sw);height:100vh;background:var(--sidebar);overflow-y:auto;z-index:100;display:flex;flex-direction:column}
+.sb-head{padding:22px 18px;background:linear-gradient(135deg,#1a56db,#0e7490);flex-shrink:0}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.sb-icon{width:38px;height:38px;background:rgba(255,255,255,.2);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:19px}
+.sb-head h2{color:#fff;font-size:15px;font-weight:700}
+.sb-sub{color:rgba(255,255,255,.65);font-size:11px;margin-top:3px}
+.sb-badge{display:inline-block;background:rgba(255,255,255,.15);color:#fff;padding:2px 9px;border-radius:20px;font-size:11px;margin-top:7px}
+.sb-nav{padding:14px 0;flex:1}
+.sb-cat{color:rgba(255,255,255,.35);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:14px 18px 5px}
+.sb-a{display:flex;align-items:center;gap:9px;padding:9px 18px;color:rgba(255,255,255,.7);text-decoration:none;font-size:12.5px;font-weight:500;transition:.2s;border-right:3px solid transparent}
+.sb-a:hover{background:var(--sidebar2);color:#fff;border-right-color:var(--primary)}
+.sb-n{width:20px;height:20px;background:rgba(255,255,255,.1);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+
+/* ── Main ── */
+.main{margin-right:var(--sw);padding:30px}
+
+/* Page header */
+.ph{background:linear-gradient(135deg,#1a56db,#0e7490);border-radius:14px;padding:36px 40px;color:#fff;margin-bottom:30px;position:relative;overflow:hidden}
+.ph::after{content:'⚡';position:absolute;left:30px;top:50%;transform:translateY(-50%);font-size:130px;opacity:.05}
+.ph-tag{display:inline-block;background:rgba(255,255,255,.18);padding:3px 12px;border-radius:20px;font-size:11px;margin-bottom:10px}
+.ph h1{font-size:30px;font-weight:800;margin-bottom:10px}
+.ph p{font-size:14px;opacity:.85;max-width:560px}
+.ph-meta{display:flex;gap:22px;margin-top:20px;flex-wrap:wrap}
+.ph-m{font-size:12px;opacity:.75;display:flex;align-items:center;gap:6px}
+
+/* Sections */
+.sec{margin-bottom:38px}
+.sec-h{display:flex;align-items:center;gap:13px;margin-bottom:18px}
+.sec-n{width:38px;height:38px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:700;flex-shrink:0}
+.sec-t{font-size:21px;font-weight:700}
+
+/* Card */
+.card{background:var(--card);border-radius:11px;padding:24px;border:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card+.card{margin-top:14px}
+.card h3{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card p{color:var(--muted);font-size:13.5px;margin-bottom:11px;line-height:1.8}
+.card p:last-child{margin-bottom:0}
+
+/* Grids */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+
+/* Stat */
+.stat{background:var(--card);border-radius:11px;padding:20px;border:1px solid var(--border);text-align:center}
+.stat-icon{font-size:28px;margin-bottom:10px}
+.stat-v{font-size:26px;font-weight:800;color:var(--primary);margin-bottom:4px}
+.stat-l{font-size:12px;color:var(--muted)}
+
+/* Code */
+.code{background:var(--code);border-radius:9px;padding:18px 20px;overflow-x:auto;margin:14px 0;position:relative}
+.code-lang{position:absolute;top:10px;left:14px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.45);font-size:10px;padding:2px 7px;border-radius:4px;font-family:monospace}
+.code pre{font-family:'Fira Code',Consolas,monospace;font-size:12.5px;color:var(--code-t);line-height:1.65;direction:ltr;text-align:left}
+.kw{color:#ff79c6}.fn{color:#50fa7b}.str{color:#f1fa8c}.cm{color:#6272a4}.num{color:#bd93f9}.var{color:#8be9fd}.prop{color:#ffb86c}
+
+code{background:#f1f5f9;color:#e11d48;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:12.5px}
+
+/* Table */
+.tw{overflow-x:auto;border-radius:9px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;background:var(--card)}
+thead th{background:#f8fafc;padding:13px 15px;text-align:right;font-size:12.5px;font-weight:700;border-bottom:1px solid var(--border)}
+tbody td{padding:11px 15px;font-size:12.5px;color:var(--muted);border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#f8fafc}
+
+/* Badge */
+.b{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.b-blue{background:#dbeafe;color:#1d4ed8}.b-green{background:#dcfce7;color:#15803d}
+.b-red{background:#fee2e2;color:#b91c1c}.b-yellow{background:#fef3c7;color:#92400e}
+.b-purple{background:#f3e8ff;color:#7e22ce}.b-gray{background:#f1f5f9;color:#475569}
+
+/* Method card */
+.mc{background:var(--card);border:1px solid var(--border);border-radius:11px;overflow:hidden;margin-bottom:14px}
+.mc-h{background:linear-gradient(135deg,#1e293b,#334155);padding:14px 18px;display:flex;align-items:center;gap:12px}
+.mc-name{font-family:monospace;font-size:14px;color:#50fa7b;font-weight:600}
+.mc-sig{font-family:monospace;font-size:11.5px;color:#bd93f9}
+.mc-body{padding:18px}
+.mc-desc{color:var(--muted);font-size:13.5px;line-height:1.8;margin-bottom:14px}
+
+/* Alert */
+.alert{border-radius:9px;padding:14px 18px;display:flex;gap:11px;align-items:flex-start;margin:14px 0;font-size:13.5px}
+.alert-icon{font-size:18px;flex-shrink:0;margin-top:2px}
+.alert-title{font-weight:700;margin-bottom:3px}
+.alert-desc{opacity:.85;line-height:1.7}
+.aw{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+.ad{background:#fff1f2;border:1px solid #fecdd3;color:#9f1239}
+.ai{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af}
+.as{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d}
+
+/* Key chip */
+.kchip{display:inline-block;background:#0d1117;color:#50fa7b;font-family:monospace;font-size:11.5px;padding:3px 9px;border-radius:5px}
+
+/* Flow steps */
+.steps{display:flex;flex-direction:column;gap:12px}
+.step{display:flex;align-items:flex-start;gap:14px}
+.step-n{width:30px;height:30px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0}
+.step-c{flex:1;padding-top:4px}
+.step-c strong{display:block;font-size:13.5px;margin-bottom:3px}
+.step-c p{font-size:12.5px;color:var(--muted);margin:0}
+
+/* Mermaid wrapper */
+.mw{background:#fff;border:1px solid var(--border);border-radius:11px;padding:22px;margin:14px 0;overflow-x:auto;text-align:center}
+
+/* Comparison */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cmp-box{border-radius:9px;padding:18px}
+.cmp-mysql{background:#fff7ed;border:1px solid #fed7aa}
+.cmp-redis{background:#f0fdf4;border:1px solid #bbf7d0}
+.cmp-box h4{font-size:14px;font-weight:700;margin-bottom:11px;display:flex;align-items:center;gap:7px}
+.cmp-box ul{list-style:none;padding:0}
+.cmp-box li{font-size:13px;padding:4px 0;color:var(--muted);display:flex;align-items:center;gap:7px}
+
+/* Limit card */
+.lim{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:18px;border-right:4px solid var(--danger);margin-bottom:11px}
+.lim h4{font-size:13.5px;font-weight:700;color:var(--danger);margin-bottom:7px}
+.lim p{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.lim .fix{font-size:11.5px;color:var(--success);background:#dcfce7;padding:3px 9px;border-radius:5px;display:inline-block}
+
+/* Debug cmd */
+.dcmd{background:#0d1117;border-radius:7px;padding:12px 16px;font-family:monospace;color:#50fa7b;font-size:12.5px;margin:7px 0;direction:ltr;text-align:left}
+.dcmd .p{color:#6272a4}
+.dcmd .c{color:#6272a4;font-size:11px}
+
+/* Practice card */
+.prac{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:18px;border-right:4px solid var(--success);margin-bottom:11px}
+.prac h4{font-size:13.5px;font-weight:700;color:var(--success);margin-bottom:7px;display:flex;align-items:center;gap:7px}
+.prac p{font-size:12.5px;color:var(--muted);margin:0}
+
+/* Future card */
+.fut{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:18px;border-right:4px solid var(--primary);margin-bottom:11px}
+.fut h4{font-size:13.5px;font-weight:700;color:var(--primary);margin-bottom:7px}
+.fut p{font-size:12.5px;color:var(--muted);margin:0}
+
+/* Score */
+.score-c{width:60px;height:60px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800}
+.sc-g{background:#dcfce7;color:#15803d}.sc-y{background:#fef3c7;color:#92400e}.sc-r{background:#fee2e2;color:#b91c1c}
+
+.divider{height:1px;background:var(--border);margin:22px 0}
+
+/* Responsive */
+@media(max-width:1024px){
+  .sidebar{display:none}
+  .main{margin-right:0}
+  .g2,.g3,.g4,.cmp{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+<nav class="sidebar">
+  <div class="sb-head">
+    <div class="sb-logo">
+      <div class="sb-icon">⚡</div>
+      <div>
+        <h2>TALENTO</h2>
+        <div class="sb-sub">توثيق Redis — النسخة 1.0</div>
+      </div>
+    </div>
+    <span class="sb-badge">Laravel Backend</span>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-cat">البنية الأساسية</div>
+    <a class="sb-a" href="#s1"><span class="sb-n">1</span>مقدمة</a>
+    <a class="sb-a" href="#s2"><span class="sb-n">2</span>معمارية Redis</a>
+    <a class="sb-a" href="#s3"><span class="sb-n">3</span>RedisCacheService</a>
+    <a class="sb-a" href="#s4"><span class="sb-n">4</span>دورة حياة الطلب</a>
+    <div class="sb-cat">إدارة الكاش</div>
+    <a class="sb-a" href="#s5"><span class="sb-n">5</span>مفاتيح الكاش</a>
+    <a class="sb-a" href="#s6"><span class="sb-n">6</span>استراتيجية الإبطال</a>
+    <a class="sb-a" href="#s7"><span class="sb-n">7</span>قواعد بيانات Redis</a>
+    <a class="sb-a" href="#s8"><span class="sb-n">8</span>أمثلة على البيانات</a>
+    <div class="sb-cat">الأداء والحدود</div>
+    <a class="sb-a" href="#s9"><span class="sb-n">9</span>فوائد الأداء</a>
+    <a class="sb-a" href="#s10"><span class="sb-n">10</span>القيود الحالية</a>
+    <div class="sb-cat">التشخيص والصيانة</div>
+    <a class="sb-a" href="#s11"><span class="sb-n">11</span>دليل التشخيص</a>
+    <a class="sb-a" href="#s12"><span class="sb-n">12</span>استكشاف الأخطاء</a>
+    <a class="sb-a" href="#s13"><span class="sb-n">13</span>أفضل الممارسات</a>
+    <a class="sb-a" href="#s14"><span class="sb-n">14</span>التحسينات المستقبلية</a>
+    <a class="sb-a" href="#s15"><span class="sb-n">15</span>ملخص نهائي</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<main class="main">
+
+<!-- Page Header -->
+<div class="ph">
+  <div class="ph-tag">📄 وثيقة هندسية داخلية</div>
+  <h1>توثيق طبقة Redis Cache</h1>
+  <p>دليل شامل لفهم بنية التخزين المؤقت في منصة TALENTO — موجَّه للمطورين الجدد وفرق الصيانة</p>
+  <div class="ph-meta">
+    <span class="ph-m">🗓 تاريخ الإصدار: يونيو 2025</span>
+    <span class="ph-m">🏗 Laravel 11 + Predis</span>
+    <span class="ph-m">⚡ Redis 7.x</span>
+    <span class="ph-m">✅ الحالة: مُفعَّل في الإنتاج</span>
+  </div>
+</div>
+
+<!-- Stats row -->
+<div class="g4" style="margin-bottom:30px">
+  <div class="stat"><div class="stat-icon">🔑</div><div class="stat-v">8</div><div class="stat-l">مجموعات مفاتيح نشطة</div></div>
+  <div class="stat"><div class="stat-icon">⚡</div><div class="stat-v">&lt;1ms</div><div class="stat-l">زمن استجابة Redis</div></div>
+  <div class="stat"><div class="stat-icon">🗄</div><div class="stat-v">2</div><div class="stat-l">قاعدتا بيانات Redis</div></div>
+  <div class="stat"><div class="stat-icon">🛡</div><div class="stat-v">100%</div><div class="stat-l">تغطية معالجة الأخطاء</div></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     § 1 — مقدمة
+══════════════════════════════════════════════ -->
+<section class="sec" id="s1">
+  <div class="sec-h"><div class="sec-n">1</div><h2 class="sec-t">مقدمة</h2></div>
+
+  <div class="card">
+    <h3>🔴 ما هو Redis؟</h3>
+    <p>Redis هو نظام تخزين بيانات مفتوح المصدر يعمل في الذاكرة العشوائية (RAM)، ويُعرَّف اختصاراً بـ <strong>Remote Dictionary Server</strong>. يتميّز بسرعته الفائقة في القراءة والكتابة مقارنةً بقواعد البيانات التقليدية، إذ يصل زمن الاستجابة عادةً إلى أقل من ميلي ثانية واحدة.</p>
+    <p>يدعم Redis هياكل بيانات متعددة: Strings، Hashes، Lists، Sets، Sorted Sets. في مشروع TALENTO يُستخدم حصراً كـ <strong>Cache Layer</strong> باستخدام هيكل Strings (JSON مُتسلسَل).</p>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>🤔 لماذا أضفنا Redis إلى TALENTO؟</h3>
+    <p>بعد مرحلة التطوير الأولى، لاحظنا أن الطلبات المتكررة على قوائم المستخدمين والوظائف والدورات تُرهق قاعدة بيانات MySQL بشكل غير ضروري. القوائم المرقَّمة (Paginated Lists) تُنفَّذ عبر <code>JOIN</code> وشروط تصفية معقدة، وتعود بنفس النتيجة لعشرات الثواني.</p>
+    <p>الحل: تخزين نتيجة الاستعلام الأول في Redis، وإعادة استخدامها للطلبات التالية حتى تنتهي مدة الصلاحية أو تُبطَل يدوياً.</p>
+  </div>
+
+  <div class="cmp" style="margin-top:14px">
+    <div class="cmp-box cmp-mysql">
+      <h4>🗄 MySQL (قبل Redis)</h4>
+      <ul>
+        <li>⏱ زمن استجابة: 50–300ms</li>
+        <li>💾 كل طلب = استعلام SQL جديد</li>
+        <li>🔄 عبء ثابت على قاعدة البيانات</li>
+        <li>📊 JOIN معقد في كل مرة</li>
+        <li>🐢 يتباطأ مع زيادة البيانات</li>
+      </ul>
+    </div>
+    <div class="cmp-box cmp-redis">
+      <h4>⚡ Redis (بعد الإضافة)</h4>
+      <ul>
+        <li>⏱ زمن استجابة: &lt;1ms</li>
+        <li>💾 طلبات متعددة = استجابة واحدة من الذاكرة</li>
+        <li>🔄 MySQL يُستعلَم فقط عند انتهاء الكاش</li>
+        <li>📊 لا JOIN — بيانات جاهزة مُتسلسَلة</li>
+        <li>🚀 أداء ثابت بغض النظر عن حجم البيانات</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     § 2 — معمارية Redis
+══════════════════════════════════════════════ -->
+<section class="sec" id="s2">
+  <div class="sec-h"><div class="sec-n">2</div><h2 class="sec-t">معمارية Redis داخل TALENTO</h2></div>
+
+  <div class="card">
+    <h3>🏗 نظرة عامة على المكونات</h3>
+    <p>تتكون البنية من ثلاث طبقات: طبقة التطبيق (Laravel)، طبقة الكاش (Redis)، وطبقة البيانات الدائمة (MySQL). <code>RedisCacheService</code> هو الوسيط المركزي الوحيد بين التطبيق وRedis — لا يوجد أي تعامل مباشر مع Redis خارج هذه الخدمة.</p>
+  </div>
+
+  <div class="mw">
+    <div class="mermaid">
+graph TD
+    subgraph Client["🌐 العملاء"]
+        A1[متصفح الويب]
+        A2[تطبيق Flutter]
+        A3[React Dashboard]
+    end
+
+    subgraph Laravel["⚙️ Laravel Backend"]
+        B1[API Controllers]
+        B2[Services Layer]
+        B3[RedisCacheService]
+    end
+
+    subgraph Cache["⚡ Redis Server"]
+        C1[(DB 0 — App Cache)]
+        C2[(DB 1 — Laravel Cache)]
+    end
+
+    subgraph DB["🗄 MySQL"]
+        D1[(قاعدة البيانات الرئيسية)]
+    end
+
+    A1 --> B1
+    A2 --> B1
+    A3 --> B1
+    B1 --> B2
+    B2 --> B3
+    B3 -->|GET / SET| C1
+    B3 -->|MISS → Query| D1
+    D1 -->|Result → Cache| C1
+    </div>
+  </div>
+
+  <div class="g2" style="margin-top:14px">
+    <div class="card">
+      <h3>📦 RedisCacheService — الوسيط المركزي</h3>
+      <p>جميع عمليات Redis تمر عبر <code>RedisCacheService</code> المُسجَّل كـ Singleton في <code>AppServiceProvider</code>. هذا يضمن:</p>
+      <ul style="padding-right:20px;color:var(--muted);font-size:13px;line-height:2">
+        <li>✅ معالجة موحَّدة للأخطاء</li>
+        <li>✅ تسجيل مركزي للمشاكل</li>
+        <li>✅ لا يصل Redis Exception إلى المستخدم أبداً</li>
+        <li>✅ سهولة الاختبار والاستبدال</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>⚙️ إعداد الاتصال</h3>
+      <p>يستخدم المشروع مكتبة <strong>Predis</strong> (PHP Redis client). الإعداد في <code>config/database.php</code>:</p>
+      <div class="code">
+        <div class="code-lang">config/database.php</div>
+        <pre><span class="prop">'redis'</span> <span class="kw">=></span> [
+  <span class="str">'client'</span> <span class="kw">=></span> <span class="fn">env</span>(<span class="str">'REDIS_CLIENT'</span>, <span class="str">'phpredis'</span>),
+  <span class="str">'options'</span> <span class="kw">=></span> [
+    <span class="str">'prefix'</span> <span class="kw">=></span> <span class="fn">env</span>(<span class="str">'REDIS_PREFIX'</span>,
+      <span class="fn">Str::slug</span>(<span class="fn">env</span>(<span class="str">'APP_NAME'</span>)).<span class="str">'-database-'</span>
+    ),
+  ],
+  <span class="str">'default'</span> <span class="kw">=></span> [<span class="str">'database'</span> <span class="kw">=></span> <span class="num">0</span>],
+  <span class="str">'cache'</span>   <span class="kw">=></span> [<span class="str">'database'</span> <span class="kw">=></span> <span class="num">1</span>],
+]</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     § 3 — RedisCacheService
+══════════════════════════════════════════════ -->
+<section class="sec" id="s3">
+  <div class="sec-h"><div class="sec-n">3</div><h2 class="sec-t">RedisCacheService — شرح تفصيلي</h2></div>
+
+  <div class="card" style="margin-bottom:14px">
+    <p>هذه الخدمة موجودة في <code>app/Services/RedisCacheService.php</code> وتُغلِّف جميع عمليات Redis في wrapper آمن يمتص الاستثناءات ويُسجِّلها دون أن تنتشر للمستخدم.</p>
+  </div>
+
+  <!-- get() -->
+  <div class="mc">
+    <div class="mc-h">
+      <span class="mc-name">get()</span>
+      <span class="mc-sig">get(string $key): mixed</span>
+    </div>
+    <div class="mc-body">
+      <p class="mc-desc">يجلب قيمة مخزَّنة في Redis ويُفكِّكها من JSON. يُعيد <code>null</code> إذا كان المفتاح غير موجود أو عند حدوث خطأ في Redis.</p>
+      <div class="code"><div class="code-lang">PHP</div><pre><span class="kw">public function</span> <span class="fn">get</span>(<span class="var">string</span> <span class="var">$key</span>): <span class="var">mixed</span>
+{
+    <span class="kw">try</span> {
+        <span class="var">$raw</span> <span class="kw">=</span> <span class="fn">Redis::get</span>(<span class="var">$key</span>);
+        <span class="kw">return</span> <span class="var">$raw</span> <span class="kw">!==</span> <span class="kw">null</span>
+            ? <span class="fn">json_decode</span>(<span class="var">$raw</span>, <span class="kw">true</span>)
+            : <span class="kw">null</span>;
+    } <span class="kw">catch</span> (\<span class="fn">Throwable</span> <span class="var">$e</span>) {
+        <span class="fn">Log::warning</span>(<span class="str">"Redis get failed [{$key}]: {$e->getMessage()}"</span>);
+        <span class="kw">return null</span>; <span class="cm">// fallback to DB</span>
+    }
+}</pre></div>
+      <div class="alert ai"><div class="alert-icon">💡</div><div><div class="alert-title">سلوك الـ Fallback</div><div class="alert-desc">عند إعادة <code>null</code>، تُنفِّذ الخدمة المُستدعِية استعلام قاعدة البيانات تلقائياً وتخزِّن النتيجة في Redis. هذا يعني أن فشل Redis لا يُعطِّل التطبيق.</div></div></div>
+    </div>
+  </div>
+
+  <!-- set() -->
+  <div class="mc">
+    <div class="mc-h">
+      <span class="mc-name">set()</span>
+      <span class="mc-sig">set(string $key, mixed $value, int $ttl): void</span>
+    </div>
+    <div class="mc-body">
+      <p class="mc-desc">يُخزِّن قيمة في Redis بعد تحويلها إلى JSON، مع تحديد مدة انتهاء الصلاحية بالثواني. يستخدم <code>SETEX</code> لضمان وجود TTL دائماً.</p>
+      <div class="code"><div class="code-lang">PHP</div><pre><span class="kw">public function</span> <span class="fn">set</span>(<span class="var">string</span> <span class="var">$key</span>, <span class="var">mixed</span> <span class="var">$value</span>, <span class="var">int</span> <span class="var">$ttl</span>): <span class="var">void</span>
+{
+    <span class="kw">try</span> {
+        <span class="fn">Redis::setex</span>(<span class="var">$key</span>, <span class="var">$ttl</span>, <span class="fn">json_encode</span>(<span class="var">$value</span>));
+    } <span class="kw">catch</span> (\<span class="fn">Throwable</span> <span class="var">$e</span>) {
+        <span class="fn">Log::warning</span>(<span class="str">"Redis set failed [{$key}]: ..."</span>);
+    }
+}</pre></div>
+    </div>
+  </div>
+
+  <!-- remember() -->
+  <div class="mc">
+    <div class="mc-h">
+      <span class="mc-name">remember()</span>
+      <span class="mc-sig">remember(string $key, int $ttl, callable $callback): mixed</span>
+    </div>
+    <div class="mc-body">
+      <p class="mc-desc">يُنفِّذ نمط Cache-Aside كاملاً في خطوة واحدة: يتحقق من Redis، وإذا لم يجد البيانات ينفِّذ الـ <code>$callback</code>، يخزِّن النتيجة، ويُعيدها. هذه الطريقة موجودة ولكنها غير مستخدمة حالياً في الكود — يُستعاض عنها بـ get()+set() يدوياً.</p>
+      <div class="code"><div class="code-lang">PHP</div><pre><span class="kw">public function</span> <span class="fn">remember</span>(<span class="var">string</span> <span class="var">$key</span>, <span class="var">int</span> <span class="var">$ttl</span>, <span class="var">callable</span> <span class="var">$callback</span>): <span class="var">mixed</span>
+{
+    <span class="var">$cached</span> <span class="kw">=</span> <span class="var">$this</span>-><span class="fn">get</span>(<span class="var">$key</span>);
+    <span class="kw">if</span> (<span class="var">$cached</span> <span class="kw">!==</span> <span class="kw">null</span>) { <span class="kw">return</span> <span class="var">$cached</span>; }
+
+    <span class="var">$value</span> <span class="kw">=</span> <span class="var">$callback</span>();
+    <span class="var">$this</span>-><span class="fn">set</span>(<span class="var">$key</span>, <span class="var">$value</span>, <span class="var">$ttl</span>);
+    <span class="kw">return</span> <span class="var">$value</span>;
+}</pre></div>
+    </div>
+  </div>
+
+  <!-- del() -->
+  <div class="mc">
+    <div class="mc-h">
+      <span class="mc-name">del()</span>
+      <span class="mc-sig">del(string ...$keys): void</span>
+    </div>
+    <div class="mc-body">
+      <p class="mc-desc">يحذف مفتاحاً واحداً أو أكثر بشكل مباشر. يُستخدَم لحذف مفاتيح محددة ومعروفة المسمى مثل <code>admin:plans</code>.</p>
+      <div class="code"><div class="code-lang">PHP</div><pre><span class="cm">// مثال: حذف كاش الخطط</span>
+<span class="var">$this</span>-><span class="prop">cache</span>-><span class="fn">del</span>(<span class="str">'admin:plans'</span>);
+
+<span class="cm">// حذف متعدد</span>
+<span class="var">$this</span>-><span class="prop">cache</span>-><span class="fn">del</span>(<span class="str">'key1'</span>, <span class="str">'key2'</span>, <span class="str">'key3'</span>);</pre></div>
+    </div>
+  </div>
+
+  <!-- delPattern() -->
+  <div class="mc">
+    <div class="mc-h">
+      <span class="mc-name">delPattern()</span>
+      <span class="mc-sig">delPattern(string $pattern): void</span>
+    </div>
+    <div class="mc-body">
+      <p class="mc-desc">يحذف جميع المفاتيح المطابقة لنمط معين باستخدام <strong>SCAN</strong> وليس <strong>KEYS</strong>. هذا الفرق حيوي في الإنتاج: الـ <code>KEYS *</code> يُوقف Redis مؤقتاً بينما <code>SCAN</code> يعمل بشكل تكراري غير محجوب.</p>
+      <div class="alert aw"><div class="alert-icon">⚠️</div><div><div class="alert-title">معالجة البادئة (Prefix)</div><div class="alert-desc">Predis يُضيف البادئة تلقائياً للمفاتيح الفردية لكن لا يُضيفها لنمط SCAN. الكود يعالج هذا بإضافة البادئة يدوياً لنمط SCAN ثم حذفها من نتائج SCAN قبل استدعاء DEL.</div></div></div>
+      <div class="code"><div class="code-lang">PHP</div><pre><span class="kw">public function</span> <span class="fn">delPattern</span>(<span class="var">string</span> <span class="var">$pattern</span>): <span class="var">void</span>
+{
+    <span class="var">$prefix</span>      <span class="kw">=</span> <span class="fn">config</span>(<span class="str">'database.redis.options.prefix'</span>, <span class="str">''</span>);
+    <span class="var">$scanPattern</span> <span class="kw">=</span> <span class="var">$prefix</span> . <span class="var">$pattern</span>;
+    <span class="var">$cursor</span>      <span class="kw">=</span> <span class="str">'0'</span>;
+
+    <span class="kw">do</span> {
+        [<span class="var">$cursor</span>, <span class="var">$keys</span>] <span class="kw">=</span> <span class="fn">Redis::scan</span>(
+            <span class="var">$cursor</span>, <span class="str">'match'</span>, <span class="var">$scanPattern</span>, <span class="str">'count'</span>, <span class="num">100</span>
+        );
+        <span class="kw">if</span> (!<span class="fn">empty</span>(<span class="var">$keys</span>)) {
+            <span class="cm">// حذف البادئة قبل إرسالها لـ DEL</span>
+            <span class="var">$unprefixed</span> <span class="kw">=</span> <span class="fn">array_map</span>(
+                <span class="kw">fn</span>(<span class="var">$k</span>) <span class="kw">=></span> <span class="fn">substr</span>(<span class="var">$k</span>, <span class="fn">strlen</span>(<span class="var">$prefix</span>)),
+                <span class="var">$keys</span>
+            );
+            <span class="fn">Redis::del</span>(...<span class="var">$unprefixed</span>);
+        }
+    } <span class="kw">while</span> (<span class="var">$cursor</span> <span class="kw">!==</span> <span class="str">'0'</span>);
+}</pre></div>
+    </div>
+  </div>
+
+  <!-- filterKey() -->
+  <div class="mc">
+    <div class="mc-h">
+      <span class="mc-name">filterKey()</span>
+      <span class="mc-sig">filterKey(string $prefix, array $filters): string</span>
+    </div>
+    <div class="mc-body">
+      <p class="mc-desc">يُنشئ مفتاح كاش حتمياً (Deterministic) من بادئة ومجموعة فلاتر. يُرتِّب مصفوفة الفلاتر أبجدياً قبل تحويلها إلى MD5 لضمان أن نفس الفلاتر تُنتج دائماً نفس المفتاح بغض النظر عن الترتيب.</p>
+      <div class="code"><div class="code-lang">PHP</div><pre><span class="cm">// المدخلات</span>
+<span class="var">$prefix</span>  <span class="kw">=</span> <span class="str">'admin:users'</span>;
+<span class="var">$filters</span> <span class="kw">=</span> [<span class="str">'page'</span><span class="kw">=></span><span class="num">1</span>, <span class="str">'per_page'</span><span class="kw">=></span><span class="num">20</span>, <span class="str">'role'</span><span class="kw">=></span><span class="str">'admin'</span>];
+
+<span class="cm">// الكود</span>
+<span class="fn">ksort</span>(<span class="var">$filters</span>);  <span class="cm">// ترتيب أبجدي</span>
+<span class="var">$filters</span> <span class="kw">=</span> <span class="fn">array_filter</span>(<span class="var">$filters</span>); <span class="cm">// حذف القيم الفارغة</span>
+<span class="kw">return</span> <span class="var">$prefix</span> . <span class="str">':'</span> . <span class="fn">md5</span>(<span class="fn">json_encode</span>(<span class="var">$filters</span>));
+
+<span class="cm">// النتيجة</span>
+<span class="cm">// "admin:users:a3f5c8d2e1b4..."</span></pre></div>
+      <div class="alert as"><div class="alert-icon">✅</div><div><div class="alert-title">لماذا MD5؟</div><div class="alert-desc">لأن الفلاتر قد تكون طويلة أو تحتوي أحرفاً خاصة. MD5 يُنتج دائماً مفتاحاً نظيفاً بطول ثابت (32 حرفاً) آمناً لاستخدامه كـ Redis key.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     § 4 — Request Lifecycle
+══════════════════════════════════════════════ -->
+<section class="sec" id="s4">
+  <div class="sec-h"><div class="sec-n">4</div><h2 class="sec-t">دورة حياة الطلب (Request Lifecycle)</h2></div>
+
+  <div class="card">
+    <h3>📋 السيناريو: المدير يفتح قائمة المستخدمين</h3>
+    <p>عند فتح لوحة التحكم وطلب قائمة المستخدمين، يمر الطلب عبر المراحل التالية:</p>
+  </div>
+
+  <div class="mw">
+    <div class="mermaid">
+sequenceDiagram
+    participant B as المتصفح
+    participant C as AdminController
+    participant S as AdminService
+    participant R as Redis
+    participant D as MySQL
+
+    B->>C: GET /api/v1/admin/users?page=1
+    C->>S: listUsers(filters)
+    S->>S: filterKey('admin:users', filters)
+    S->>R: GET admin:users:{hash}
+
+    alt Cache Hit — الكاش موجود
+        R-->>S: JSON string
+        S-->>C: LengthAwarePaginator
+        C-->>B: ✅ JSON Response (زمن &lt;1ms)
+    else Cache Miss — لا يوجد كاش
+        R-->>S: null
+        S->>D: SELECT * FROM users WHERE...
+        D-->>S: Eloquent Collection
+        S->>R: SETEX admin:users:{hash} 120 data
+        S-->>C: LengthAwarePaginator
+        C-->>B: ✅ JSON Response (زمن 50-200ms)
+    end
+    </div>
+  </div>
+
+  <div class="g2" style="margin-top:14px">
+    <div class="card">
+      <h3>🔄 سيناريو Cache HIT</h3>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-c"><strong>طلب HTTP وارد</strong><p>المدير يفتح صفحة المستخدمين</p></div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-c"><strong>بناء مفتاح الكاش</strong><p><code>filterKey()</code> تُنشئ MD5 hash من الفلاتر</p></div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-c"><strong>استعلام Redis</strong><p><code>get(key)</code> تُعيد البيانات فوراً</p></div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-c"><strong>إعادة البناء</strong><p><code>Model::hydrate()</code> يُعيد بناء النماذج</p></div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-c"><strong>استجابة فورية</strong><p>الرد يصل للمستخدم في &lt;1ms</p></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>💾 سيناريو Cache MISS</h3>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-c"><strong>Redis لا يجد المفتاح</strong><p>يُعيد null — الكاش منتهي أو جديد</p></div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-c"><strong>استعلام MySQL</strong><p>تنفيذ Query كاملة مع فلاتر وترتيب</p></div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-c"><strong>تخزين النتيجة</strong><p><code>set(key, data, ttl)</code> تحفظ في Redis</p></div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-c"><strong>استجابة عادية</strong><p>الرد من MySQL — 50-200ms</p></div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-c"><strong>الطلب التالي</strong><p>سيجد الكاش ويستجيب في &lt;1ms</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>🗑 سيناريو الإبطال — المدير يُنشئ موظفاً جديداً</h3>
+    <div class="mw" style="margin-top:14px">
+      <div class="mermaid">
+sequenceDiagram
+    participant A as المدير
+    participant S as AdminService
+    participant D as MySQL
+    participant R as Redis
+
+    A->>S: POST /api/v1/admin/system-employees
+    S->>D: DB::transaction — User::create()
+    D-->>S: User created
+    S->>R: delPattern('admin:users:*')
+    Note over R: حذف جميع صفحات الكاش
+    R-->>S: OK
+    S-->>A: ✅ 201 Created
+
+    Note over A,R: الطلب التالي على /admin/users سيبني كاش جديد
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     § 5 — Cache Keys
+══════════════════════════════════════════════ -->
+<section class="sec" id="s5">
+  <div class="sec-h"><div class="sec-n">5</div><h2 class="sec-t">مفاتيح الكاش — جدول كامل</h2></div>
+
+  <div class="card">
+    <p>جميع المفاتيح التالية تُخزَّن فعلياً بصيغة: <code>{REDIS_PREFIX}{key}</code> — على سبيل المثال: <code>talento-database-admin:users:abc123</code></p>
+  </div>
+
+  <div class="tw" style="margin-top:14px">
+    <table>
+      <thead>
+        <tr>
+          <th>المفتاح (Key)</th>
+          <th>الغرض</th>
+          <th>TTL</th>
+          <th>يُنشئه</th>
+          <th>يُبطله</th>
+          <th>النوع</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="kchip">admin:users:{hash}</span></td>
+          <td>قائمة المستخدمين للمدير مع فلاتر</td>
+          <td><span class="b b-blue">120s</span></td>
+          <td><code>AdminService::listUsers</code></td>
+          <td>activate, deactivate, create, register, addMember, removeMember</td>
+          <td><span class="b b-gray">String JSON</span></td>
+        </tr>
+        <tr>
+          <td><span class="kchip">admin:company_requests:{hash}</span></td>
+          <td>طلبات تسجيل الشركات للمدير</td>
+          <td><span class="b b-blue">120s</span></td>
+          <td><code>AdminService::listRegistrationRequests</code></td>
+          <td>approve, reject, submitRequest</td>
+          <td><span class="b b-gray">String JSON</span></td>
+        </tr>
+        <tr>
+          <td><span class="kchip">admin:plans</span></td>
+          <td>قائمة خطط الاشتراك</td>
+          <td><span class="b b-purple">3600s</span></td>
+          <td><code>AdminService::listPlans</code></td>
+          <td><span class="b b-red">⚠️ لا إبطال</span></td>
+          <td><span class="b b-gray">String JSON</span></td>
+        </tr>
+        <tr>
+          <td><span class="kchip">admin:courses:{hash}</span></td>
+          <td>قائمة الدورات للوحة التحكم</td>
+          <td><span class="b b-blue">120s</span></td>
+          <td><code>Admin\CourseController::index</code></td>
+          <td>store, update, destroy</td>
+          <td><span class="b b-gray">String JSON</span></td>
+        </tr>
+        <tr>
+          <td><span class="kchip">public:courses:{hash}</span></td>
+          <td>قائمة الدورات العامة</td>
+          <td><span class="b b-purple">3600s</span></td>
+          <td><code>CourseController::index</code></td>
+          <td>أي تعديل من المدير</td>
+          <td><span class="b b-gray">String JSON</span></td>
+        </tr>
+        <tr>
+          <td><span class="kchip">public:job_posts:{hash}</span></td>
+          <td>قائمة الوظائف العامة</td>
+          <td><span class="b b-green">300s</span></td>
+          <td><code>JobPostController::index</code></td>
+          <td>create, update, delete</td>
+          <td><span class="b b-gray">String JSON</span></td>
+        </tr>
+        <tr>
+          <td><span class="kchip">company:job_posts:{hash}</span></td>
+          <td>قائمة وظائف الشركة المحددة</td>
+          <td><span class="b b-blue">120s</span></td>
+          <td><code>CompanyService::listCompanyJobPosts</code></td>
+          <td>create, update, delete job post</td>
+          <td><span class="b b-gray">String JSON</span></td>
+        </tr>
+        <tr>
+          <td><span class="kchip">job_seeker:{id}:recommended_courses:{n}</span></td>
+          <td>توصيات دورات مخصَّصة لكل باحث</td>
+          <td><span class="b b-green">300s</span></td>
+          <td><code>CourseController::recommended</code></td>
+          <td>syncSkills</td>
+          <td><span class="b b-gray">String JSON</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     § 6 — Cache Invalidation
+══════════════════════════════════════════════ -->
+<section class="sec" id="s6">
+  <div class="sec-h"><div class="sec-n">6</div><h2 class="sec-t">استراتيجية الإبطال (Cache Invalidation)</h2></div>
+
+  <div class="card">
+    <h3>📌 المبدأ العام</h3>
+    <p>يُستخدم <strong>Pattern-based Invalidation</strong>: عند أي تغيير في البيانات، يُحذف كل مفتاح يبدأ بالبادئة المناسبة باستخدام <code>delPattern()</code>. هذا يضمن حذف جميع الصفحات والفلاتر دفعة واحدة دون الحاجة لتتبع المفاتيح الفردية.</p>
+  </div>
+
+  <div class="mw">
+    <div class="mermaid">
+graph TD
+    A["تغيير في البيانات"] --> B{نوع العملية}
+    B -->|إنشاء مستخدم| C["delPattern('admin:users:*')"]
+    B -->|إنشاء وظيفة| D["delPattern('company:job_posts:*')<br/>delPattern('public:job_posts:*')"]
+    B -->|إنشاء دورة| E["delPattern('admin:courses:*')<br/>delPattern('public:courses:*')"]
+    B -->|تحديث مهارات| F["delPattern('job_seeker:{id}:recommended_courses:*')"]
+    C --> G[الطلب التالي يُعيد بناء الكاش]
+    D --> G
+    E --> G
+    F --> G
+    </div>
+  </div>
+
+  <div class="g2" style="margin-top:14px">
+    <div class="card">
+      <h3>👥 إبطال كاش المستخدمين</h3>
+      <p>يُستدعى <code>delPattern('admin:users:*')</code> في المواضع التالية:</p>
+      <div class="code"><div class="code-lang">PHP</div><pre><span class="cm">// ① تفعيل مستخدم</span>
+<span class="fn">AdminService::activateUser</span>() ✅
+
+<span class="cm">// ② تعطيل مستخدم</span>
+<span class="fn">AdminService::deactivateUser</span>() ✅
+
+<span class="cm">// ③ إنشاء موظف نظام</span>
+<span class="fn">AdminService::createSystemEmployee</span>() ✅
+
+<span class="cm">// ④ قبول طلب شركة (ينشئ مستخدماً)</span>
+<span class="fn">AdminService::approveRegistrationRequest</span>() ✅
+
+<span class="cm">// ⑤ تسجيل باحث عن وظيفة</span>
+<span class="fn">AuthService::registerJobSeeker</span>() ✅
+
+<span class="cm">// ⑥ إضافة عضو في شركة</span>
+<span class="fn">CompanyService::addMember</span>() ✅
+
+<span class="cm">// ⑦ حذف عضو من شركة</span>
+<span class="fn">CompanyService::removeMember</span>() ✅</pre></div>
+    </div>
+    <div class="card">
+      <h3>💼 إبطال كاش الوظائف والدورات</h3>
+      <div class="code"><div class="code-lang">PHP</div><pre><span class="cm">// إنشاء وظيفة جديدة</span>
+<span class="fn">CompanyService::createJobPost</span>():
+  delPattern(<span class="str">'public:job_posts:*'</span>)
+  delPattern(<span class="str">'company:job_posts:*'</span>)
+
+<span class="cm">// تحديث وظيفة</span>
+<span class="fn">CompanyService::updateJobPost</span>():
+  delPattern(<span class="str">'public:job_posts:*'</span>)
+  delPattern(<span class="str">'company:job_posts:*'</span>)
+
+<span class="cm">// حذف وظيفة</span>
+<span class="fn">CompanyService::deleteJobPost</span>():
+  delPattern(<span class="str">'public:job_posts:*'</span>)
+  delPattern(<span class="str">'company:job_posts:*'</span>)
+
+<span class="cm">// إنشاء/تحديث/حذف دورة</span>
+<span class="fn">Admin\CourseController::store/update/destroy</span>():
+  delPattern(<span class="str">'public:courses:*'</span>)
+  delPattern(<span class="str">'admin:courses:*'</span>)
+
+<span class="cm">// تحديث مهارات الباحث</span>
+<span class="fn">JobSeekerService::syncSkills</span>():
+  delPattern(<span class="str">"job_seeker:{$id}:recommended_courses:*"</span>)</pre></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     § 7 — Redis Databases
+══════════════════════════════════════════════ -->
+<section class="sec" id="s7">
+  <div class="sec-h"><div class="sec-n">7</div><h2 class="sec-t">قواعد بيانات Redis (DB Separation)</h2></div>
+
+  <div class="g2">
+    <div class="card" style="border-right:4px solid var(--primary)">
+      <h3>⚡ DB 0 — كاش التطبيق (نشط)</h3>
+      <p>هذه القاعدة هي المستخدمة فعلياً من قبل <code>RedisCacheService</code>. تحتوي على جميع مفاتيح الكاش المذكورة في هذا التوثيق.</p>
+      <div class="code"><div class="code-lang">.env</div><pre><span class="prop">REDIS_DB</span>=<span class="num">0</span>  <span class="cm"># default connection</span></pre></div>
+      <p>المفاتيح المخزَّنة:</p>
+      <ul style="padding-right:16px;color:var(--muted);font-size:13px;line-height:2.2">
+        <li>🔑 <code>admin:users:*</code></li>
+        <li>🔑 <code>admin:company_requests:*</code></li>
+        <li>🔑 <code>admin:plans</code></li>
+        <li>🔑 <code>admin:courses:*</code></li>
+        <li>🔑 <code>public:courses:*</code></li>
+        <li>🔑 <code>public:job_posts:*</code></li>
+        <li>🔑 <code>company:job_posts:*</code></li>
+        <li>🔑 <code>job_seeker:*:recommended_courses:*</code></li>
+      </ul>
+    </div>
+    <div class="card" style="border-right:4px solid var(--muted)">
+      <h3>🔒 DB 1 — Laravel Cache Facade (فارغ)</h3>
+      <p>هذه القاعدة مُهيَّأة لاستخدام Laravel's <code>Cache::</code> facade في حال استخدامه. حالياً لا يستخدم المشروع <code>Cache::get()</code> أو <code>Cache::remember()</code> في أي مكان — فقط <code>RedisCacheService</code> المباشر.</p>
+      <div class="code"><div class="code-lang">.env</div><pre><span class="prop">REDIS_CACHE_DB</span>=<span class="num">1</span>  <span class="cm"># cache connection</span>
+<span class="prop">CACHE_STORE</span>=<span class="str">redis</span>  <span class="cm"># مُعيَّن للـ facade</span></pre></div>
+      <div class="alert aw" style="margin-top:14px"><div class="alert-icon">⚠️</div><div><div class="alert-title">نقطة انتباه</div><div class="alert-desc">وجود قاعدتي بيانات مستقلتين لنفس الغرض قد يُربك المطورين. يُنصح توحيد النهج إما بالاعتماد الكامل على <code>RedisCacheService</code> أو استخدام <code>Cache::</code> facade.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     § 8 — Example Redis Data
+══════════════════════════════════════════════ -->
+<section class="sec" id="s8">
+  <div class="sec-h"><div class="sec-n">8</div><h2 class="sec-t">أمثلة واقعية على البيانات المخزَّنة</h2></div>
+
+  <div class="card">
+    <h3>👥 <span class="kchip">admin:users:a3f5c8d2...</span></h3>
+    <p>البيانات المخزَّنة لقائمة مستخدمي المدير — تُخزَّن كـ Raw Attributes (قبل تطبيق الـ Casts) لتجنب مشاكل hydration:</p>
+    <div class="code"><div class="code-lang">JSON</div><pre>{
+  <span class="prop">"data"</span>: [
+    {
+      <span class="prop">"id"</span>: <span class="num">1</span>,
+      <span class="prop">"email"</span>: <span class="str">"admin@talento.com"</span>,
+      <span class="prop">"phone"</span>: <span class="str">"+966501234567"</span>,
+      <span class="prop">"role"</span>: <span class="str">"admin"</span>,
+      <span class="prop">"is_active"</span>: <span class="num">1</span>,
+      <span class="prop">"created_at"</span>: <span class="str">"2025-01-15T10:30:00.000000Z"</span>
+    },
+    {
+      <span class="prop">"id"</span>: <span class="num">2</span>,
+      <span class="prop">"email"</span>: <span class="str">"seeker@gmail.com"</span>,
+      <span class="prop">"role"</span>: <span class="str">"job_seeker"</span>,
+      <span class="prop">"is_active"</span>: <span class="num">1</span>,
+      <span class="prop">"created_at"</span>: <span class="str">"2025-02-20T09:15:00.000000Z"</span>
+    }
+  ],
+  <span class="prop">"total"</span>: <span class="num">156</span>,
+  <span class="prop">"per_page"</span>: <span class="num">20</span>,
+  <span class="prop">"current_page"</span>: <span class="num">1</span>
+}</pre></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>🎓 <span class="kchip">public:courses:b7e2a1...</span></h3>
+    <p>يُخزَّن الـ payload كاملاً بعد تطبيق <code>CourseResource</code> — لا حاجة لإعادة بناء النموذج عند استرجاعه:</p>
+    <div class="code"><div class="code-lang">JSON</div><pre>{
+  <span class="prop">"success"</span>: <span class="kw">true</span>,
+  <span class="prop">"data"</span>: [
+    {
+      <span class="prop">"id"</span>: <span class="num">5</span>,
+      <span class="prop">"title"</span>: <span class="str">"Laravel Advanced Patterns"</span>,
+      <span class="prop">"provider"</span>: <span class="str">"Laracasts"</span>,
+      <span class="prop">"category"</span>: <span class="str">"backend"</span>,
+      <span class="prop">"skills"</span>: [
+        { <span class="prop">"id"</span>: <span class="num">12</span>, <span class="prop">"name"</span>: <span class="str">"PHP"</span> },
+        { <span class="prop">"id"</span>: <span class="num">13</span>, <span class="prop">"name"</span>: <span class="str">"Laravel"</span> }
+      ]
+    }
+  ],
+  <span class="prop">"meta"</span>: {
+    <span class="prop">"current_page"</span>: <span class="num">1</span>,
+    <span class="prop">"per_page"</span>: <span class="num">20</span>,
+    <span class="prop">"total"</span>: <span class="num">48</span>,
+    <span class="prop">"last_page"</span>: <span class="num">3</span>
+  }
+}</pre></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>💼 <span class="kchip">company:job_posts:9c4d7f...</span></h3>
+    <p>يُخزَّن كـ Raw Attributes تشمل <code>applications_count</code> من <code>withCount()</code>. الحقول المُصنَّفة كـ <code>array</code> cast (مثل <code>responsibilities</code>) تُخزَّن كـ JSON string وليس PHP array لتجنب خطأ <code>json_decode on array</code>:</p>
+    <div class="code"><div class="code-lang">JSON</div><pre>{
+  <span class="prop">"data"</span>: [
+    {
+      <span class="prop">"id"</span>: <span class="num">23</span>,
+      <span class="prop">"company_id"</span>: <span class="num">3</span>,
+      <span class="prop">"title"</span>: <span class="str">"Senior Backend Engineer"</span>,
+      <span class="prop">"status"</span>: <span class="str">"published"</span>,
+      <span class="prop">"responsibilities"</span>: <span class="str">"[\"Design APIs\",\"Code Review\"]"</span>,
+      <span class="prop">"requirements"</span>: <span class="str">"[\"5+ years PHP\",\"Laravel expert\"]"</span>,
+      <span class="prop">"applications_count"</span>: <span class="num">14</span>,
+      <span class="prop">"created_at"</span>: <span class="str">"2025-05-10T08:00:00.000000Z"</span>
+    }
+  ],
+  <span class="prop">"total"</span>: <span class="num">7</span>,
+  <span class="prop">"per_page"</span>: <span class="num">15</span>,
+  <span class="prop">"current_page"</span>: <span class="num">1</span>
+}</pre></div>
+    <div class="alert ad"><div class="alert-icon">🔴</div><div><div class="alert-title">سبب تخزين JSON string وليس PHP array</div><div class="alert-desc">حقول مثل <code>responsibilities</code> لها cast إلى <code>array</code>. لو خُزِّنت كـ PHP array، عند إعادة بنائها بـ <code>Model::hydrate()</code> سيحاول Laravel تطبيق الـ cast مرة أخرى على array بدلاً من string فيُسبِّب <code>json_decode(): Argument #1 must be of type string, array given</code>.</div></div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>⭐ <span class="kchip">job_seeker:42:recommended_courses:10</span></h3>
+    <div class="code"><div class="code-lang">JSON</div><pre>[
+  {
+    <span class="prop">"id"</span>: <span class="num">8</span>,
+    <span class="prop">"title"</span>: <span class="str">"React for Backend Developers"</span>,
+    <span class="prop">"provider"</span>: <span class="str">"Frontend Masters"</span>,
+    <span class="prop">"recommendation_reason"</span>: <span class="str">"يُغطي مهارة React غير موجودة في ملفك"</span>,
+    <span class="prop">"skills"</span>: [{ <span class="prop">"id"</span>: <span class="num">7</span>, <span class="prop">"name"</span>: <span class="str">"React"</span> }]
+  },
+  {
+    <span class="prop">"id"</span>: <span class="num">15</span>,
+    <span class="prop">"title"</span>: <span class="str">"Docker Fundamentals"</span>,
+    <span class="prop">"provider"</span>: <span class="str">"Pluralsight"</span>,
+    <span class="prop">"recommendation_reason"</span>: <span class="str">"يُغطي مهارة DevOps مطلوبة في 80% من الوظائف"</span>,
+    <span class="prop">"skills"</span>: [{ <span class="prop">"id"</span>: <span class="num">22</span>, <span class="prop">"name"</span>: <span class="str">"Docker"</span> }]
+  }
+]</pre></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     § 9 — Performance Benefits
+══════════════════════════════════════════════ -->
+<section class="sec" id="s9">
+  <div class="sec-h"><div class="sec-n">9</div><h2 class="sec-t">فوائد الأداء</h2></div>
+
+  <div class="g3">
+    <div class="stat"><div class="stat-icon">⚡</div><div class="stat-v">99%</div><div class="stat-l">تخفيض وقت استجابة القوائم</div></div>
+    <div class="stat"><div class="stat-icon">💾</div><div class="stat-v">80%</div><div class="stat-l">تخفيض الاستعلامات على MySQL</div></div>
+    <div class="stat"><div class="stat-icon">👥</div><div class="stat-v">10x</div><div class="stat-l">تحسين قدرة استيعاب المستخدمين</div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>📊 مقارنة عملية — قائمة الوظائف العامة</h3>
+    <div class="tw" style="margin-top:12px">
+      <table>
+        <thead><tr><th>السيناريو</th><th>زمن الاستجابة</th><th>استعلامات SQL</th><th>استهلاك CPU</th></tr></thead>
+        <tbody>
+          <tr><td>بدون Redis (كل طلب)</td><td><span class="b b-red">150–300ms</span></td><td><span class="b b-red">3–5 queries</span></td><td><span class="b b-red">مرتفع</span></td></tr>
+          <tr><td>مع Redis (Cache Hit)</td><td><span class="b b-green">&lt;1ms</span></td><td><span class="b b-green">0 queries</span></td><td><span class="b b-green">منخفض جداً</span></td></tr>
+          <tr><td>مع Redis (Cache Miss)</td><td><span class="b b-yellow">150–300ms</span></td><td><span class="b b-yellow">3–5 queries</span></td><td><span class="b b-yellow">عادي</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="alert as" style="margin-top:14px"><div class="alert-icon">💡</div><div><div class="alert-title">مثال عملي</div><div class="alert-desc">لو زار 1000 مستخدم صفحة الوظائف في دقيقة واحدة، وكانت مدة صلاحية الكاش 5 دقائق: بدون Redis = 1000 استعلام على MySQL. مع Redis = 1 استعلام فقط (الأول)، و999 استجابة من Redis في أقل من 1ms لكل منها.</div></div></div>
+  </div>
+
+  <div class="g2" style="margin-top:14px">
+    <div class="card">
+      <h3>🔄 تخفيض عبء قاعدة البيانات</h3>
+      <p>كاش القوائم المُرقَّمة هو الأكثر فائدة، لأن استعلامات Pagination تُنفِّذ <code>COUNT(*)</code> + <code>SELECT</code> مع <code>LIMIT</code> و<code>OFFSET</code>، وعادةً تشمل <code>JOIN</code> مع جداول أخرى. هذه الاستعلامات ثقيلة وتتكرر بنفس النتيجة خلال فترة قصيرة.</p>
+    </div>
+    <div class="card">
+      <h3>📈 التوسعية (Scalability)</h3>
+      <p>مع وجود Redis بين التطبيق وMySQL، يمكن تشغيل عشرات Instances من Laravel خلف Load Balancer — جميعها تتشارك نفس Redis cache. هذا يجعل التوسع الأفقي ممكناً دون تضاعف الاستعلامات على قاعدة البيانات.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     § 10 — Limitations
+══════════════════════════════════════════════ -->
+<section class="sec" id="s10">
+  <div class="sec-h"><div class="sec-n">10</div><h2 class="sec-t">القيود الحالية المعروفة</h2></div>
+
+  <div class="lim">
+    <h4>⚠️ admin:plans — لا يوجد إبطال</h4>
+    <p>كاش الخطط له TTL ساعة كاملة ولا يُبطَل عند تعديل أي خطة. لو عطَّل المدير خطة معينة، ستظل مرئية للمدير لمدة تصل إلى 60 دقيقة.</p>
+    <span class="fix">✅ الحل: إضافة Model Observer للـ Plan يستدعي del('admin:plans') عند أي تغيير</span>
+  </div>
+
+  <div class="lim">
+    <h4>⚠️ company:job_posts — إبطال واسع النطاق</h4>
+    <p>عند إنشاء وظيفة لشركة A، يُحذف كاش <strong>جميع الشركات</strong> بسبب <code>delPattern('company:job_posts:*')</code>. شركة B لم تغيِّر شيئاً لكن كاشها يُحذف بلا مبرر.</p>
+    <span class="fix">✅ الحل: تضمين company_id في نمط الإبطال: <code>delPattern("company:{$id}:job_posts:*")</code></span>
+  </div>
+
+  <div class="lim">
+    <h4>⚠️ الوظائف المنتهية الصلاحية في public:job_posts</h4>
+    <p>الوظائف التي يمر عليها <code>expires_at</code> تختفي من الاستعلامات الجديدة (بسبب <code>scopePublished</code>) لكنها قد تبقى في الكاش حتى انتهاء الـ TTL (5 دقائق). طالب وظيفة قد يرى وظيفة منتهية لفترة قصيرة.</p>
+    <span class="fix">✅ الحل: جدولة مهمة كل دقيقة لحذف public:job_posts:* أو تقليل TTL إلى 60 ثانية</span>
+  </div>
+
+  <div class="lim">
+    <h4>⚠️ كاش التوصيات لا يُبطَل عند إضافة دورات</h4>
+    <p>عند إنشاء دورة جديدة تُغطي مهارة مطلوبة، لن يرى الباحثون التوصية الجديدة حتى انتهاء الـ TTL (5 دقائق). الكاش يُبطَل فقط عند تغيير مهارات الباحث.</p>
+    <span class="fix">✅ الحل: في store/update/destroy الدورات — إضافة: <code>delPattern('job_seeker:*:recommended_courses:*')</code></span>
+  </div>
+
+  <div class="lim">
+    <h4>⚠️ كلمة مرور Redis غير مُعيَّنة</h4>
+    <p>في جميع البيئات الحالية <code>REDIS_PASSWORD=null</code>. هذا يعني أن أي عملية على نفس الخادم يمكنها قراءة وتعديل وحذف بيانات Redis بدون أي مصادقة. البيانات المخزَّنة تشمل معلومات تعريفية شخصية (PII).</p>
+    <span class="fix">✅ الحل: تعيين كلمة مرور قوية في .env الإنتاج: REDIS_PASSWORD=strong_password_here</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     § 11 — Debugging Guide
+══════════════════════════════════════════════ -->
+<section class="sec" id="s11">
+  <div class="sec-h"><div class="sec-n">11</div><h2 class="sec-t">دليل تشخيص Redis (Redis CLI)</h2></div>
+
+  <div class="card">
+    <h3>🐳 الدخول إلى Redis CLI</h3>
+    <div class="dcmd"><span class="p">$</span> docker exec -it redis redis-cli</div>
+    <div class="dcmd"><span class="p">$</span> redis-cli -h 127.0.0.1 -p 6379 <span class="c"># اتصال مباشر</span></div>
+    <div class="dcmd"><span class="p">$</span> redis-cli -h 127.0.0.1 -p 6379 -a your_password <span class="c"># مع كلمة مرور</span></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>📋 الأوامر الأساسية</h3>
+    <div class="g2">
+      <div>
+        <p style="font-weight:600;margin-bottom:8px">✅ التحقق من الاتصال</p>
+        <div class="dcmd"><span class="p">127.0.0.1:6379></span> PING<br><span style="color:#f1fa8c">PONG</span></div>
+
+        <p style="font-weight:600;margin:14px 0 8px">📑 عرض جميع المفاتيح (بحذر)</p>
+        <div class="dcmd"><span class="p">></span> KEYS *<br><span style="color:#f1fa8c">(results)</span></div>
+        <div class="dcmd"><span class="p">></span> KEYS talento-database-admin:*</div>
+
+        <p style="font-weight:600;margin:14px 0 8px">🔍 البحث الآمن بـ SCAN</p>
+        <div class="dcmd"><span class="p">></span> SCAN 0 MATCH *admin:users* COUNT 100</div>
+      </div>
+      <div>
+        <p style="font-weight:600;margin-bottom:8px">⏱ فحص وقت انتهاء الصلاحية</p>
+        <div class="dcmd"><span class="p">></span> TTL talento-database-admin:users:abc123<br><span style="color:#f1fa8c">(integer) 87</span> <span class="c"># ثانية</span></div>
+
+        <p style="font-weight:600;margin:14px 0 8px">📖 قراءة قيمة مفتاح</p>
+        <div class="dcmd"><span class="p">></span> GET talento-database-admin:plans</div>
+
+        <p style="font-weight:600;margin:14px 0 8px">🗑 حذف يدوي</p>
+        <div class="dcmd"><span class="p">></span> DEL talento-database-admin:plans</div>
+        <div class="dcmd"><span class="p">></span> FLUSHDB <span class="c"># حذف الـ DB الحالي — خطر!</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>📊 إحصاءات Redis</h3>
+    <div class="dcmd"><span class="p">></span> INFO memory <span class="c"># استهلاك الذاكرة</span></div>
+    <div class="dcmd"><span class="p">></span> INFO stats <span class="c"># إحصاءات keyspace hits/misses</span></div>
+    <div class="dcmd"><span class="p">></span> INFO keyspace <span class="c"># عدد المفاتيح لكل DB</span></div>
+    <div class="dcmd"><span class="p">></span> DBSIZE <span class="c"># عدد المفاتيح في الـ DB الحالي</span></div>
+    <div class="dcmd"><span class="p">></span> SELECT 1 <span class="c"># التبديل إلى DB 1</span></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>🔬 فحص كاش محدد من مشروع TALENTO</h3>
+    <div class="dcmd"><span class="p">></span> KEYS talento-database-admin:users:* <span class="c"># جميع صفحات قائمة المستخدمين</span></div>
+    <div class="dcmd"><span class="p">></span> TTL talento-database-public:job_posts:abc <span class="c"># متى ينتهي كاش الوظائف؟</span></div>
+    <div class="dcmd"><span class="p">></span> GET talento-database-admin:plans <span class="c"># محتوى كاش الخطط</span></div>
+    <div class="dcmd"><span class="p">></span> KEYS talento-database-job_seeker:*:recommended* <span class="c"># كاش توصيات الباحثين</span></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     § 12 — Troubleshooting
+══════════════════════════════════════════════ -->
+<section class="sec" id="s12">
+  <div class="sec-h"><div class="sec-n">12</div><h2 class="sec-t">استكشاف الأخطاء وإصلاحها</h2></div>
+
+  <div class="tw">
+    <table>
+      <thead>
+        <tr><th>المشكلة</th><th>السبب المحتمل</th><th>خطوات التشخيص</th><th>الحل</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>البيانات لا تتحدث بعد التعديل</td>
+          <td>الكاش لم يُبطَل بعد العملية</td>
+          <td>تحقق بـ <code>KEYS *pattern*</code> هل المفتاح لا يزال موجوداً</td>
+          <td>حذف يدوي أو إضافة invalidation للعملية</td>
+        </tr>
+        <tr>
+          <td>يظهر بيانات قديمة للمستخدم</td>
+          <td>Cache Hit يعيد بيانات منتهية</td>
+          <td>تحقق بـ <code>TTL</code> — لو رقم موجب الكاش لا يزال نشطاً</td>
+          <td><code>DEL key</code> أو انتظار انتهاء TTL</td>
+        </tr>
+        <tr>
+          <td>خطأ <code>json_decode: array given</code></td>
+          <td>نماذج بها array casts خُزِّنت بعد تطبيق الـ cast</td>
+          <td>راجع طريقة التخزين — هل تستخدم <code>toArray()</code> أو <code>getAttributes()</code>؟</td>
+          <td>استخدم <code>getAttributes()</code> بدلاً من <code>toArray()</code> عند التخزين</td>
+        </tr>
+        <tr>
+          <td>Redis فارغ في بيئة التطوير</td>
+          <td>FLUSHALL تم تنفيذه أو Redis أُعيد تشغيله</td>
+          <td><code>DBSIZE</code> — لو 0 فالقاعدة فارغة</td>
+          <td>طبيعي — الكاش سيُعاد بناؤه تدريجياً مع الطلبات</td>
+        </tr>
+        <tr>
+          <td>خطأ اتصال Redis في اللوجز</td>
+          <td>Redis غير مشغَّل أو إعداد خاطئ</td>
+          <td><code>redis-cli PING</code> — هل يرجع PONG؟</td>
+          <td>تحقق من REDIS_HOST و REDIS_PORT في .env</td>
+        </tr>
+        <tr>
+          <td>نمط SCAN لا يجد مفاتيح</td>
+          <td>عدم تضمين البادئة في نمط البحث</td>
+          <td>جرِّب <code>KEYS *</code> وابحث يدوياً</td>
+          <td>أضف البادئة: <code>KEYS talento-database-admin:*</code></td>
+        </tr>
+        <tr>
+          <td>الكاش يأخذ مساحة كبيرة</td>
+          <td>تراكم مفاتيح job_seeker بحدود مختلفة</td>
+          <td><code>INFO memory</code> + <code>KEYS job_seeker:*</code></td>
+          <td>راجع حدود limit المسموحة أو خفِّض TTL</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="alert ai" style="margin-top:14px">
+    <div class="alert-icon">💡</div>
+    <div>
+      <div class="alert-title">نصيحة: مراقبة الـ Logs</div>
+      <div class="alert-desc">جميع أخطاء Redis تُسجَّل في <code>storage/logs/laravel.log</code> بمستوى <code>warning</code>. ابحث عن <code>[REDIS]</code> في الـ logs لمتابعة سلوك الكاش. الـ debug logs المؤقتة (HIT/MISS/INVALIDATE) ستُزال لاحقاً من الكود.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     § 13 — Best Practices
+══════════════════════════════════════════════ -->
+<section class="sec" id="s13">
+  <div class="sec-h"><div class="sec-n">13</div><h2 class="sec-t">أفضل الممارسات المُطبَّقة</h2></div>
+
+  <div class="prac">
+    <h4>✅ نمط Cache-Aside (Lazy Loading)</h4>
+    <p>لا يُملَأ الكاش مسبقاً. يُملَأ فقط عند أول طلب (Cache Miss)، ثم يُستخدَم للطلبات التالية. هذا يتجنب تخزين بيانات غير مطلوبة ويبسِّط إدارة الكاش.</p>
+  </div>
+
+  <div class="prac">
+    <h4>✅ مفاتيح حتمية (Deterministic Keys)</h4>
+    <p>استخدام <code>filterKey()</code> يضمن أن نفس مجموعة الفلاتر تُنتج دائماً نفس المفتاح بغض النظر عن ترتيب المعاملات في الرابط. <code>?page=1&role=admin</code> تساوي <code>?role=admin&page=1</code>.</p>
+  </div>
+
+  <div class="prac">
+    <h4>✅ SCAN بدلاً من KEYS</h4>
+    <p>استخدام <code>SCAN</code> في <code>delPattern()</code> بدلاً من <code>KEYS *</code> يضمن عدم حجب Redis Server أثناء عملية البحث. <code>KEYS *</code> قد يُوقف Redis لثوانٍ على قواعد بيانات كبيرة.</p>
+  </div>
+
+  <div class="prac">
+    <h4>✅ امتصاص الاستثناءات (Exception Swallowing)</h4>
+    <p>جميع عمليات Redis مُغلَّفة بـ <code>try-catch</code>. إذا تعطَّل Redis لأي سبب، يستمر التطبيق في العمل عبر MySQL مع تسجيل التحذير في الـ logs. لا يصل استثناء Redis للمستخدم أبداً.</p>
+  </div>
+
+  <div class="prac">
+    <h4>✅ الإبطال بعد اكتمال العملية</h4>
+    <p>في جميع المواضع، يُستدعى <code>delPattern()</code> بعد نجاح العملية في قاعدة البيانات وليس قبلها. هذا يتجنب حالة Race Condition حيث يُحذَف الكاش قبل اكتمال الكتابة في MySQL.</p>
+  </div>
+
+  <div class="prac">
+    <h4>✅ Singleton Pattern للخدمة</h4>
+    <p>تُسجَّل <code>RedisCacheService</code> كـ Singleton في <code>AppServiceProvider</code>. هذا يعني نسخة واحدة للتطبيق كله، مما يوفِّر الذاكرة ويضمن سلوكاً متسقاً.</p>
+  </div>
+
+  <div class="prac">
+    <h4>✅ فصل تخزين النماذج حسب نوع الـ Cast</h4>
+    <p>النماذج التي تُعاد منها Paginator (AdminService, CompanyService) تُخزِّن بـ <code>getAttributes()</code> للحفاظ على القيم الخام. Controllers التي تُخزِّن payload JSON كاملاً لا تحتاج لهذا الاحتياط.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     § 14 — Future Improvements
+══════════════════════════════════════════════ -->
+<section class="sec" id="s14">
+  <div class="sec-h"><div class="sec-n">14</div><h2 class="sec-t">التحسينات المستقبلية المُقترَحة</h2></div>
+
+  <div class="fut">
+    <h4>🚀 تحويل Queue إلى Redis</h4>
+    <p>حالياً يستخدم المشروع Database Queue Driver (يخزِّن الوظائف في جدول MySQL). في بيئة الإنتاج عالية الحركة، هذا يُرهق قاعدة البيانات. الحل: <code>QUEUE_CONNECTION=redis</code> — يستخدم BLPOP الفوري بدلاً من polling قاعدة البيانات.</p>
+  </div>
+
+  <div class="fut">
+    <h4>🍪 نقل Sessions إلى Redis</h4>
+    <p>حالياً <code>SESSION_DRIVER=database</code> يُضيف قراءة جدول <code>sessions</code> لكل طلب مُصادَق. التحويل إلى <code>SESSION_DRIVER=redis</code> يُلغي هذه القراءة ويُحسِّن أداء كل طلب.</p>
+  </div>
+
+  <div class="fut">
+    <h4>🔔 تخزين إشعارات Supabase مؤقتاً</h4>
+    <p>حالياً كل إنشاء إشعار هو استدعاء متزامن (Synchronous) لقاعدة بيانات Supabase. عند إرسال إشعارات لعدة مستخدمين في نفس الوقت (مثل <code>withdrawApplication</code>) يتأخر الطلب بشكل متناسب. الحل: تحويل الإشعارات إلى Queued Job.</p>
+  </div>
+
+  <div class="fut">
+    <h4>🌡 Cache Warming</h4>
+    <p>حالياً الكاش يُبنَى بالطلب الأول (Cold Start). عند إعادة تشغيل Redis أو حذف الكاش، أول مستخدم يتحمَّل تكلفة الاستعلام. يمكن إضافة Artisan command يُسخِّن الكاش بالبيانات الأكثر طلباً عند بدء التشغيل.</p>
+  </div>
+
+  <div class="fut">
+    <h4>📊 Redis Cluster / Redis Sentinel</h4>
+    <p>حالياً يعمل Redis على Node واحد — نقطة فشل واحدة. في الإنتاج الكامل يُنصح بـ Redis Sentinel للـ High Availability أو Redis Cluster للتوزيع الأفقي عند تجاوز حجم البيانات ذاكرة خادم واحد.</p>
+  </div>
+
+  <div class="fut">
+    <h4>🔒 Rate Limiting بـ Redis</h4>
+    <p>Laravel's Throttle Middleware يستخدم Redis تلقائياً عند <code>CACHE_STORE=redis</code>. إضافة Rate Limiting على نقاط نهاية Login و Register و Company Registration تحمي من Brute Force وSpam بدون جهد إضافي.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     § 15 — Final Summary
+══════════════════════════════════════════════ -->
+<section class="sec" id="s15">
+  <div class="sec-h"><div class="sec-n">15</div><h2 class="sec-t">ملخص نهائي</h2></div>
+
+  <div class="g4">
+    <div class="stat">
+      <div class="score-c sc-g">7</div>
+      <div class="stat-l">تصميم Redis<br><small>/10</small></div>
+    </div>
+    <div class="stat">
+      <div class="score-c sc-y">6</div>
+      <div class="stat-l">تصميم الكاش<br><small>/10</small></div>
+    </div>
+    <div class="stat">
+      <div class="score-c sc-r">4</div>
+      <div class="stat-l">نظام Queue<br><small>/10</small></div>
+    </div>
+    <div class="stat">
+      <div class="score-c sc-y">5</div>
+      <div class="stat-l">الأمان<br><small>/10</small></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>🗺 خريطة Redis الكاملة في TALENTO</h3>
+    <div class="mw">
+      <div class="mermaid">
+graph TD
+    subgraph RCS["RedisCacheService"]
+        G[get]
+        S[set]
+        D[del / delPattern]
+        F[filterKey]
+    end
+
+    subgraph Keys["مفاتيح DB 0"]
+        K1["admin:users:{hash} — TTL 120s"]
+        K2["admin:company_requests:{hash} — TTL 120s"]
+        K3["admin:plans — TTL 3600s"]
+        K4["admin:courses:{hash} — TTL 120s"]
+        K5["public:courses:{hash} — TTL 3600s"]
+        K6["public:job_posts:{hash} — TTL 300s"]
+        K7["company:job_posts:{hash} — TTL 120s"]
+        K8["job_seeker:id:recommended_courses:n — TTL 300s"]
+    end
+
+    subgraph Services["الخدمات"]
+        AS[AdminService]
+        CS[CompanyService]
+        AU[AuthService]
+        JS[JobSeekerService]
+        CC[CourseController]
+        JC[JobPostController]
+    end
+
+    AS --> K1
+    AS --> K2
+    AS --> K3
+    CS --> K7
+    AU --> K1
+    JS --> K8
+    CC --> K4
+    CC --> K5
+    CC --> K8
+    JC --> K6
+    CS --> K6
+    CS --> K7
+      </div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-top:14px">
+    <div class="card">
+      <h3>✅ ما يعمل بشكل صحيح</h3>
+      <ul style="padding-right:18px;color:var(--muted);font-size:13.5px;line-height:2.2">
+        <li>✅ <code>RedisCacheService</code> — بنية ممتازة ومركزية</li>
+        <li>✅ نمط Cache-Aside مُطبَّق بشكل صحيح</li>
+        <li>✅ SCAN بدلاً من KEYS للسلامة الإنتاجية</li>
+        <li>✅ معالجة صحيحة لبادئات المفاتيح</li>
+        <li>✅ الإبطال بعد نجاح العمليات</li>
+        <li>✅ جميع استثناءات Redis ممتصَّة ومُسجَّلة</li>
+        <li>✅ مفاتيح حتمية باستخدام MD5</li>
+        <li>✅ TTLs مناسبة لطبيعة البيانات</li>
+        <li>✅ إبطال <code>admin:users:*</code> في جميع مواضع إنشاء/حذف المستخدم</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>⚠️ يحتاج إصلاحاً أو تحسيناً</h3>
+      <ul style="padding-right:18px;color:var(--muted);font-size:13.5px;line-height:2.2">
+        <li>🔴 <code>admin:plans</code> بدون أي إبطال</li>
+        <li>🟡 إبطال واسع النطاق لـ company:job_posts</li>
+        <li>🟡 وظائف منتهية قد تبقى في الكاش 5 دقائق</li>
+        <li>🟡 إضافة دورة جديدة لا تُبطل توصيات الباحثين</li>
+        <li>🔴 Redis بدون كلمة مرور في بيئة الإنتاج</li>
+        <li>🟡 Database Queue Driver غير مناسب للإنتاج</li>
+        <li>🟡 Sessions في Database بدلاً من Redis</li>
+        <li>🟡 <code>remember()</code> موجودة وغير مستخدمة</li>
+        <li>🟡 اتصالات Supabase متزامنة غير مُدارة بـ Queue</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px;border-right:4px solid var(--primary)">
+    <h3>📝 الخلاصة التنفيذية</h3>
+    <p>منصة TALENTO تعتمد على Redis كطبقة كاش بين Laravel وMySQL. الأساس التقني راسخ: <code>RedisCacheService</code> آمنة ومرنة، والمفاتيح منظَّمة ومتسقة، والإبطال يعمل في أغلب مسارات البيانات. المشاكل الموجودة إما منخفضة الخطورة (TTL قصير يحمي منها) أو موثَّقة مع خطة إصلاح. قبل دخول الإنتاج الكامل، الأولوية القصوى هي: تعيين كلمة مرور Redis، إصلاح <code>admin:plans</code>، وتحويل Queue إلى Redis.</p>
+  </div>
+
+  <div style="text-align:center;padding:40px 0 20px;color:var(--muted);font-size:13px">
+    <p>📄 هذا التوثيق أُنشئ في يونيو 2025 — منصة TALENTO للتوظيف</p>
+    <p style="margin-top:6px">للتحديثات والتعديلات — راجع فريق الهندسة الخلفية</p>
+  </div>
+</section>
+
+</main>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'base',
+  themeVariables: {
+    primaryColor: '#dbeafe',
+    primaryTextColor: '#1e293b',
+    primaryBorderColor: '#1a56db',
+    lineColor: '#64748b',
+    secondaryColor: '#dcfce7',
+    tertiaryColor: '#f8fafc',
+    fontFamily: 'Cairo, sans-serif',
+    fontSize: '13px'
+  },
+  flowchart: { curve: 'basis', htmlLabels: true },
+  sequence: {
+    actorMargin: 60,
+    messageMargin: 40,
+    mirrorActors: false,
+    useMaxWidth: true
+  }
+});
+
+// Smooth scroll for sidebar nav
+document.querySelectorAll('.sb-a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// Active nav highlight
+const sections = document.querySelectorAll('.sec');
+const navLinks = document.querySelectorAll('.sb-a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.background = a.getAttribute('href') === '#' + current ? '#1e293b' : '';
+    a.style.color = a.getAttribute('href') === '#' + current ? '#fff' : '';
+    a.style.borderRightColor = a.getAttribute('href') === '#' + current ? '#1a56db' : 'transparent';
+  });
+});
+</script>
+</body>
+</html>

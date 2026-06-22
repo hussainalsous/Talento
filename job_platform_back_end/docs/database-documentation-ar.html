@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>توثيق قاعدة البيانات — منصة TALENTO للتوظيف</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Cairo', 'Tajawal', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            50:'#eef4ff',100:'#d9e6ff',200:'#bcd2ff',300:'#8eb4ff',400:'#598bff',
+                            500:'#3563ff',600:'#1f43f5',700:'#1733e1',800:'#192cb6',900:'#1a2c8f',950:'#151b54',
+                        },
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Cairo', 'Tajawal', sans-serif; }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        section { scroll-margin-top: 1rem; }
+        code, .mono { font-family: 'Consolas', 'Courier New', monospace; direction: ltr; unicode-bidi: embed; display: inline-block; }
+        .nav-link.active { background-color: #1f43f5; color: #fff; }
+        /* table data type chip */
+        .type-chip { font-family: 'Consolas', monospace; font-size: 0.7rem; direction: ltr; padding: 1px 6px; border-radius: 4px; background:#eef2ff; color:#3730a3; white-space: nowrap; }
+        table.cols th { position: sticky; top: 0; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased">
+
+<div class="flex min-h-screen">
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="hidden lg:block w-80 shrink-0 bg-slate-900 text-slate-200 sticky top-0 h-screen overflow-y-auto">
+        <div class="p-6 border-b border-slate-700">
+            <h1 class="text-xl font-extrabold text-white flex items-center gap-2">
+                <span class="inline-block w-3 h-3 rounded-full bg-brand-500"></span>
+                توثيق قاعدة البيانات
+            </h1>
+            <p class="text-xs text-slate-400 mt-1">منصة TALENTO للتوظيف — MySQL Schema</p>
+        </div>
+        <nav class="p-4 space-y-6 text-sm">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 px-2">عام</p>
+                <ul class="space-y-1">
+                    <li><a href="#overview" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">نظرة عامة</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 px-2">المستخدمون والأدوار</p>
+                <ul class="space-y-1">
+                    <li><a href="#t-users" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">users</a></li>
+                    <li><a href="#t-admins" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">admins</a></li>
+                    <li><a href="#t-companies" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">companies</a></li>
+                    <li><a href="#t-company_members" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">company_members</a></li>
+                    <li><a href="#t-company_registration_requests" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">company_registration_requests</a></li>
+                    <li><a href="#t-job_seekers" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">job_seekers</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 px-2">الوظائف والطلبات</p>
+                <ul class="space-y-1">
+                    <li><a href="#t-job_titles" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">job_titles</a></li>
+                    <li><a href="#t-job_posts" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">job_posts</a></li>
+                    <li><a href="#t-job_applications" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">job_applications</a></li>
+                    <li><a href="#t-saved_jobs" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">saved_jobs</a></li>
+                    <li><a href="#t-invitations" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">invitations</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 px-2">السير الذاتية والمهارات</p>
+                <ul class="space-y-1">
+                    <li><a href="#t-cvs" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">cvs</a></li>
+                    <li><a href="#t-skills" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">skills</a></li>
+                    <li><a href="#t-courses" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">courses</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 px-2">جداول العلاقات (Pivot)</p>
+                <ul class="space-y-1">
+                    <li><a href="#t-job_seeker_skill" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">job_seeker_skill</a></li>
+                    <li><a href="#t-job_post_skill" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">job_post_skill</a></li>
+                    <li><a href="#t-job_skill" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">job_skill</a></li>
+                    <li><a href="#t-course_skill" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">course_skill</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 px-2">الاشتراكات</p>
+                <ul class="space-y-1">
+                    <li><a href="#t-plans" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">plans</a></li>
+                    <li><a href="#t-subscriptions" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">subscriptions</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 px-2">النظام والبنية التحتية</p>
+                <ul class="space-y-1">
+                    <li><a href="#t-email_logs" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">email_logs</a></li>
+                    <li><a href="#t-personal_access_tokens" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">personal_access_tokens</a></li>
+                    <li><a href="#t-password_reset_tokens" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">password_reset_tokens</a></li>
+                    <li><a href="#t-sessions" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">sessions</a></li>
+                    <li><a href="#t-cache" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">cache / cache_locks</a></li>
+                    <li><a href="#t-jobs" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition">jobs / job_batches / failed_jobs</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 px-2">المخطط</p>
+                <ul class="space-y-1">
+                    <li><a href="#erd" class="nav-link block px-3 py-2 rounded-lg hover:bg-slate-800 transition font-bold text-brand-300">مخطط العلاقات (ERD)</a></li>
+                </ul>
+            </div>
+        </nav>
+        <div class="p-4 text-xs text-slate-500 border-t border-slate-700">
+            مبني من 29 ملف migration بالترتيب الزمني.
+        </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="flex-1 min-w-0">
+        <header class="lg:hidden bg-slate-900 text-white p-4 sticky top-0 z-20">
+            <h1 class="text-lg font-bold">توثيق قاعدة البيانات — TALENTO</h1>
+        </header>
+
+        <div class="max-w-6xl mx-auto px-5 sm:px-8 py-10 space-y-16">
+
+            <!-- ===================== OVERVIEW ===================== -->
+            <section id="overview">
+                <h1 class="text-4xl font-extrabold text-slate-900 mb-3">توثيق مخطط قاعدة البيانات — TALENTO</h1>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    هذا المستند يصف <strong>الحالة النهائية</strong> لمخطط قاعدة بيانات منصة TALENTO للتوظيف،
+                    مُعاد بناؤها من جميع ملفات الـ migrations بالترتيب الزمني — بما في ذلك الأعمدة التي أُضيفت أو عُدّلت
+                    أو حُذفت في migrations لاحقة (وليس فقط أوامر <code class="text-xs">create</code> الأصلية).
+                    لكل جدول: الموديل المرتبط، الغرض، جدول كامل بالأعمدة وأنواعها وقيودها، المفاتيح الخارجية، والفهارس.
+                </p>
+
+                <div class="grid sm:grid-cols-4 gap-4 mt-8">
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                        <div class="text-3xl font-extrabold text-brand-600">29</div>
+                        <div class="text-sm text-slate-500 mt-1">جدول في المخطط</div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                        <div class="text-3xl font-extrabold text-brand-600">21</div>
+                        <div class="text-sm text-slate-500 mt-1">جدول تطبيقي (Domain)</div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                        <div class="text-3xl font-extrabold text-brand-600">4</div>
+                        <div class="text-sm text-slate-500 mt-1">جداول علاقات (Pivot)</div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                        <div class="text-3xl font-extrabold text-brand-600">2</div>
+                        <div class="text-sm text-slate-500 mt-1">جداول بحذف ناعم (cvs، job_posts)</div>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-amber-50 border-r-4 border-amber-400 rounded-lg p-5">
+                    <h3 class="font-bold text-amber-900 mb-2">ملاحظات حول إعادة بناء المخطط (Migrations لاحقة)</h3>
+                    <ul class="list-disc pr-5 space-y-1 text-sm text-amber-900/90">
+                        <li><strong>courses</strong>: أُضيفت لاحقاً الأعمدة <code class="text-xs">category, language, price, duration, teacher</code> ثم <code class="text-xs">course_image_url, level, learning_material</code>.</li>
+                        <li><strong>job_seekers</strong>: أُضيف لاحقاً <code class="text-xs">professional_title</code> و <code class="text-xs">open_to_work</code>.</li>
+                        <li><strong>job_posts</strong>: أُعيدت هيكلته — أُضيف <code class="text-xs">experience_years, level, job_type</code>، وحُوِّل <code class="text-xs">responsibilities</code> و <code class="text-xs">requirements</code> من <code class="text-xs">TEXT</code> إلى <code class="text-xs">JSON</code>.</li>
+                        <li><strong>company_registration_requests</strong>: أُضيف <code class="text-xs">email_verified_at</code>.</li>
+                        <li><strong>email_logs</strong>: عُدِّل <code class="text-xs">sender_id</code> ليصبح nullable (إصلاح خطأ تدقيق B3).</li>
+                    </ul>
+                </div>
+
+                <div class="mt-6 bg-blue-50 border-r-4 border-blue-400 rounded-lg p-5">
+                    <h3 class="font-bold text-blue-900 mb-2">بيانات أولية (Seeders)</h3>
+                    <ul class="list-disc pr-5 space-y-1 text-sm text-blue-900/90">
+                        <li><code class="text-xs">PlanSeeder</code>: 4 خطط افتراضية — Free (3 وظائف/2 أعضاء)، Starter (49$)، Professional (149$)، Enterprise (399$، غير محدود).</li>
+                        <li><code class="text-xs">AdminSeeder</code>: أدمن خارق بصلاحية <code class="text-xs">['*']</code> وأدمن عادي بصلاحيات محدّدة.</li>
+                        <li><code class="text-xs">SkillSeeder, JobTitleSeeder, CourseSeeder</code>: بيانات مرجعية للمهارات والمسمّيات والدورات.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ===================== users ===================== -->
+            <section id="t-users" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">users</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: User</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Timestamps</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_users_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">الجدول المركزي لحسابات المصادقة لجميع الأدوار (admin، company_owner، company_member، job_seeker) عبر العمود <code class="text-xs">role</code>. يحتوي ملف الـ migration نفسه أيضاً على جدولي <code class="text-xs">password_reset_tokens</code> و <code class="text-xs">sessions</code> (موثّقان في قسم النظام).</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK (auto-increment)</td></tr>
+                            <tr><td class="px-4 py-2 mono">email</td><td class="px-4 py-2"><span class="type-chip">string</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2"><span class="text-rose-600 font-semibold">Unique</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">phone</td><td class="px-4 py-2"><span class="type-chip">string(30)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">password</td><td class="px-4 py-2"><span class="type-chip">string</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">مُجزّأة (hashed)</td></tr>
+                            <tr><td class="px-4 py-2 mono">role</td><td class="px-4 py-2"><span class="type-chip">enum</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">admin, company_owner, company_member, job_seeker · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">is_active</td><td class="px-4 py-2"><span class="type-chip">boolean</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">true</td><td class="px-4 py-2"><span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">email_verified_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">last_login_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">remember_token</td><td class="px-4 py-2"><span class="type-chip">string(100)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">rememberToken()</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">الفهارس</h4>
+                        <ul class="text-xs text-slate-700 space-y-1"><li>Unique: <code class="text-xs">email</code></li><li>Index: <code class="text-xs">role</code>، <code class="text-xs">is_active</code></li></ul>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح الخارجية</h4>
+                        <p class="text-xs text-slate-500">لا يوجد — هو الجدول الأب لمعظم الجداول.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== admins ===================== -->
+            <section id="t-admins" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">admins</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: Admin</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Timestamps</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_admins_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">الملف الإداري المرتبط بحساب مستخدم بدور admin. يخزّن الصلاحيات كمصفوفة JSON من السلاسل النصية (مثل <code class="text-xs">["manage_users","manage_cvs"]</code> أو <code class="text-xs">["*"]</code>).</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">user_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2"><span class="text-rose-600 font-semibold">Unique</span> · FK → users (cascade)</td></tr>
+                            <tr><td class="px-4 py-2 mono">first_name</td><td class="px-4 py-2"><span class="type-chip">string(100)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">last_name</td><td class="px-4 py-2"><span class="type-chip">string(100)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">permissions</td><td class="px-4 py-2"><span class="type-chip">json</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">مصفوفة صلاحيات</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح الخارجية</h4>
+                        <ul class="text-xs text-slate-700 space-y-1"><li><code class="text-xs">user_id</code> → <code class="text-xs">users.id</code> · <span class="text-rose-600">onDelete: cascade</span></li></ul>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">الفهارس</h4>
+                        <ul class="text-xs text-slate-700 space-y-1"><li>Unique: <code class="text-xs">user_id</code> (أدمن واحد لكل مستخدم)</li></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== companies ===================== -->
+            <section id="t-companies" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">companies</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: Company</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Timestamps</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_companies_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">يمثّل الشركات المُسجّلة. يُضبط المالك (<code class="text-xs">owner_user_id</code>) بعد اعتماد الأدمن للطلب. لاحظ أن <code class="text-xs">approval_status</code> قيمته الافتراضية <code class="text-xs">approved</code>.</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">owner_user_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">FK → users (nullOnDelete)</td></tr>
+                            <tr><td class="px-4 py-2 mono">name</td><td class="px-4 py-2"><span class="type-chip">string(200)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">registration_number</td><td class="px-4 py-2"><span class="type-chip">string(100)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2"><span class="text-rose-600 font-semibold">Unique</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">website</td><td class="px-4 py-2"><span class="type-chip">string(255)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">address</td><td class="px-4 py-2"><span class="type-chip">string(500)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">country</td><td class="px-4 py-2"><span class="type-chip">string(100)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">description</td><td class="px-4 py-2"><span class="type-chip">text</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">logo_path</td><td class="px-4 py-2"><span class="type-chip">string(500)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">approval_status</td><td class="px-4 py-2"><span class="type-chip">enum</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">approved</td><td class="px-4 py-2">pending, approved, rejected · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">approved_by</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">FK → admins (nullOnDelete)</td></tr>
+                            <tr><td class="px-4 py-2 mono">approved_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح الخارجية</h4>
+                        <ul class="text-xs text-slate-700 space-y-1">
+                            <li><code class="text-xs">owner_user_id</code> → <code class="text-xs">users.id</code> · <span class="text-amber-600">nullOnDelete</span></li>
+                            <li><code class="text-xs">approved_by</code> → <code class="text-xs">admins.id</code> · <span class="text-amber-600">nullOnDelete</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">الفهارس</h4>
+                        <ul class="text-xs text-slate-700 space-y-1"><li>Unique: <code class="text-xs">registration_number</code></li><li>Index: <code class="text-xs">approval_status</code>، <code class="text-xs">country</code></li></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== company_members ===================== -->
+            <section id="t-company_members" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">company_members</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: CompanyMember</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Timestamps</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_company_members_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">يربط المستخدمين بالشركات كأعضاء، مع دور داخل الشركة (مختلف عن دور النظام). كل مستخدم يمكن أن يكون عضواً في شركة واحدة فقط (قيد Unique على <code class="text-xs">user_id</code>).</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">user_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2"><span class="text-rose-600 font-semibold">Unique</span> · FK → users (cascade)</td></tr>
+                            <tr><td class="px-4 py-2 mono">company_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → companies (cascade) · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">first_name</td><td class="px-4 py-2"><span class="type-chip">string(100)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">last_name</td><td class="px-4 py-2"><span class="type-chip">string(100)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">role_in_company</td><td class="px-4 py-2"><span class="type-chip">string(100)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">member</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">invited_by</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">FK → users (nullOnDelete)</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح الخارجية</h4>
+                        <ul class="text-xs text-slate-700 space-y-1">
+                            <li><code class="text-xs">user_id</code> → <code class="text-xs">users.id</code> · <span class="text-rose-600">cascade</span></li>
+                            <li><code class="text-xs">company_id</code> → <code class="text-xs">companies.id</code> · <span class="text-rose-600">cascade</span></li>
+                            <li><code class="text-xs">invited_by</code> → <code class="text-xs">users.id</code> · <span class="text-amber-600">nullOnDelete</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">الفهارس</h4>
+                        <ul class="text-xs text-slate-700 space-y-1"><li>Unique: <code class="text-xs">user_id</code></li><li>Index: <code class="text-xs">company_id</code></li></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== company_registration_requests ===================== -->
+            <section id="t-company_registration_requests" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mono">company_registration_requests</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: CompanyRegistrationRequest</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_company_registration_requests_table.php + add_email_verified_at_...</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">يخزّن طلبات تسجيل الشركات قبل اعتمادها (لا حساب مستخدم/شركة قبل الموافقة). يحتفظ بكلمة مرور مُجزّأة مؤقتاً ويُربط بالشركة بعد الاعتماد. العمود <code class="text-xs">email_verified_at</code> أُضيف في migration لاحقة.</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">company_name</td><td class="px-4 py-2"><span class="type-chip">string(200)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">registration_number</td><td class="px-4 py-2"><span class="type-chip">string(100)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2"><span class="text-rose-600 font-semibold">Unique</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">website</td><td class="px-4 py-2"><span class="type-chip">string(255)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">address</td><td class="px-4 py-2"><span class="type-chip">string(500)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">country</td><td class="px-4 py-2"><span class="type-chip">string(100)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">description</td><td class="px-4 py-2"><span class="type-chip">text</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">logo_path</td><td class="px-4 py-2"><span class="type-chip">string(500)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">requester_first_name</td><td class="px-4 py-2"><span class="type-chip">string(100)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">requester_last_name</td><td class="px-4 py-2"><span class="type-chip">string(100)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">requester_email</td><td class="px-4 py-2"><span class="type-chip">string(255)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2"><span class="text-rose-600 font-semibold">Unique</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">requester_phone</td><td class="px-4 py-2"><span class="type-chip">string(30)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">password</td><td class="px-4 py-2"><span class="type-chip">string</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">مُجزّأة مؤقتاً</td></tr>
+                            <tr><td class="px-4 py-2 mono">email_verified_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-emerald-600">أُضيف لاحقاً</span> (after password)</td></tr>
+                            <tr><td class="px-4 py-2 mono">status</td><td class="px-4 py-2"><span class="type-chip">enum</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">pending</td><td class="px-4 py-2">pending, approved, rejected · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">reviewed_by</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">FK → admins (nullOnDelete)</td></tr>
+                            <tr><td class="px-4 py-2 mono">reviewed_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">rejection_reason</td><td class="px-4 py-2"><span class="type-chip">text</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">company_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">FK → companies (nullOnDelete)</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح الخارجية</h4>
+                        <ul class="text-xs text-slate-700 space-y-1">
+                            <li><code class="text-xs">reviewed_by</code> → <code class="text-xs">admins.id</code> · <span class="text-amber-600">nullOnDelete</span></li>
+                            <li><code class="text-xs">company_id</code> → <code class="text-xs">companies.id</code> · <span class="text-amber-600">nullOnDelete</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">الفهارس</h4>
+                        <ul class="text-xs text-slate-700 space-y-1"><li>Unique: <code class="text-xs">registration_number</code>، <code class="text-xs">requester_email</code></li><li>Index: <code class="text-xs">status</code></li></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== job_seekers ===================== -->
+            <section id="t-job_seekers" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">job_seekers</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: JobSeeker</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Timestamps</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_job_seekers_table.php + add_fields_to_job_seekers_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">ملف باحث العمل المرتبط بحساب مستخدم. يحمل البيانات المهنية وإعدادات الخصوصية (مُطبَّعة كأعمدة منفصلة لتسهيل الاستعلام). العمودان <code class="text-xs">professional_title</code> و <code class="text-xs">open_to_work</code> أُضيفا في migration لاحقة.</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">user_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2"><span class="text-rose-600 font-semibold">Unique</span> · FK → users (cascade)</td></tr>
+                            <tr><td class="px-4 py-2 mono">first_name</td><td class="px-4 py-2"><span class="type-chip">string(100)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">last_name</td><td class="px-4 py-2"><span class="type-chip">string(100)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">professional_title</td><td class="px-4 py-2"><span class="type-chip">string</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-emerald-600">أُضيف لاحقاً</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">open_to_work</td><td class="px-4 py-2"><span class="type-chip">boolean</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">true</td><td class="px-4 py-2"><span class="text-emerald-600">أُضيف لاحقاً</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">current_job</td><td class="px-4 py-2"><span class="type-chip">string(200)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">location</td><td class="px-4 py-2"><span class="type-chip">string(200)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">preferred_job_type</td><td class="px-4 py-2"><span class="type-chip">enum</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">full_time…freelance · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">desired_salary</td><td class="px-4 py-2"><span class="type-chip">decimal(10,2) unsigned</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">profile_visibility</td><td class="px-4 py-2"><span class="type-chip">enum</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">public</td><td class="px-4 py-2">public, limited, private · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">cv_visibility</td><td class="px-4 py-2"><span class="type-chip">enum</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">public</td><td class="px-4 py-2">public, upon_request, private · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">last_updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح الخارجية</h4>
+                        <ul class="text-xs text-slate-700 space-y-1"><li><code class="text-xs">user_id</code> → <code class="text-xs">users.id</code> · <span class="text-rose-600">cascade</span></li></ul>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">الفهارس</h4>
+                        <ul class="text-xs text-slate-700 space-y-1"><li>Unique: <code class="text-xs">user_id</code></li><li>Index: <code class="text-xs">location، preferred_job_type، profile_visibility، cv_visibility</code></li></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== job_titles ===================== -->
+            <section id="t-job_titles" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">job_titles</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: JobTitle</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Timestamps</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_job_titles_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">قائمة مرجعية بالمسمّيات الوظيفية المعيارية. سُمّي <code class="text-xs">job_titles</code> لتجنّب التعارض مع جدول الطوابير <code class="text-xs">jobs</code> المدمج في Laravel.</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">title</td><td class="px-4 py-2"><span class="type-chip">string(200)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2"><span class="text-rose-600 font-semibold">Unique</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                    <h4 class="font-bold text-slate-800 mb-2 text-sm">العلاقات</h4>
+                    <p class="text-xs text-slate-700">مرتبط بـ <code class="text-xs">skills</code> عبر الجدول الوسيط <code class="text-xs">job_skill</code>، وبـ <code class="text-xs">job_posts</code> عبر <code class="text-xs">job_posts.job_title_id</code>.</p>
+                </div>
+            </section>
+
+            <!-- ===================== job_posts ===================== -->
+            <section id="t-job_posts" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">job_posts</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: JobPost</span>
+                    <span class="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full">SoftDeletes</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Timestamps</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_job_posts_table.php + restructure_job_posts_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">
+                        إعلانات الوظائف التي تنشرها الشركات. خضع لإعادة هيكلة: أُضيف <code class="text-xs">experience_years, level, job_type</code>،
+                        وحُوِّل العمودان <code class="text-xs">responsibilities</code> و <code class="text-xs">requirements</code> من <code class="text-xs">TEXT</code> إلى
+                        <code class="text-xs">JSON</code> (مع ترحيل البيانات الموجودة من نص إلى مصفوفة). يدعم الحذف الناعم.
+                    </p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">company_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → companies (cascade) · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">created_by</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → users · <span class="text-rose-600">restrictOnDelete</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">job_title_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">FK → job_titles (nullOnDelete)</td></tr>
+                            <tr><td class="px-4 py-2 mono">title</td><td class="px-4 py-2"><span class="type-chip">string(200)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">description</td><td class="px-4 py-2"><span class="type-chip">text</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">location</td><td class="px-4 py-2"><span class="type-chip">string(200)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">employment_type</td><td class="px-4 py-2"><span class="type-chip">enum</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">full_time…freelance · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">salary_min</td><td class="px-4 py-2"><span class="type-chip">decimal(10,2) unsigned</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">salary_max</td><td class="px-4 py-2"><span class="type-chip">decimal(10,2) unsigned</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">experience_years</td><td class="px-4 py-2"><span class="type-chip">integer</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-emerald-600">أُضيف (restructure)</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">level</td><td class="px-4 py-2"><span class="type-chip">string(50)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-emerald-600">أُضيف (restructure)</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">job_type</td><td class="px-4 py-2"><span class="type-chip">string(50)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-emerald-600">أُضيف (restructure)</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">responsibilities</td><td class="px-4 py-2"><span class="type-chip">json</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-orange-600">حُوِّل من text → json</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">requirements</td><td class="px-4 py-2"><span class="type-chip">json</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-orange-600">حُوِّل من text → json</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">status</td><td class="px-4 py-2"><span class="type-chip">enum</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">draft</td><td class="px-4 py-2">draft, published, closed, archived · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">expires_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">deleted_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">softDeletes()</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح الخارجية</h4>
+                        <ul class="text-xs text-slate-700 space-y-1">
+                            <li><code class="text-xs">company_id</code> → <code class="text-xs">companies.id</code> · <span class="text-rose-600">cascade</span></li>
+                            <li><code class="text-xs">created_by</code> → <code class="text-xs">users.id</code> · <span class="text-rose-600">restrictOnDelete</span></li>
+                            <li><code class="text-xs">job_title_id</code> → <code class="text-xs">job_titles.id</code> · <span class="text-amber-600">nullOnDelete</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">الفهارس</h4>
+                        <ul class="text-xs text-slate-700 space-y-1"><li>Index: <code class="text-xs">company_id، status، employment_type، location، expires_at</code></li></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== job_applications ===================== -->
+            <section id="t-job_applications" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">job_applications</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: JobApplication</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Timestamps</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_job_applications_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">طلبات التوظيف المقدّمة من باحثي العمل على الإعلانات. قيد Unique مركّب يضمن أن باحث العمل يتقدّم مرة واحدة فقط لكل إعلان.</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">job_post_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → job_posts (cascade) · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">job_seeker_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → job_seekers (cascade) · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">cv_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">FK → cvs (nullOnDelete)</td></tr>
+                            <tr><td class="px-4 py-2 mono">cover_letter</td><td class="px-4 py-2"><span class="type-chip">text</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">status</td><td class="px-4 py-2"><span class="type-chip">enum</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">submitted</td><td class="px-4 py-2">submitted, under_review, shortlisted, rejected, accepted, withdrawn · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">score</td><td class="px-4 py-2"><span class="type-chip">unsignedTinyInteger</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">درجة المطابقة 0-100</td></tr>
+                            <tr><td class="px-4 py-2 mono">applied_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">CURRENT</td><td class="px-4 py-2">useCurrent()</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح الخارجية</h4>
+                        <ul class="text-xs text-slate-700 space-y-1">
+                            <li><code class="text-xs">job_post_id</code> → <code class="text-xs">job_posts.id</code> · <span class="text-rose-600">cascade</span></li>
+                            <li><code class="text-xs">job_seeker_id</code> → <code class="text-xs">job_seekers.id</code> · <span class="text-rose-600">cascade</span></li>
+                            <li><code class="text-xs">cv_id</code> → <code class="text-xs">cvs.id</code> · <span class="text-amber-600">nullOnDelete</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">الفهارس والقيود</h4>
+                        <ul class="text-xs text-slate-700 space-y-1"><li><span class="text-rose-600 font-semibold">Unique مركّب:</span> <code class="text-xs">(job_post_id, job_seeker_id)</code></li><li>Index: <code class="text-xs">status، job_post_id، job_seeker_id</code></li></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== saved_jobs ===================== -->
+            <section id="t-saved_jobs" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">saved_jobs</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: SavedJob</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Timestamps</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_saved_jobs_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">يربط باحثي العمل بالإعلانات المحفوظة. قيد Unique مركّب يمنع حفظ نفس الإعلان مرتين.</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">job_seeker_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → job_seekers (cascade)</td></tr>
+                            <tr><td class="px-4 py-2 mono">job_post_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → job_posts (cascade)</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح الخارجية</h4>
+                        <ul class="text-xs text-slate-700 space-y-1">
+                            <li><code class="text-xs">job_seeker_id</code> → <code class="text-xs">job_seekers.id</code> · <span class="text-rose-600">cascade</span></li>
+                            <li><code class="text-xs">job_post_id</code> → <code class="text-xs">job_posts.id</code> · <span class="text-rose-600">cascade</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">القيود</h4>
+                        <ul class="text-xs text-slate-700 space-y-1"><li><span class="text-rose-600 font-semibold">Unique مركّب:</span> <code class="text-xs">(job_seeker_id, job_post_id)</code></li></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== invitations ===================== -->
+            <section id="t-invitations" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">invitations</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: Invitation</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Timestamps</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_invitations_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">دعوات الشركات لباحثي العمل (عامة أو مرتبطة بإعلان، أو كطلب وصول لسيرة ذاتية). يحمل الحالة وتاريخ الإرسال والرد.</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">company_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → companies (cascade) · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">invited_by</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → users · <span class="text-rose-600">restrictOnDelete</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">job_seeker_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → job_seekers (cascade) · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">job_post_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">FK → job_posts (nullOnDelete)</td></tr>
+                            <tr><td class="px-4 py-2 mono">message</td><td class="px-4 py-2"><span class="type-chip">text</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">status</td><td class="px-4 py-2"><span class="type-chip">enum</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">pending</td><td class="px-4 py-2">pending, accepted, declined · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">sent_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">CURRENT</td><td class="px-4 py-2">useCurrent()</td></tr>
+                            <tr><td class="px-4 py-2 mono">responded_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح الخارجية</h4>
+                        <ul class="text-xs text-slate-700 space-y-1">
+                            <li><code class="text-xs">company_id</code> → <code class="text-xs">companies.id</code> · <span class="text-rose-600">cascade</span></li>
+                            <li><code class="text-xs">invited_by</code> → <code class="text-xs">users.id</code> · <span class="text-rose-600">restrictOnDelete</span></li>
+                            <li><code class="text-xs">job_seeker_id</code> → <code class="text-xs">job_seekers.id</code> · <span class="text-rose-600">cascade</span></li>
+                            <li><code class="text-xs">job_post_id</code> → <code class="text-xs">job_posts.id</code> · <span class="text-amber-600">nullOnDelete</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">الفهارس</h4>
+                        <ul class="text-xs text-slate-700 space-y-1"><li>Index: <code class="text-xs">company_id، job_seeker_id، status</code></li></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== cvs ===================== -->
+            <section id="t-cvs" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">cvs</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: CV</span>
+                    <span class="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full">SoftDeletes</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Timestamps</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_cvs_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">السير الذاتية لباحثي العمل، مع مسار الملف والبيانات المُستخرَجة منه (<code class="text-xs">parsed_data</code>) وعلامة الأساسية ومستوى ظهور خاص قد يتجاوز الإعداد الافتراضي لباحث العمل. يدعم الحذف الناعم.</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">job_seeker_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → job_seekers (cascade) · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">title</td><td class="px-4 py-2"><span class="type-chip">string(200)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">file_path</td><td class="px-4 py-2"><span class="type-chip">string(500)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">parsed_data</td><td class="px-4 py-2"><span class="type-chip">json</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">بيانات مُهيكلة من التحليل</td></tr>
+                            <tr><td class="px-4 py-2 mono">is_primary</td><td class="px-4 py-2"><span class="type-chip">boolean</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">false</td><td class="px-4 py-2"><span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">visibility</td><td class="px-4 py-2"><span class="type-chip">enum</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">public</td><td class="px-4 py-2">public, upon_request, private</td></tr>
+                            <tr><td class="px-4 py-2 mono">deleted_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">softDeletes()</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح الخارجية</h4>
+                        <ul class="text-xs text-slate-700 space-y-1"><li><code class="text-xs">job_seeker_id</code> → <code class="text-xs">job_seekers.id</code> · <span class="text-rose-600">cascade</span></li></ul>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">الفهارس</h4>
+                        <ul class="text-xs text-slate-700 space-y-1"><li>Index: <code class="text-xs">job_seeker_id، is_primary</code></li></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== skills ===================== -->
+            <section id="t-skills" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">skills</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: Skill</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Timestamps</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_skills_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">قائمة مرجعية بالمهارات، تُربط بباحثي العمل والإعلانات والمسمّيات الوظيفية والدورات عبر جداول وسيطة متعدّدة. هي محور منطق المطابقة والتوصيات.</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">title</td><td class="px-4 py-2"><span class="type-chip">string(150)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2"><span class="text-rose-600 font-semibold">Unique</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                    <h4 class="font-bold text-slate-800 mb-2 text-sm">العلاقات (عبر جداول Pivot)</h4>
+                    <p class="text-xs text-slate-700"><code class="text-xs">job_seeker_skill</code> ← JobSeeker · <code class="text-xs">job_post_skill</code> ← JobPost · <code class="text-xs">job_skill</code> ← JobTitle · <code class="text-xs">course_skill</code> ← Course.</p>
+                </div>
+            </section>
+
+            <!-- ===================== courses ===================== -->
+            <section id="t-courses" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">courses</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: Course</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Timestamps</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_courses_table.php + add_fields_to_courses_table.php + add_new_fields_to_courses_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">الدورات التدريبية المُوصى بها لسدّ فجوات المهارات. توسّع الجدول عبر migrationين لاحقين أضافا حقول التصنيف واللغة والسعر والمدّة والمدرّب وصورة الدورة والمستوى والمادة التعليمية.</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">title</td><td class="px-4 py-2"><span class="type-chip">string(300)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">category</td><td class="px-4 py-2"><span class="type-chip">string</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2"><span class="text-emerald-600">أُضيف لاحقاً</span> (after title)</td></tr>
+                            <tr><td class="px-4 py-2 mono">language</td><td class="px-4 py-2"><span class="type-chip">string</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">English</td><td class="px-4 py-2"><span class="text-emerald-600">أُضيف لاحقاً</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">price</td><td class="px-4 py-2"><span class="type-chip">decimal(10,2)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-emerald-600">أُضيف لاحقاً</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">provider</td><td class="px-4 py-2"><span class="type-chip">string(200)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">link</td><td class="px-4 py-2"><span class="type-chip">string(500)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">description</td><td class="px-4 py-2"><span class="type-chip">text</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">duration</td><td class="px-4 py-2"><span class="type-chip">string</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-emerald-600">أُضيف لاحقاً</span> (after description)</td></tr>
+                            <tr><td class="px-4 py-2 mono">teacher</td><td class="px-4 py-2"><span class="type-chip">string</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-emerald-600">أُضيف لاحقاً</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">course_image_url</td><td class="px-4 py-2"><span class="type-chip">string(500)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-emerald-600">أُضيف لاحقاً</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">level</td><td class="px-4 py-2"><span class="type-chip">string(50)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-emerald-600">أُضيف لاحقاً</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">learning_material</td><td class="px-4 py-2"><span class="type-chip">json</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2"><span class="text-emerald-600">أُضيف لاحقاً</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">الفهارس</h4>
+                        <ul class="text-xs text-slate-700 space-y-1"><li>Index: <code class="text-xs">provider</code></li></ul>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">العلاقات</h4>
+                        <p class="text-xs text-slate-700">مرتبط بـ <code class="text-xs">skills</code> عبر الجدول الوسيط <code class="text-xs">course_skill</code>.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== job_seeker_skill (PIVOT) ===================== -->
+            <section id="t-job_seeker_skill" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">job_seeker_skill</h2>
+                    <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">Pivot (M:N)</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">بدون موديل مستقل</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_job_seeker_skill_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed"><strong>جدول وسيط (many-to-many)</strong> يربط <code class="text-xs">JobSeeker</code> ↔ <code class="text-xs">Skill</code>، مع حقل إضافي <code class="text-xs">level</code> (مستوى الإتقان) يُتاح عبر <code class="text-xs">withPivot('level')</code> في الموديل.</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">job_seeker_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → job_seekers (cascade)</td></tr>
+                            <tr><td class="px-4 py-2 mono">skill_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → skills (cascade)</td></tr>
+                            <tr><td class="px-4 py-2 mono">level</td><td class="px-4 py-2"><span class="type-chip">enum</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">intermediate</td><td class="px-4 py-2">beginner, intermediate, advanced, expert</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                    <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح والقيود</h4>
+                    <ul class="text-xs text-slate-700 space-y-1">
+                        <li>FK: <code class="text-xs">job_seeker_id</code> → job_seekers · <code class="text-xs">skill_id</code> → skills (كلاهما cascade)</li>
+                        <li><span class="text-rose-600 font-semibold">Unique مركّب:</span> <code class="text-xs">(job_seeker_id, skill_id)</code></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ===================== job_post_skill (PIVOT) ===================== -->
+            <section id="t-job_post_skill" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">job_post_skill</h2>
+                    <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">Pivot (M:N)</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">بدون موديل مستقل</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_job_post_skill_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed"><strong>جدول وسيط (many-to-many)</strong> يربط <code class="text-xs">JobPost</code> ↔ <code class="text-xs">Skill</code>، مع حقل <code class="text-xs">is_required</code> (هل المهارة إلزامية) عبر <code class="text-xs">withPivot('is_required')</code>.</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">job_post_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → job_posts (cascade)</td></tr>
+                            <tr><td class="px-4 py-2 mono">skill_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → skills (cascade)</td></tr>
+                            <tr><td class="px-4 py-2 mono">is_required</td><td class="px-4 py-2"><span class="type-chip">boolean</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">true</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                    <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح والقيود</h4>
+                    <ul class="text-xs text-slate-700 space-y-1">
+                        <li>FK: <code class="text-xs">job_post_id</code> → job_posts · <code class="text-xs">skill_id</code> → skills (كلاهما cascade)</li>
+                        <li><span class="text-rose-600 font-semibold">Unique مركّب:</span> <code class="text-xs">(job_post_id, skill_id)</code></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ===================== job_skill (PIVOT) ===================== -->
+            <section id="t-job_skill" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">job_skill</h2>
+                    <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">Pivot (M:N)</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">بدون موديل مستقل</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_job_skill_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed"><strong>جدول وسيط (many-to-many)</strong> يربط <code class="text-xs">JobTitle</code> ↔ <code class="text-xs">Skill</code> — يحدّد المهارات المقترحة لكل مسمّى وظيفي (لأغراض المطابقة/التوصية).</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">job_title_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → job_titles (cascade)</td></tr>
+                            <tr><td class="px-4 py-2 mono">skill_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → skills (cascade)</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                    <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح والقيود</h4>
+                    <ul class="text-xs text-slate-700 space-y-1">
+                        <li>FK: <code class="text-xs">job_title_id</code> → job_titles · <code class="text-xs">skill_id</code> → skills (كلاهما cascade)</li>
+                        <li><span class="text-rose-600 font-semibold">Unique مركّب:</span> <code class="text-xs">(job_title_id, skill_id)</code></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ===================== course_skill (PIVOT) ===================== -->
+            <section id="t-course_skill" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">course_skill</h2>
+                    <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">Pivot (M:N)</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">بدون موديل مستقل</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_course_skill_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed"><strong>جدول وسيط (many-to-many)</strong> يربط <code class="text-xs">Course</code> ↔ <code class="text-xs">Skill</code> — يحدّد المهارات التي تُكسبها كل دورة (تستخدمه خدمة التوصيات).</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">course_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → courses (cascade)</td></tr>
+                            <tr><td class="px-4 py-2 mono">skill_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → skills (cascade)</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                    <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح والقيود</h4>
+                    <ul class="text-xs text-slate-700 space-y-1">
+                        <li>FK: <code class="text-xs">course_id</code> → courses · <code class="text-xs">skill_id</code> → skills (كلاهما cascade)</li>
+                        <li><span class="text-rose-600 font-semibold">Unique مركّب:</span> <code class="text-xs">(course_id, skill_id)</code></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ===================== plans ===================== -->
+            <section id="t-plans" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">plans</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: Plan</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Timestamps</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_subscriptions_table.php (ينشئ plans و subscriptions معاً)</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">خطط الاشتراك المتاحة للشركات. <strong>ملاحظة:</strong> يُنشأ هذا الجدول في نفس ملف migration الخاص بـ <code class="text-xs">subscriptions</code>. القيمة <code class="text-xs">null</code> في الحدود تعني «غير محدود». يُملأ ببيانات أولية عبر <code class="text-xs">PlanSeeder</code> (Free/Starter/Professional/Enterprise).</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">name</td><td class="px-4 py-2"><span class="type-chip">string(100)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2"><span class="text-rose-600 font-semibold">Unique</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">description</td><td class="px-4 py-2"><span class="type-chip">text</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">price</td><td class="px-4 py-2"><span class="type-chip">decimal(10,2) unsigned</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">0</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">billing_cycle</td><td class="px-4 py-2"><span class="type-chip">enum</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">monthly</td><td class="px-4 py-2">monthly, quarterly, annual, free</td></tr>
+                            <tr><td class="px-4 py-2 mono">max_job_posts</td><td class="px-4 py-2"><span class="type-chip">unsignedInteger</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">null = غير محدود</td></tr>
+                            <tr><td class="px-4 py-2 mono">max_members</td><td class="px-4 py-2"><span class="type-chip">unsignedInteger</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">null = غير محدود</td></tr>
+                            <tr><td class="px-4 py-2 mono">is_active</td><td class="px-4 py-2"><span class="type-chip">boolean</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">true</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                    <h4 class="font-bold text-slate-800 mb-2 text-sm">الفهارس</h4>
+                    <ul class="text-xs text-slate-700 space-y-1"><li>Unique: <code class="text-xs">name</code></li></ul>
+                </div>
+            </section>
+
+            <!-- ===================== subscriptions ===================== -->
+            <section id="t-subscriptions" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">subscriptions</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: Subscription</span>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Timestamps</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_subscriptions_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">اشتراكات الشركات في الخطط، مع الحالة وتواريخ البداية/النهاية. لاحظ أن حذف الخطة مُقيّد (<code class="text-xs">restrictOnDelete</code>) لمنع حذف خطة مرتبطة باشتراكات.</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">company_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → companies (cascade) · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">plan_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">FK → plans · <span class="text-rose-600">restrictOnDelete</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">status</td><td class="px-4 py-2"><span class="type-chip">enum</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">pending</td><td class="px-4 py-2">active, cancelled, expired, pending · <span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">starts_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">ends_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح الخارجية</h4>
+                        <ul class="text-xs text-slate-700 space-y-1">
+                            <li><code class="text-xs">company_id</code> → <code class="text-xs">companies.id</code> · <span class="text-rose-600">cascade</span></li>
+                            <li><code class="text-xs">plan_id</code> → <code class="text-xs">plans.id</code> · <span class="text-rose-600">restrictOnDelete</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                        <h4 class="font-bold text-slate-800 mb-2 text-sm">الفهارس</h4>
+                        <ul class="text-xs text-slate-700 space-y-1"><li>Index: <code class="text-xs">company_id، status</code></li></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== email_logs ===================== -->
+            <section id="t-email_logs" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">email_logs</h2>
+                    <span class="text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">Model: EmailLog</span>
+                    <span class="text-xs bg-fuchsia-100 text-fuchsia-700 px-2 py-1 rounded-full">PK: UUID</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_email_logs_table.php + make_email_log_sender_id_nullable.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">سجلّ رسائل البريد المُرسلة (الموضوع، المستلِم، المحتوى، الحالة، الخطأ). المفتاح الأساسي من نوع <code class="text-xs">UUID</code> (غير تلقائي الزيادة). قيمة enum للحالة مبنية على <code class="text-xs">App\Enum\EmailStatus</code>. عُدِّل <code class="text-xs">sender_id</code> لاحقاً ليصبح nullable (إصلاح B3: السماح بالرسائل النظامية بلا مُرسِل).</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm mb-5">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">Default</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">uuid</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">PK (UUID، غير تلقائي)</td></tr>
+                            <tr><td class="px-4 py-2 mono">sender_id</td><td class="px-4 py-2"><span class="type-chip">unsignedBigInteger</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">FK → users (cascade) · <span class="text-emerald-600">صار nullable لاحقاً</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">subject</td><td class="px-4 py-2"><span class="type-chip">string</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">to_email</td><td class="px-4 py-2"><span class="type-chip">string</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">body</td><td class="px-4 py-2"><span class="type-chip">text</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">status</td><td class="px-4 py-2"><span class="type-chip">enum</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">pending</td><td class="px-4 py-2">sent, failed, pending (EmailStatus)</td></tr>
+                            <tr><td class="px-4 py-2 mono">error_message</td><td class="px-4 py-2"><span class="type-chip">text</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">NULL</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                    <h4 class="font-bold text-slate-800 mb-2 text-sm">المفاتيح الخارجية</h4>
+                    <ul class="text-xs text-slate-700 space-y-1"><li><code class="text-xs">sender_id</code> → <code class="text-xs">users.id</code> · <span class="text-rose-600">onDelete: cascade</span></li></ul>
+                </div>
+            </section>
+
+            <!-- ===================== personal_access_tokens ===================== -->
+            <section id="t-personal_access_tokens" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mono">personal_access_tokens</h2>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">Laravel Sanctum</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_personal_access_tokens_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">جدول Sanctum القياسي لتخزين توكنات الوصول عبر API. يستخدم علاقة polymorphic عبر <code class="text-xs">morphs('tokenable')</code> (يربط بأي موديل، عملياً <code class="text-xs">User</code>).</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">bigIncrements</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">PK</td></tr>
+                            <tr><td class="px-4 py-2 mono">tokenable_type / tokenable_id</td><td class="px-4 py-2"><span class="type-chip">morphs</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">علاقة polymorphic · <span class="text-indigo-600">Index مركّب</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">name</td><td class="px-4 py-2"><span class="type-chip">text</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">token</td><td class="px-4 py-2"><span class="type-chip">string(64)</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2"><span class="text-rose-600 font-semibold">Unique</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">abilities</td><td class="px-4 py-2"><span class="type-chip">text</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">last_used_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">expires_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2"><span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at / updated_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">timestamps()</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ===================== password_reset_tokens ===================== -->
+            <section id="t-password_reset_tokens" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mono">password_reset_tokens</h2>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">بنية تحتية (Laravel)</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_users_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">جدول Laravel القياسي لتخزين توكنات إعادة تعيين كلمة المرور. مفتاحه الأساسي هو <code class="text-xs">email</code>.</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">email</td><td class="px-4 py-2"><span class="type-chip">string</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">PK (Primary)</td></tr>
+                            <tr><td class="px-4 py-2 mono">token</td><td class="px-4 py-2"><span class="type-chip">string</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">created_at</td><td class="px-4 py-2"><span class="type-chip">timestamp</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">—</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ===================== sessions ===================== -->
+            <section id="t-sessions" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">sessions</h2>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">بنية تحتية (Laravel)</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_users_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">جدول جلسات Laravel القياسي. مفتاحه الأساسي هو معرّف الجلسة النصّي. (مستخدم فقط عند ضبط مُشغّل الجلسات على database.)</p>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                    <table class="cols w-full text-sm bg-white">
+                        <thead class="bg-slate-800 text-white text-right">
+                            <tr><th class="px-4 py-3 font-semibold">العمود</th><th class="px-4 py-3 font-semibold">النوع</th><th class="px-4 py-3 font-semibold">Null</th><th class="px-4 py-3 font-semibold">قيود / ملاحظات</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-2 mono font-bold">id</td><td class="px-4 py-2"><span class="type-chip">string</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">PK (Primary)</td></tr>
+                            <tr><td class="px-4 py-2 mono">user_id</td><td class="px-4 py-2"><span class="type-chip">foreignId</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2"><span class="text-indigo-600">Index</span></td></tr>
+                            <tr><td class="px-4 py-2 mono">ip_address</td><td class="px-4 py-2"><span class="type-chip">string(45)</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">user_agent</td><td class="px-4 py-2"><span class="type-chip">text</span></td><td class="px-4 py-2">Yes</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">payload</td><td class="px-4 py-2"><span class="type-chip">longText</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2">—</td></tr>
+                            <tr><td class="px-4 py-2 mono">last_activity</td><td class="px-4 py-2"><span class="type-chip">integer</span></td><td class="px-4 py-2">No</td><td class="px-4 py-2"><span class="text-indigo-600">Index</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ===================== cache / cache_locks ===================== -->
+            <section id="t-cache" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-3xl font-extrabold text-slate-900 mono">cache / cache_locks</h2>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">بنية تحتية (Laravel)</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_cache_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">جداول التخزين المؤقت القياسية في Laravel (تُستخدم عند ضبط مُشغّل الكاش على database؛ المشروع يستخدم Redis أساساً للكاش التطبيقي).</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                        <table class="cols w-full text-sm bg-white">
+                            <thead class="bg-slate-800 text-white text-right"><tr><th class="px-3 py-2 font-semibold">cache</th><th class="px-3 py-2 font-semibold">النوع</th><th class="px-3 py-2 font-semibold">ملاحظات</th></tr></thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-3 py-2 mono">key</td><td class="px-3 py-2"><span class="type-chip">string</span></td><td class="px-3 py-2">PK</td></tr>
+                                <tr><td class="px-3 py-2 mono">value</td><td class="px-3 py-2"><span class="type-chip">mediumText</span></td><td class="px-3 py-2">—</td></tr>
+                                <tr><td class="px-3 py-2 mono">expiration</td><td class="px-3 py-2"><span class="type-chip">bigInteger</span></td><td class="px-3 py-2">Index</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                        <table class="cols w-full text-sm bg-white">
+                            <thead class="bg-slate-800 text-white text-right"><tr><th class="px-3 py-2 font-semibold">cache_locks</th><th class="px-3 py-2 font-semibold">النوع</th><th class="px-3 py-2 font-semibold">ملاحظات</th></tr></thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-3 py-2 mono">key</td><td class="px-3 py-2"><span class="type-chip">string</span></td><td class="px-3 py-2">PK</td></tr>
+                                <tr><td class="px-3 py-2 mono">owner</td><td class="px-3 py-2"><span class="type-chip">string</span></td><td class="px-3 py-2">—</td></tr>
+                                <tr><td class="px-3 py-2 mono">expiration</td><td class="px-3 py-2"><span class="type-chip">bigInteger</span></td><td class="px-3 py-2">Index</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== jobs / job_batches / failed_jobs ===================== -->
+            <section id="t-jobs" class="border-t border-slate-200 pt-12">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mono">jobs / job_batches / failed_jobs</h2>
+                    <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">بنية تحتية — الطوابير (Queues)</span>
+                </div>
+                <p class="text-sm text-slate-500 mb-4 mono">create_jobs_table.php</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-5">
+                    <p class="text-slate-700 leading-relaxed">جداول الطوابير القياسية في Laravel لإدارة المهام المؤجّلة/المُدرَجة (مثل إرسال البريد عبر <code class="text-xs">SendEmail</code> وإشعارات التحقق). <code class="text-xs">jobs</code> للمهام المعلّقة، <code class="text-xs">job_batches</code> للدفعات، <code class="text-xs">failed_jobs</code> للمهام الفاشلة.</p>
+                </div>
+                <div class="grid lg:grid-cols-3 gap-4">
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                        <table class="cols w-full text-xs bg-white">
+                            <thead class="bg-slate-800 text-white text-right"><tr><th class="px-3 py-2 font-semibold">jobs</th><th class="px-3 py-2 font-semibold">النوع</th></tr></thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-3 py-2 mono">id</td><td class="px-3 py-2"><span class="type-chip">bigIncrements</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">queue</td><td class="px-3 py-2"><span class="type-chip">string (idx)</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">payload</td><td class="px-3 py-2"><span class="type-chip">longText</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">attempts</td><td class="px-3 py-2"><span class="type-chip">uTinyInt</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">reserved_at</td><td class="px-3 py-2"><span class="type-chip">uInt null</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">available_at</td><td class="px-3 py-2"><span class="type-chip">uInt</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">created_at</td><td class="px-3 py-2"><span class="type-chip">uInt</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                        <table class="cols w-full text-xs bg-white">
+                            <thead class="bg-slate-800 text-white text-right"><tr><th class="px-3 py-2 font-semibold">job_batches</th><th class="px-3 py-2 font-semibold">النوع</th></tr></thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-3 py-2 mono">id</td><td class="px-3 py-2"><span class="type-chip">string PK</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">name</td><td class="px-3 py-2"><span class="type-chip">string</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">total_jobs</td><td class="px-3 py-2"><span class="type-chip">integer</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">pending_jobs</td><td class="px-3 py-2"><span class="type-chip">integer</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">failed_jobs</td><td class="px-3 py-2"><span class="type-chip">integer</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">failed_job_ids</td><td class="px-3 py-2"><span class="type-chip">longText</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">options</td><td class="px-3 py-2"><span class="type-chip">medText null</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">cancelled_at</td><td class="px-3 py-2"><span class="type-chip">int null</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">created_at</td><td class="px-3 py-2"><span class="type-chip">integer</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">finished_at</td><td class="px-3 py-2"><span class="type-chip">int null</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                        <table class="cols w-full text-xs bg-white">
+                            <thead class="bg-slate-800 text-white text-right"><tr><th class="px-3 py-2 font-semibold">failed_jobs</th><th class="px-3 py-2 font-semibold">النوع</th></tr></thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-3 py-2 mono">id</td><td class="px-3 py-2"><span class="type-chip">bigIncrements</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">uuid</td><td class="px-3 py-2"><span class="type-chip">string uniq</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">connection</td><td class="px-3 py-2"><span class="type-chip">text</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">queue</td><td class="px-3 py-2"><span class="type-chip">text</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">payload</td><td class="px-3 py-2"><span class="type-chip">longText</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">exception</td><td class="px-3 py-2"><span class="type-chip">longText</span></td></tr>
+                                <tr><td class="px-3 py-2 mono">failed_at</td><td class="px-3 py-2"><span class="type-chip">ts useCurrent</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== ERD OVERVIEW ===================== -->
+            <section id="erd" class="border-t-2 border-brand-300 pt-12">
+                <h2 class="text-3xl font-extrabold text-slate-900 mb-3">مخطط العلاقات (ERD Overview)</h2>
+                <p class="text-slate-600 leading-relaxed mb-8">ملخّص للعلاقات بين الجداول حسب المفاتيح الخارجية، مُجمّعاً منطقياً. الرمز <code class="text-xs">─▶</code> يعني «يشير إلى» (FK).</p>
+
+                <div class="space-y-6">
+                    <!-- Group 1 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-brand-600 text-white px-6 py-3 font-bold">المستخدمون والأدوار</div>
+                        <div class="p-6 text-sm leading-loose text-slate-700 space-y-1">
+                            <p><code class="text-xs">users</code> هو الجذر. كل ملف دور يرتبط به بعلاقة 1:1:</p>
+                            <p class="pr-4"><code class="text-xs">admins.user_id</code> ─▶ <code class="text-xs">users</code> (cascade, unique)</p>
+                            <p class="pr-4"><code class="text-xs">job_seekers.user_id</code> ─▶ <code class="text-xs">users</code> (cascade, unique)</p>
+                            <p class="pr-4"><code class="text-xs">company_members.user_id</code> ─▶ <code class="text-xs">users</code> (cascade, unique) · <code class="text-xs">company_members.company_id</code> ─▶ <code class="text-xs">companies</code> · <code class="text-xs">invited_by</code> ─▶ <code class="text-xs">users</code></p>
+                            <p class="pr-4"><code class="text-xs">companies.owner_user_id</code> ─▶ <code class="text-xs">users</code> (nullable) · <code class="text-xs">companies.approved_by</code> ─▶ <code class="text-xs">admins</code></p>
+                            <p class="pr-4"><code class="text-xs">company_registration_requests.reviewed_by</code> ─▶ <code class="text-xs">admins</code> · <code class="text-xs">.company_id</code> ─▶ <code class="text-xs">companies</code></p>
+                        </div>
+                    </div>
+                    <!-- Group 2 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-green-600 text-white px-6 py-3 font-bold">الوظائف والطلبات</div>
+                        <div class="p-6 text-sm leading-loose text-slate-700 space-y-1">
+                            <p><code class="text-xs">job_posts.company_id</code> ─▶ <code class="text-xs">companies</code> · <code class="text-xs">created_by</code> ─▶ <code class="text-xs">users</code> (restrict) · <code class="text-xs">job_title_id</code> ─▶ <code class="text-xs">job_titles</code></p>
+                            <p><code class="text-xs">job_applications.job_post_id</code> ─▶ <code class="text-xs">job_posts</code> · <code class="text-xs">job_seeker_id</code> ─▶ <code class="text-xs">job_seekers</code> · <code class="text-xs">cv_id</code> ─▶ <code class="text-xs">cvs</code></p>
+                            <p><code class="text-xs">saved_jobs</code>: <code class="text-xs">job_seeker_id</code> ─▶ <code class="text-xs">job_seekers</code> · <code class="text-xs">job_post_id</code> ─▶ <code class="text-xs">job_posts</code></p>
+                            <p><code class="text-xs">invitations</code>: <code class="text-xs">company_id</code> ─▶ <code class="text-xs">companies</code> · <code class="text-xs">invited_by</code> ─▶ <code class="text-xs">users</code> · <code class="text-xs">job_seeker_id</code> ─▶ <code class="text-xs">job_seekers</code> · <code class="text-xs">job_post_id</code> ─▶ <code class="text-xs">job_posts</code> (nullable)</p>
+                        </div>
+                    </div>
+                    <!-- Group 3 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-amber-600 text-white px-6 py-3 font-bold">السير الذاتية والمهارات (علاقات M:N)</div>
+                        <div class="p-6 text-sm leading-loose text-slate-700 space-y-1">
+                            <p><code class="text-xs">cvs.job_seeker_id</code> ─▶ <code class="text-xs">job_seekers</code></p>
+                            <p><code class="text-xs">skills</code> ترتبط بأربعة كيانات عبر جداول وسيطة:</p>
+                            <p class="pr-4"><code class="text-xs">job_seeker_skill</code>: job_seekers ⇄ skills (+level)</p>
+                            <p class="pr-4"><code class="text-xs">job_post_skill</code>: job_posts ⇄ skills (+is_required)</p>
+                            <p class="pr-4"><code class="text-xs">job_skill</code>: job_titles ⇄ skills</p>
+                            <p class="pr-4"><code class="text-xs">course_skill</code>: courses ⇄ skills</p>
+                        </div>
+                    </div>
+                    <!-- Group 4 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-indigo-600 text-white px-6 py-3 font-bold">الاشتراكات</div>
+                        <div class="p-6 text-sm leading-loose text-slate-700 space-y-1">
+                            <p><code class="text-xs">subscriptions.company_id</code> ─▶ <code class="text-xs">companies</code> (cascade)</p>
+                            <p><code class="text-xs">subscriptions.plan_id</code> ─▶ <code class="text-xs">plans</code> (restrict — لا يمكن حذف خطة مستخدَمة)</p>
+                        </div>
+                    </div>
+                    <!-- Group 5 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-slate-600 text-white px-6 py-3 font-bold">النظام والبنية التحتية</div>
+                        <div class="p-6 text-sm leading-loose text-slate-700 space-y-1">
+                            <p><code class="text-xs">email_logs.sender_id</code> ─▶ <code class="text-xs">users</code> (cascade, nullable)</p>
+                            <p><code class="text-xs">personal_access_tokens</code> ـ polymorphic عبر <code class="text-xs">tokenable</code> (عملياً ─▶ users).</p>
+                            <p><code class="text-xs">sessions.user_id</code> ـ مفهرس (بدون FK مُقيّد).</p>
+                            <p>جداول <code class="text-xs">cache, cache_locks, jobs, job_batches, failed_jobs, password_reset_tokens</code> مستقلة بلا مفاتيح خارجية.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-slate-50 border border-slate-200 rounded-xl p-6">
+                    <h3 class="font-bold text-slate-800 mb-3">ملخّص سلوك الحذف (onDelete)</h3>
+                    <ul class="list-disc pr-5 space-y-1 text-sm text-slate-700">
+                        <li><span class="font-semibold text-rose-600">cascade</span>: حذف الأب يحذف الأبناء — معظم علاقات الملكية (admins، job_seekers، company_members، cvs، job_applications، saved_jobs، job_posts↔company، الجداول الوسيطة).</li>
+                        <li><span class="font-semibold text-amber-600">nullOnDelete</span>: حذف الأب يضبط المفتاح إلى NULL — (companies.owner_user_id/approved_by، job_posts.job_title_id، job_applications.cv_id، invitations.job_post_id، company_registration_requests.*).</li>
+                        <li><span class="font-semibold text-slate-700">restrictOnDelete</span>: يمنع حذف الأب إن وُجد أبناء — (job_posts.created_by، invitations.invited_by، subscriptions.plan_id).</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ===================== FOOTER ===================== -->
+            <footer class="border-t border-slate-200 pt-8 pb-4 text-center text-sm text-slate-500">
+                <p>تم توليد هذا التوثيق من 29 ملف migration بالترتيب الزمني — يعكس الحالة النهائية للمخطط بعد جميع التعديلات.</p>
+                <p class="mt-1">منصة TALENTO للتوظيف · Laravel + MySQL</p>
+            </footer>
+
+        </div>
+    </main>
+</div>
+
+<!-- ScrollSpy: highlight active sidebar link -->
+<script>
+    (function () {
+        const links = Array.from(document.querySelectorAll('.nav-link'));
+        const map = {};
+        links.forEach(l => {
+            const id = l.getAttribute('href').slice(1);
+            const el = document.getElementById(id);
+            if (el) map[id] = l;
+        });
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    links.forEach(l => l.classList.remove('active'));
+                    const active = map[entry.target.id];
+                    if (active) active.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-10% 0px -80% 0px', threshold: 0 });
+        Object.keys(map).forEach(id => {
+            const el = document.getElementById(id);
+            if (el) observer.observe(el);
+        });
+    })();
+</script>
+
+</body>
+</html>

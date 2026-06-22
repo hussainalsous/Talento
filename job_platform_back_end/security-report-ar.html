@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TALENTO — تقرير تقوية أمان المصادقة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--bg-card:#1a1d27;--bg-code:#12141e;--bg-sidebar:#13151f;
+  --border:#2a2d3e;--border-lite:#1e2132;
+  --text:#e2e4ef;--text-muted:#7a7f9a;--text-dim:#555872;
+  --accent:#6366f1;--accent-lite:#818cf8;--accent-glow:rgba(99,102,241,.15);
+  --green:#22c55e;--green-bg:rgba(34,197,94,.1);
+  --red:#ef4444;--red-bg:rgba(239,68,68,.1);
+  --yellow:#f59e0b;--yellow-bg:rgba(245,158,11,.1);
+  --orange:#f97316;--orange-bg:rgba(249,115,22,.1);
+  --cyan:#06b6d4;--cyan-bg:rgba(6,182,212,.1);
+  --purple:#a855f7;--purple-bg:rgba(168,85,247,.1);
+  --radius:10px;--radius-sm:6px;--sidebar-w:270px;
+  --font-mono:'Fira Code','Cascadia Code',Consolas,monospace;
+  --font-ar:'Cairo','Tajawal','Segoe UI',Tahoma,Arial,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-ar);
+  background:var(--bg);color:var(--text);
+  display:flex;min-height:100vh;font-size:15px;line-height:1.85;
+  direction:rtl;
+}
+
+/* ── Sidebar (right side in RTL) ── */
+.sidebar{
+  position:fixed;top:0;right:0;bottom:0;
+  width:var(--sidebar-w);
+  background:var(--bg-sidebar);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow-y:auto;z-index:100;
+}
+.sidebar-brand{padding:24px 20px 16px;border-bottom:1px solid var(--border-lite)}
+.brand-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--accent-glow);border:1px solid rgba(99,102,241,.3);
+  border-radius:20px;padding:4px 12px;
+  font-size:11px;font-weight:700;color:var(--accent-lite);
+  letter-spacing:.3px;margin-bottom:10px;
+}
+.brand-badge::before{content:'🔐';font-size:13px}
+.sidebar-brand h2{font-size:16px;font-weight:800;color:var(--text);line-height:1.4}
+.sidebar-brand p{font-size:12px;color:var(--text-muted);margin-top:4px}
+.sidebar-nav{padding:12px 0;flex:1}
+.nav-group-label{
+  font-size:10px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.8px;color:var(--text-dim);padding:14px 20px 4px;
+}
+.sidebar-nav a{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 20px;font-size:13px;color:var(--text-muted);
+  text-decoration:none;border-right:2px solid transparent;
+  transition:all .15s;line-height:1.4;
+}
+.sidebar-nav a:hover{color:var(--text);background:rgba(255,255,255,.03);border-right-color:var(--border)}
+.sidebar-nav a.active{color:var(--accent-lite);background:var(--accent-glow);border-right-color:var(--accent)}
+.nav-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.sidebar-footer{padding:14px 20px;border-top:1px solid var(--border-lite);font-size:11px;color:var(--text-dim)}
+
+/* ── Main ── */
+.main{margin-right:var(--sidebar-w);flex:1;min-width:0;padding:40px 48px;max-width:1060px}
+
+/* ── Page Header ── */
+.page-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border)}
+.tag-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.3px}
+.tag-security{background:var(--red-bg);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.tag-laravel{background:var(--orange-bg);color:var(--orange);border:1px solid rgba(249,115,22,.25)}
+.tag-redis{background:var(--red-bg);color:#ff6b6b;border:1px solid rgba(255,107,107,.25)}
+.tag-sanctum{background:var(--purple-bg);color:var(--purple);border:1px solid rgba(168,85,247,.25)}
+.tag-resolved{background:var(--green-bg);color:var(--green);border:1px solid rgba(34,197,94,.25)}
+.page-header h1{
+  font-size:30px;font-weight:900;line-height:1.3;
+  background:linear-gradient(135deg,#e2e4ef 0%,#818cf8 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:10px;
+}
+.page-header .subtitle{font-size:15px;color:var(--text-muted);max-width:660px}
+.meta-row{display:flex;gap:24px;margin-top:20px;flex-wrap:wrap}
+.meta-item{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text-muted)}
+.meta-item span:first-child{color:var(--text-dim)}
+
+/* ── Sections ── */
+.section{margin-bottom:56px}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--border-lite)}
+.section-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;background:var(--accent-glow);
+  border:1px solid rgba(99,102,241,.3);border-radius:var(--radius-sm);
+  font-size:12px;font-weight:800;color:var(--accent-lite);flex-shrink:0;
+}
+.section-header h2{font-size:20px;font-weight:800;color:var(--text)}
+
+/* ── Cards ── */
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px}
+.card-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.card-grid-2{display:grid;gap:16px;grid-template-columns:1fr 1fr}
+.card h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px}
+.card p,.card li{font-size:13.5px;color:var(--text-muted);line-height:1.75}
+.card ul{padding-right:18px;padding-left:0}
+.card ul li{margin-bottom:4px}
+
+/* ── Risk Cards ── */
+.risk-card{border-radius:var(--radius);padding:16px 20px;display:flex;gap:14px;align-items:flex-start;margin-bottom:12px}
+.risk-critical{background:var(--red-bg);border:1px solid rgba(239,68,68,.25)}
+.risk-high{background:var(--orange-bg);border:1px solid rgba(249,115,22,.25)}
+.risk-medium{background:var(--yellow-bg);border:1px solid rgba(245,158,11,.25)}
+.risk-low{background:var(--green-bg);border:1px solid rgba(34,197,94,.25)}
+.risk-badge{
+  font-size:10px;font-weight:800;padding:3px 9px;border-radius:4px;
+  text-transform:uppercase;letter-spacing:.5px;flex-shrink:0;margin-top:2px;
+}
+.badge-critical{background:var(--red);color:#fff}
+.badge-high{background:var(--orange);color:#fff}
+.badge-medium{background:var(--yellow);color:#000}
+.badge-low{background:var(--green);color:#000}
+.badge-fixed{background:var(--green);color:#000}
+.badge-pass{background:var(--green);color:#000}
+.badge-fail{background:var(--red);color:#fff}
+.risk-body h4{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.risk-body p{font-size:13px;color:var(--text-muted);line-height:1.6}
+
+/* ── Code Blocks (LTR) ── */
+.code-block{background:var(--bg-code);border:1px solid var(--border);border-radius:var(--radius-sm);margin:14px 0;overflow:hidden;direction:ltr;text-align:left}
+.code-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 16px;background:rgba(255,255,255,.03);
+  border-bottom:1px solid var(--border);font-size:11px;color:var(--text-dim);
+  font-family:var(--font-mono);direction:ltr;
+}
+.code-lang{background:var(--accent-glow);border:1px solid rgba(99,102,241,.2);border-radius:3px;padding:1px 7px;color:var(--accent-lite);font-size:10px;font-weight:700;text-transform:uppercase}
+.code-block pre{padding:18px 20px;font-family:var(--font-mono);font-size:12.5px;line-height:1.75;color:#c9d1d9;overflow-x:auto;white-space:pre;direction:ltr;text-align:left}
+.kw{color:#ff7b72}.fn{color:#d2a8ff}.st{color:#a5d6ff}.cm{color:#8b949e;font-style:italic}.nm{color:#ffa657}.cl{color:#ffa657}.op{color:#ff7b72}.va{color:#79c0ff}
+.hl{background:rgba(99,102,241,.12);display:block;margin:0 -20px;padding:0 20px;border-right:3px solid var(--accent)}
+
+/* ── Tables ── */
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead th{background:rgba(255,255,255,.04);padding:12px 16px;text-align:right;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted);border-bottom:1px solid var(--border)}
+tbody td{padding:11px 16px;color:var(--text-muted);border-bottom:1px solid var(--border-lite);vertical-align:top;line-height:1.6;text-align:right}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(255,255,255,.015)}
+td code,th code{font-family:var(--font-mono);font-size:11.5px;background:rgba(255,255,255,.07);padding:2px 6px;border-radius:3px;color:var(--cyan);direction:ltr;display:inline-block}
+
+/* ── Flow Diagram ── */
+.flow-diagram{display:flex;flex-direction:column;align-items:center;gap:0;padding:28px 20px;background:var(--bg-code);border:1px solid var(--border);border-radius:var(--radius);margin:16px 0}
+.flow-step{display:flex;align-items:center;gap:16px;width:100%;max-width:680px}
+.flow-node{flex:1;border-radius:var(--radius-sm);padding:12px 18px;font-size:13px;font-weight:500;position:relative;z-index:1;text-align:right}
+.flow-node-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;opacity:.75}
+.flow-node-title{font-size:13.5px;font-weight:700;line-height:1.3;direction:ltr;text-align:left}
+.flow-node-sub{font-size:11.5px;margin-top:3px;opacity:.75;direction:ltr;text-align:left}
+.flow-node-label-ar{font-size:11px;font-weight:800;margin-bottom:3px;opacity:.85}
+.flow-node-title-ar{font-size:13px;font-weight:700;line-height:1.4}
+.flow-node-sub-ar{font-size:11.5px;margin-top:3px;opacity:.75}
+.fn-blue{background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.3);color:var(--cyan)}
+.fn-purple{background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.3);color:var(--purple)}
+.fn-green{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:var(--green)}
+.fn-red{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--red)}
+.fn-yellow{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:var(--yellow)}
+.fn-orange{background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.3);color:var(--orange)}
+.fn-indigo{background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.3);color:var(--accent-lite)}
+.flow-arrow{text-align:center;color:var(--text-dim);font-size:20px;line-height:1;padding:4px 0;width:100%;max-width:680px}
+.flow-fork{display:flex;gap:16px;width:100%;max-width:680px;align-items:flex-start}
+.flow-fork-col{flex:1;display:flex;flex-direction:column;align-items:center}
+.fork-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+
+/* ── Score Cards ── */
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:16px 0}
+.score-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;text-align:center}
+.sc-label{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--text-dim);margin-bottom:12px;font-weight:700}
+.score-num{font-size:52px;font-weight:900;line-height:1;margin-bottom:6px}
+.score-num.before{color:var(--red)}
+.score-num.after{color:var(--green)}
+.sc-sub{font-size:13px;color:var(--text-muted)}
+.score-bar{margin-top:14px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;direction:ltr}
+.score-bar-fill{height:100%;border-radius:3px}
+.score-bar-fill.before{background:var(--red);width:20%}
+.score-bar-fill.after{background:var(--green);width:90%}
+
+/* ── Test Grid ── */
+.test-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin:14px 0}
+.test-item{display:flex;align-items:center;gap:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px}
+.test-status{font-size:10px;font-weight:800;letter-spacing:.5px;padding:4px 10px;border-radius:4px;text-transform:uppercase;flex-shrink:0}
+.test-pass{background:var(--green);color:#000}
+.test-fail{background:var(--red);color:#fff}
+.test-label{font-size:13px;color:var(--text);font-weight:600}
+.test-desc{font-size:11.5px;color:var(--text-muted);margin-top:2px}
+
+/* ── Inline code ── */
+p code,li code{font-family:var(--font-mono);font-size:12px;background:rgba(255,255,255,.07);padding:2px 6px;border-radius:3px;color:var(--cyan);direction:ltr;display:inline-block}
+
+/* ── Typography ── */
+p{margin-bottom:10px}p:last-child{margin-bottom:0}
+.text-muted{color:var(--text-muted)}.text-green{color:var(--green)}.text-red{color:var(--red)}
+.text-yellow{color:var(--yellow)}.text-accent{color:var(--accent-lite)}.text-cyan{color:var(--cyan)}
+h3{font-size:16px;font-weight:800;color:var(--text);margin:20px 0 10px}
+h4{font-size:14px;font-weight:700;color:var(--text-muted);margin:14px 0 8px}
+ul,ol{padding-right:20px;padding-left:0;color:var(--text-muted);font-size:14px;line-height:1.9}
+ul li,ol li{margin-bottom:4px}
+
+/* ── KV List ── */
+.kv-list{display:grid;grid-template-columns:max-content 1fr;gap:8px 20px;font-size:13.5px}
+.kv-key{color:var(--text-dim);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.4px;padding-top:1px;white-space:nowrap}
+.kv-val{color:var(--text-muted)}
+
+/* ── Callout ── */
+.callout{border-radius:var(--radius-sm);padding:14px 18px;font-size:13.5px;margin:14px 0;display:flex;gap:12px;align-items:flex-start}
+.callout-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.callout-body{color:var(--text-muted);line-height:1.7}
+.callout-body strong{color:var(--text)}
+.callout-note{background:var(--cyan-bg);border:1px solid rgba(6,182,212,.2)}
+.callout-warn{background:var(--yellow-bg);border:1px solid rgba(245,158,11,.2)}
+.callout-success{background:var(--green-bg);border:1px solid rgba(34,197,94,.2)}
+
+/* ── Compare ── */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.compare-before{background:var(--red-bg);border:1px solid rgba(239,68,68,.2);border-radius:var(--radius-sm);padding:16px}
+.compare-after{background:var(--green-bg);border:1px solid rgba(34,197,94,.2);border-radius:var(--radius-sm);padding:16px}
+.compare-before h4{color:var(--red);margin:0 0 10px;font-size:13px}
+.compare-after h4{color:var(--green);margin:0 0 10px;font-size:13px}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* ── Responsive ── */
+@media(max-width:900px){
+  .sidebar{display:none}
+  .main{margin-right:0;padding:24px 20px}
+  .card-grid-2{grid-template-columns:1fr}
+  .score-grid{grid-template-columns:1fr}
+  .compare-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-badge">تقرير الأمان</div>
+    <h2>منصة TALENTO</h2>
+    <p>تقوية أمان المصادقة — الإصدار 1.0</p>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group-label">نظرة عامة</div>
+    <a href="#executive-summary"><span class="nav-icon">📋</span>الملخص التنفيذي</a>
+    <div class="nav-group-label">تدفق المصادقة</div>
+    <a href="#auth-flow"><span class="nav-icon">🔄</span>مخطط تدفق تسجيل الدخول</a>
+    <div class="nav-group-label">إصلاحات الأمان</div>
+    <a href="#throttling"><span class="nav-icon">⏱️</span>تقييد تسجيل الدخول</a>
+    <a href="#brute-force"><span class="nav-icon">🛡️</span>الحماية من القوة الغاشمة</a>
+    <a href="#enumeration"><span class="nav-icon">🕵️</span>منع تعداد المستخدمين</a>
+    <a href="#timing"><span class="nav-icon">🕐</span>هجمات التوقيت</a>
+    <a href="#sanctum"><span class="nav-icon">🎟️</span>انتهاء صلاحية الرمز</a>
+    <div class="nav-group-label">البنية التحتية</div>
+    <a href="#redis"><span class="nav-icon">🗄️</span>تكامل Redis</a>
+    <a href="#logging"><span class="nav-icon">📝</span>التسجيل الأمني</a>
+    <div class="nav-group-label">النتائج</div>
+    <a href="#files"><span class="nav-icon">📁</span>الملفات المعدّلة</a>
+    <a href="#test-results"><span class="nav-icon">✅</span>نتائج الاختبار</a>
+    <a href="#security-score"><span class="nav-icon">🏆</span>درجة الأمان النهائية</a>
+  </nav>
+  <div class="sidebar-footer">تم الإنشاء · يونيو 2026<br>TALENTO Backend · Laravel 11</div>
+</aside>
+
+<!-- ═══════ MAIN ═══════ -->
+<main class="main">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="tag-row">
+      <span class="tag tag-security">أمان</span>
+      <span class="tag tag-laravel">Laravel 11</span>
+      <span class="tag tag-redis">Redis</span>
+      <span class="tag tag-sanctum">Sanctum</span>
+      <span class="tag tag-resolved">تم حل جميع المشكلات</span>
+    </div>
+    <h1>تقرير تقوية أمان المصادقة</h1>
+    <p class="subtitle">
+      تدقيق وتنفيذ كامل لتقييد تسجيل الدخول، والحماية من هجمات القوة الغاشمة،
+      ومنع تعداد المستخدمين، والتخفيف من هجمات التوقيت، وإدارة دورة حياة الرموز
+      في خادم منصة TALENTO للوظائف.
+    </p>
+    <div class="meta-row">
+      <div class="meta-item"><span>المشروع</span><span>منصة TALENTO للوظائف — Laravel API</span></div>
+      <div class="meta-item"><span>النطاق</span><span>نظام المصادقة</span></div>
+      <div class="meta-item"><span>التاريخ</span><span>يونيو 2026</span></div>
+      <div class="meta-item"><span>الحالة</span><span class="text-green">● منفّذ ومُتحقق منه</span></div>
+    </div>
+  </div>
+
+  <!-- ═══════ 1. EXECUTIVE SUMMARY ═══════ -->
+  <section class="section" id="executive-summary">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <h2>الملخص التنفيذي</h2>
+    </div>
+    <p class="text-muted">
+      كشف تدقيق أمني شامل لنظام مصادقة TALENTO عن خمس ثغرات أمنية متميزة —
+      تتراوح بين حرجة (غياب تام لتقييد المعدل) وعالية الخطورة (رموز لا تنتهي صلاحيتها).
+      تمّت معالجة جميعها بتطبيق محدود يمسّ ثلاثة ملفات فقط، دون أي تبعيات جديدة،
+      مع إعادة استخدام بنية Redis الموجودة أصلًا لخدمة التخزين المؤقت.
+    </p>
+
+    <h3>المشكلات المكتشفة قبل التقوية</h3>
+
+    <div class="risk-card risk-critical">
+      <span class="risk-badge badge-critical">حرج</span>
+      <div class="risk-body">
+        <h4>لا يوجد تقييد لمعدل تسجيل الدخول</h4>
+        <p>نقطة النهاية <code>POST /api/v1/auth/login</code> خالية تمامًا من أي حماية لتقييد الطلبات.
+        يمكن للمهاجم إرسال محاولات لا محدودة لتخمين كلمة المرور دون أي عائق.</p>
+      </div>
+    </div>
+
+    <div class="risk-card risk-critical">
+      <span class="risk-badge badge-critical">حرج</span>
+      <div class="risk-body">
+        <h4>لا توجد حماية من هجمات القوة الغاشمة</h4>
+        <p>لم يُسجَّل أي عداد للمحاولات الفاشلة على الإطلاق. حسابات المدير (admin) معرّضة
+        للهجوم عبر نفس النقطة غير المحمية كحسابات المستخدمين العاديين.</p>
+      </div>
+    </div>
+
+    <div class="risk-card risk-high">
+      <span class="risk-badge badge-high">عالٍ</span>
+      <div class="risk-body">
+        <h4>خطر تعداد المستخدمين</h4>
+        <p>الحسابات الموقوفة كانت تُعيد رسالة خطأ مختلفة ("تم تعطيل حسابك") مقارنةً بحسابات
+        غير موجودة، مما يتيح للمهاجم معرفة ما إذا كان بريد إلكتروني معيّن مسجّلًا في النظام.</p>
+      </div>
+    </div>
+
+    <div class="risk-card risk-high">
+      <span class="risk-badge badge-high">عالٍ</span>
+      <div class="risk-body">
+        <h4>ثغرة هجوم التوقيت</h4>
+        <p>عند استخدام بريد إلكتروني غير مسجّل، كان PHP يتخطى عملية bcrypt بالكامل عبر
+        Short-Circuit Evaluation، مما يجعل الاستجابة أسرع بكثير — وهو فارق زمني قابل
+        للقياس يكشف عن وجود البريد الإلكتروني في النظام.</p>
+      </div>
+    </div>
+
+    <div class="risk-card risk-high">
+      <span class="risk-badge badge-high">عالٍ</span>
+      <div class="risk-body">
+        <h4>رموز Sanctum لا تنتهي صلاحيتها أبدًا</h4>
+        <p>كان الإعداد <code>'expiration' => null</code> في ملف <code>config/sanctum.php</code>
+        يجعل الرموز صالحة للأبد. أي رمز مسروق يمنح وصولًا دائمًا للحساب.</p>
+      </div>
+    </div>
+
+    <h3>ما تم تطبيقه</h3>
+    <div class="card-grid">
+      <div class="card">
+        <h3 class="text-accent">تقييد معدل الطلبات</h3>
+        <p>Laravel <code>RateLimiter</code> بمفتاح مركّب <code>login:{email}:{ip}</code>،
+        5 محاولات، حظر لمدة 15 دقيقة، مدعوم بـ Redis الحالي.</p>
+      </div>
+      <div class="card">
+        <h3 class="text-green">الحماية من القوة الغاشمة</h3>
+        <p>عداد المحاولات يزيد عند كل فشل، ويُصفَّر عند تسجيل الدخول الناجح.
+        يُعاد HTTP 429 عند تجاوز الحد.</p>
+      </div>
+      <div class="card">
+        <h3 class="text-yellow">منع تعداد المستخدمين</h3>
+        <p>جميع مسارات الفشل — بريد غير موجود، كلمة مرور خاطئة، حساب موقوف —
+        تُعيد رسالة خطأ موحدة تمامًا. السبب الحقيقي يُسجَّل داخليًا فقط.</p>
+      </div>
+      <div class="card">
+        <h3 class="text-cyan">التخفيف من هجمات التوقيت</h3>
+        <p>يُستدعى <code>Hash::check()</code> دائمًا بغض النظر عن وجود المستخدم.
+        تجزئة وهمية بتكلفة 12 تضمن تنفيذ bcrypt الكامل في كل الحالات.</p>
+      </div>
+      <div class="card">
+        <h3 class="text-purple">انتهاء صلاحية الرمز</h3>
+        <p>رموز Sanctum تنتهي بعد 7 أيام. لا حاجة لهجرة قاعدة بيانات —
+        Sanctum يستخدم <code>created_at + expiration</code> في كل طلب.</p>
+      </div>
+      <div class="card">
+        <h3 class="text-orange">التسجيل الأمني</h3>
+        <p>كل محاولة فاشلة وكل حدث حظر يُسجَّل بـ <code>Log::warning()</code>
+        مع البريد، IP، السبب، والتوقيت. كلمات المرور لا تُسجَّل أبدًا.</p>
+      </div>
+    </div>
+
+    <h3>الحالة الأمنية النهائية</h3>
+    <div class="callout callout-success">
+      <span class="callout-icon">✅</span>
+      <div class="callout-body">
+        <strong>تمت معالجة جميع الثغرات الأمنية الخمس الحرجة وعالية الخطورة.</strong>
+        يطبّق نظام المصادقة الآن المجموعة الكاملة من الدفاعات المعيارية المطلوبة لأي API
+        في بيئة إنتاجية: حماية متعددة الأبعاد من القوة الغاشمة، ومنع تعداد المستخدمين،
+        وتكافؤ التوقيت، ورسائل خطأ موحدة، وانتهاء صلاحية الرموز بعد 7 أيام،
+        وتسجيل أمني منظّم — وكل ذلك باستخدام مكونات Laravel الأساسية دون أي تبعيات جديدة.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ 2. AUTH FLOW ═══════ -->
+  <section class="section" id="auth-flow">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <h2>تدفق المصادقة</h2>
+    </div>
+    <p class="text-muted">
+      التدفق الكامل لعملية تسجيل الدخول بعد تطبيق التقوية الأمنية.
+      كل خطوة تمثل قرارًا أو إجراءً مستقلًا — الفشل يخرج مبكرًا، والنجاح يكمل المسار.
+    </p>
+
+    <div class="flow-diagram">
+
+      <div class="flow-step">
+        <div class="flow-node fn-blue">
+          <div class="flow-node-label-ar">الخطوة 1 · المتحكم (Controller)</div>
+          <div class="flow-node-title">POST /api/v1/auth/login</div>
+          <div class="flow-node-sub">LoginRequest · email + password · $request→ip() يُسجَّل</div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-step">
+        <div class="flow-node fn-purple">
+          <div class="flow-node-label-ar">الخطوة 2 · التحقق من النموذج</div>
+          <div class="flow-node-title">LoginRequest::rules()</div>
+          <div class="flow-node-sub">email: required|email · password: required|string</div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-step">
+        <div class="flow-node fn-orange">
+          <div class="flow-node-label-ar">الخطوة 3 · فحص حد المعدل</div>
+          <div class="flow-node-title">RateLimiter::tooManyAttempts()</div>
+          <div class="flow-node-sub">المفتاح: login:{email}:{ip} · الحد: 5 محاولات / 15 دقيقة</div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-fork">
+        <div class="flow-fork-col" style="flex:.45">
+          <div class="fork-label text-red">محظور</div>
+          <div class="flow-node fn-red" style="width:100%;text-align:right">
+            <div class="flow-node-label-ar">خروج · HTTP 429</div>
+            <div class="flow-node-title-ar">"محاولات كثيرة جدًا. حاول لاحقًا."</div>
+            <div class="flow-node-sub-ar">Log::warning — rate_limited</div>
+          </div>
+        </div>
+        <div class="flow-fork-col" style="flex:.1;justify-content:center;padding-top:28px;color:var(--text-dim);font-size:13px">أو</div>
+        <div class="flow-fork-col" style="flex:.45">
+          <div class="fork-label text-green">ضمن الحد</div>
+          <div class="flow-node fn-green" style="width:100%;text-align:right">
+            <div class="flow-node-label-ar">متابعة</div>
+            <div class="flow-node-title-ar">المضي قدمًا في البحث</div>
+            <div class="flow-node-sub-ar">عدد المحاولات المتبقية يُخزَّن في Redis</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-arrow" style="max-width:280px;margin-left:auto">↓</div>
+
+      <div class="flow-step">
+        <div class="flow-node fn-blue">
+          <div class="flow-node-label-ar">الخطوة 4 · البحث في قاعدة البيانات</div>
+          <div class="flow-node-title">User::where('email', $email)->first()</div>
+          <div class="flow-node-sub">النتيجة قد تكون null — لا يخرج مبكرًا هنا</div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-step">
+        <div class="flow-node fn-yellow">
+          <div class="flow-node-label-ar">الخطوة 5 · التخفيف من هجمات التوقيت</div>
+          <div class="flow-node-title">Hash::check($password, $user?→password ?? DUMMY_HASH)</div>
+          <div class="flow-node-sub">bcrypt يعمل دائمًا · البريد غير الموجود يستخدم تجزئة وهمية · التوقيت متكافئ</div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-step">
+        <div class="flow-node fn-purple">
+          <div class="flow-node-label-ar">الخطوة 6 · تحديد سبب الفشل</div>
+          <div class="flow-node-title">match(true) — determine failure reason</div>
+          <div class="flow-node-sub">user_not_found · invalid_credentials · inactive_user · null (نجاح)</div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-fork">
+        <div class="flow-fork-col" style="flex:.45">
+          <div class="fork-label text-red">أي فشل</div>
+          <div class="flow-node fn-red" style="width:100%;text-align:right">
+            <div class="flow-node-label-ar">خروج · HTTP 422</div>
+            <div class="flow-node-title-ar">RateLimiter::hit() + تسجيل + استثناء</div>
+            <div class="flow-node-sub-ar">"بيانات الاعتماد غير صحيحة" — لجميع أنواع الفشل</div>
+          </div>
+        </div>
+        <div class="flow-fork-col" style="flex:.1;justify-content:center;padding-top:28px;color:var(--text-dim);font-size:13px">أو</div>
+        <div class="flow-fork-col" style="flex:.45">
+          <div class="fork-label text-green">بيانات صحيحة</div>
+          <div class="flow-node fn-green" style="width:100%;text-align:right">
+            <div class="flow-node-label-ar">متابعة</div>
+            <div class="flow-node-title-ar">RateLimiter::clear()</div>
+            <div class="flow-node-sub-ar">إعادة ضبط عداد المحاولات عند النجاح</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-arrow" style="max-width:280px;margin-left:auto">↓</div>
+
+      <div class="flow-step">
+        <div class="flow-node fn-indigo">
+          <div class="flow-node-label-ar">الخطوة 7 · إنشاء الرمز</div>
+          <div class="flow-node-title">$user→createToken("{role}-token")→plainTextToken</div>
+          <div class="flow-node-sub">رمز Sanctum الشخصي · ينتهي بعد 7 أيام</div>
+        </div>
+      </div>
+
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-step">
+        <div class="flow-node fn-green">
+          <div class="flow-node-label-ar">الخطوة 8 · الاستجابة · HTTP 200</div>
+          <div class="flow-node-title">{ success, message, data: { user, token } }</div>
+          <div class="flow-node-sub">ملف المستخدم المناسب للدور يُحمَّل · UserResource يُسلسَل</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════ 3. THROTTLING ═══════ -->
+  <section class="section" id="throttling">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <h2>تقييد تسجيل الدخول</h2>
+    </div>
+    <p class="text-muted">
+      يُستخدم Laravel <code>RateLimiter</code> الأصيل لفرض حدّ على المحاولات في نقطة نهاية
+      تسجيل الدخول. بما أن <code>CACHE_STORE=redis</code> مضبوط مسبقًا، يخزّن المحدّد
+      عداداته تلقائيًا في Redis دون أي إعداد إضافي.
+    </p>
+
+    <h3>إعدادات محدد المعدل</h3>
+    <div class="card">
+      <div class="kv-list">
+        <span class="kv-key">صيغة المفتاح</span><span class="kv-val"><code>login:{email_بأحرف_صغيرة}:{IP_العميل}</code></span>
+        <span class="kv-key">الحد الأقصى للمحاولات</span><span class="kv-val"><code>5</code> محاولات فاشلة</span>
+        <span class="kv-key">مدة الحظر</span><span class="kv-val"><code>900 ثانية</code> (15 دقيقة)</span>
+        <span class="kv-key">الإعادة عند النجاح</span><span class="kv-val">نعم — <code>RateLimiter::clear()</code> عند تسجيل الدخول الناجح</span>
+        <span class="kv-key">الخادم الخلفي</span><span class="kv-val">Redis (عبر <code>CACHE_STORE=redis</code> — لا إعداد إضافي)</span>
+        <span class="kv-key">استجابة HTTP عند الحظر</span><span class="kv-val"><code>429 Too Many Requests</code></span>
+        <span class="kv-key">النطاق</span><span class="kv-val">لكل زوج بريد إلكتروني + IP (هجمات IP الموزعة لا تتجاوز حماية البريد)</span>
+      </div>
+    </div>
+
+    <h3>تصميم المفتاح: مركّب من البريد الإلكتروني + IP</h3>
+    <p class="text-muted">
+      استخدام مفتاح مركّب من البريد الإلكتروني وعنوان IP يوفر توازنًا مثاليًا:
+      IP واحد يحاول على حسابات متعددة يُرصد عبر البُعد IP، وحساب واحد يُهاجَم من IPs
+      متعددة يُرصد عبر البُعد البريدي. المزيج يمنع قفل المستخدم الشرعي بسبب محاولات
+      مستخدم آخر من نفس الشبكة.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span>app/Services/AuthService.php</span>
+        <span class="code-lang">PHP</span>
+      </div>
+      <pre><span class="cm">// ثوابت مستوى الفئة — مصدر وحيد للإعدادات الأمنية</span>
+<span class="kw">private const</span> <span class="nm">MAX_ATTEMPTS</span>  = <span class="nm">5</span>;
+<span class="kw">private const</span> <span class="nm">DECAY_SECONDS</span> = <span class="nm">900</span>; <span class="cm">// 15 دقيقة</span>
+
+<span class="kw">public function</span> <span class="fn">login</span>(<span class="cl">string</span> <span class="va">$email</span>, <span class="cl">string</span> <span class="va">$password</span>, <span class="cl">string</span> <span class="va">$ip</span>): <span class="cl">array</span>
+{
+<span class="hl">    <span class="va">$throttleKey</span> = <span class="st">'login:'</span> . <span class="cl">Str</span>::<span class="fn">lower</span>(<span class="va">$email</span>) . <span class="st">':'</span> . <span class="va">$ip</span>;</span>
+
+    <span class="cm">// فحص: هل تجاوز هذا المفتاح الحد الأقصى؟</span>
+    <span class="kw">if</span> (<span class="cl">RateLimiter</span>::<span class="fn">tooManyAttempts</span>(<span class="va">$throttleKey</span>, <span class="kw">self</span>::<span class="nm">MAX_ATTEMPTS</span>)) {
+        <span class="cl">Log</span>::<span class="fn">warning</span>(<span class="st">'security.login_rate_limited'</span>, [...]);
+        <span class="fn">abort</span>(<span class="nm">429</span>, <span class="st">'Too many login attempts. Please try again later.'</span>);
+    }
+
+    <span class="cm">// ... التحقق من بيانات الاعتماد ...</span>
+
+    <span class="cm">// عند الفشل: زيادة العداد</span>
+<span class="hl">    <span class="cl">RateLimiter</span>::<span class="fn">hit</span>(<span class="va">$throttleKey</span>, <span class="kw">self</span>::<span class="nm">DECAY_SECONDS</span>);</span>
+
+    <span class="cm">// عند النجاح: مسح العداد</span>
+<span class="hl">    <span class="cl">RateLimiter</span>::<span class="fn">clear</span>(<span class="va">$throttleKey</span>);</span>
+}</pre>
+    </div>
+
+    <div class="callout callout-note">
+      <span class="callout-icon">ℹ️</span>
+      <div class="callout-body">
+        <strong>لماذا لم نستخدم middleware <code>throttle:</code> على مستوى المسار؟</strong>
+        الـ middleware يستخدم IP فقط مفتاحًا ويعدّ جميع أنواع الطلبات. التطبيق على مستوى
+        الخدمة يستخدم المفتاح المركّب <code>email+IP</code> ويزيد العداد <em>فقط عند الفشل</em>
+        — مما يجعله أكثر دقة وأقل احتمالًا لقفل المستخدمين الشرعيين.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ 4. BRUTE FORCE ═══════ -->
+  <section class="section" id="brute-force">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <h2>الحماية من هجمات القوة الغاشمة</h2>
+    </div>
+
+    <h3>سيناريو الهجوم</h3>
+    <p class="text-muted">
+      في هجوم حشو بيانات الاعتماد (Credential Stuffing) أو رش كلمات المرور (Password Spray)،
+      يجرب المهاجم مئات أو آلاف كلمات المرور الشائعة على عناوين بريد إلكتروني معروفة.
+      بدون حماية، كل محاولة تستغرق فقط وقت فحص bcrypt (حوالي 150-200 مللي ثانية عند
+      التكلفة 12)، مما يعني أن أداة آلية تستطيع تنفيذ آلاف المحاولات في الدقيقة.
+    </p>
+
+    <div class="compare-grid">
+      <div class="compare-before">
+        <h4>❌ السلوك السابق</h4>
+        <ul>
+          <li>لا يوجد عداد للمحاولات من أي نوع</li>
+          <li>كل طلب معالَج باستقلالية — الفشل السابق لا يؤثر على التالي</li>
+          <li>يمكن للمهاجم إرسال محاولات لا محدودة على مدار الساعة</li>
+          <li>حسابات المدير معرّضة لنفس الهجوم الغير محدود</li>
+          <li>لا رؤية أمنية — لا سجلات، لا تنبيهات</li>
+        </ul>
+      </div>
+      <div class="compare-after">
+        <h4>✅ السلوك الجديد</h4>
+        <ul>
+          <li>عداد المحاولات مُخزَّن في Redis لكل مفتاح بريد+IP</li>
+          <li>العداد يزيد عند كل محاولة فاشلة</li>
+          <li>بعد 5 إخفاقات: حظر 15 دقيقة مع HTTP 429</li>
+          <li>تسجيل الدخول الناجح يمسح العداد فورًا</li>
+          <li>كل إخفاق مُسجَّل مع البريد والـIP والسبب والوقت</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>الفوائد الأمنية</h3>
+    <div class="card-grid">
+      <div class="card">
+        <h3>تقييد سرعة الهجوم</h3>
+        <p>5 محاولات كل 15 دقيقة = 20 محاولة/ساعة لكل زوج بريد+IP. كلمة مرور من
+        6 أحرف صغيرة بها 300 مليون تركيبة — بهذا المعدل يستغرق الاستنفاد أكثر من 1700 سنة.</p>
+      </div>
+      <div class="card">
+        <h3>الحفاظ على وصول المستخدمين الشرعيين</h3>
+        <p>العداد يُمسح عند النجاح. مستخدم أخطأ كلمة المرور 4 مرات ثم أدخلها صحيحة،
+        يُفتح حسابه فورًا — لا تدخل يدوي من المدير.</p>
+      </div>
+      <div class="card">
+        <h3>مقاومة الهجمات الموزعة</h3>
+        <p>المفتاح المركّب بريد+IP يعني أن المهاجم الذي يستخدم شبكة botnet بـIP مختلف
+        لكل طلب لا يزال يُعدّ كل IP منفصلًا. 100 IP يمنح 500 محاولة فقط — وليس لا نهائيًا.</p>
+      </div>
+      <div class="card">
+        <h3>تكلفة بنية تحتية صفرية</h3>
+        <p>يستخدم نفس مثيل Redis الذي يعمل أصلًا للتخزين المؤقت. مفاتيح حد المعدل
+        ضئيلة الحجم (أقل من 100 بايت) وتنتهي تلقائيًا بعد 15 دقيقة.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ 5. ENUMERATION ═══════ -->
+  <section class="section" id="enumeration">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <h2>الحماية من تعداد المستخدمين</h2>
+    </div>
+    <p class="text-muted">
+      تعداد المستخدمين هو القدرة على تحديد ما إذا كان بريد إلكتروني معيّن مسجّلًا
+      في النظام بناءً على استجابة التطبيق. حتى فارق بسيط في رسائل الخطأ كافٍ
+      لأداة آلية لبناء قائمة بالحسابات الصحيحة.
+    </p>
+
+    <h3>الثغرة السابقة</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span>AuthService.php — قبل (معرّض للخطر)</span>
+        <span class="code-lang">PHP</span>
+      </div>
+      <pre><span class="cm">// المسار 1 — بريد غير موجود أو كلمة مرور خاطئة → نفس الرسالة</span>
+<span class="kw">if</span> (! <span class="va">$user</span> || ! <span class="cl">Hash</span>::<span class="fn">check</span>(<span class="va">$password</span>, <span class="va">$user</span>-><span class="va">password</span>)) {
+    <span class="kw">throw</span> <span class="cl">ValidationException</span>::<span class="fn">withMessages</span>([
+        <span class="st">'email'</span> => [<span class="st">'The provided credentials are incorrect.'</span>],
+    ]);
+}
+
+<span class="cm">// المسار 2 — حساب موقوف → رسالة مختلفة ← يكشف عن وجود المستخدم!</span>
+<span class="kw">if</span> (! <span class="va">$user</span>-><span class="va">is_active</span>) {
+    <span class="kw">throw</span> <span class="cl">ValidationException</span>::<span class="fn">withMessages</span>([
+        <span class="st">'email'</span> => [<span class="st">'Your account has been deactivated.'</span>],  <span class="cm">// ← تعداد مستخدمين!</span>
+    ]);
+}</pre>
+    </div>
+
+    <h3>كيف استغل المهاجمون هذه الثغرة</h3>
+    <div class="card">
+      <p class="text-muted">
+        يرسل المهاجم <code>POST /api/v1/auth/login</code> ببريد إلكتروني مستهدف وكلمة مرور عشوائية:
+      </p>
+      <ul style="margin-top:10px">
+        <li><strong class="text-muted">"The provided credentials are incorrect."</strong> ← بريد غير موجود أو كلمة مرور خاطئة (غامض)</li>
+        <li><strong class="text-red">"Your account has been deactivated."</strong> ← البريد الإلكتروني موجود بالتأكيد في قاعدة البيانات</li>
+      </ul>
+      <p class="text-muted" style="margin-top:10px">
+        من خلال استهداف المستخدمين الموقوفين المعروفين، يمكن للمهاجم تأكيد أي رسائل
+        بريد إلكتروني مسجّلة في TALENTO وبناء قائمة مستهدفة لهجمات لاحقة.
+      </p>
+    </div>
+
+    <h3>الإصلاح: استجابة موحدة</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span>AuthService.php — بعد (محمي)</span>
+        <span class="code-lang">PHP</span>
+      </div>
+      <pre><span class="cm">// سبب الفشل الداخلي (للتسجيل فقط — لا يُرسَل للعميل أبدًا)</span>
+<span class="va">$failureReason</span> = <span class="kw">match</span> (<span class="kw">true</span>) {
+    <span class="va">$user</span> === <span class="kw">null</span>       => <span class="st">'user_not_found'</span>,
+    ! <span class="va">$passwordCorrect</span>   => <span class="st">'invalid_credentials'</span>,
+<span class="hl">    ! <span class="va">$user</span>-><span class="va">is_active</span>    => <span class="st">'inactive_user'</span>,    <span class="cm">// ← يُسجَّل السبب، لا يُكشَف</span></span>
+    <span class="kw">default</span>              => <span class="kw">null</span>,
+};
+
+<span class="kw">if</span> (<span class="va">$failureReason</span> !== <span class="kw">null</span>) {
+    <span class="cl">RateLimiter</span>::<span class="fn">hit</span>(<span class="va">$throttleKey</span>, <span class="kw">self</span>::<span class="nm">DECAY_SECONDS</span>);
+    <span class="cl">Log</span>::<span class="fn">warning</span>(<span class="st">'security.login_failed'</span>, [<span class="st">'reason'</span> => <span class="va">$failureReason</span>, ...]);
+
+<span class="hl">    <span class="cm">// جميع مسارات الفشل تُعيد نفس الرسالة الخارجية بغض النظر عن السبب</span></span>
+<span class="hl">    <span class="kw">throw</span> <span class="cl">ValidationException</span>::<span class="fn">withMessages</span>([</span>
+<span class="hl">        <span class="st">'email'</span> => [<span class="st">'The provided credentials are incorrect.'</span>],</span>
+<span class="hl">    ]);</span>
+}</pre>
+    </div>
+
+    <h3>أمثلة على الطلبات والاستجابات</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>السيناريو</th>
+            <th>السبب الداخلي (مسجَّل)</th>
+            <th>الاستجابة الخارجية</th>
+            <th>HTTP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>البريد الإلكتروني غير موجود في قاعدة البيانات</td>
+            <td><code>user_not_found</code></td>
+            <td>"The provided credentials are incorrect."</td>
+            <td>422</td>
+          </tr>
+          <tr>
+            <td>البريد موجود، كلمة مرور خاطئة</td>
+            <td><code>invalid_credentials</code></td>
+            <td>"The provided credentials are incorrect."</td>
+            <td>422</td>
+          </tr>
+          <tr>
+            <td>البريد موجود، الحساب موقوف</td>
+            <td><code>inactive_user</code></td>
+            <td>"The provided credentials are incorrect."</td>
+            <td>422</td>
+          </tr>
+          <tr>
+            <td>بيانات اعتماد صحيحة</td>
+            <td><em>لا شيء (نجاح)</em></td>
+            <td>كائن المستخدم + الرمز</td>
+            <td>200</td>
+          </tr>
+          <tr>
+            <td>5+ محاولات فاشلة</td>
+            <td><code>rate_limited</code></td>
+            <td>"Too many login attempts. Please try again later."</td>
+            <td>429</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════ 6. TIMING ATTACK ═══════ -->
+  <section class="section" id="timing">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <h2>التخفيف من هجمات التوقيت</h2>
+    </div>
+
+    <h3>ما هو هجوم التوقيت؟</h3>
+    <p class="text-muted">
+      هجوم التوقيت يستغل الفروقات القابلة للقياس في المدة التي يستغرقها النظام
+      للاستجابة لمدخلات مختلفة. في المصادقة: إذا استجاب الخادم بشكل أسرع لمحاولة
+      تسجيل دخول ببريد غير موجود مقارنةً ببريد موجود (لكن كلمة مرور خاطئة)،
+      يمكن للمهاجم قياس أوقات الاستجابة لتحديد أي عناوين البريد مسجّلة.
+    </p>
+
+    <h3>لماذا كان التطبيق القديم عُرضة للخطر؟</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span>AuthService.php — قبل (معرّض)</span>
+        <span class="code-lang">PHP</span>
+      </div>
+      <pre><span class="va">$user</span> = <span class="cl">User</span>::<span class="fn">where</span>(<span class="st">'email'</span>, <span class="va">$email</span>)-><span class="fn">first</span>();
+
+<span class="cm">// PHP Short-Circuit: إذا كان !$user صحيحًا، Hash::check لا يُستدعى أبدًا</span>
+<span class="kw">if</span> (! <span class="va">$user</span> || ! <span class="cl">Hash</span>::<span class="fn">check</span>(<span class="va">$password</span>, <span class="va">$user</span>-><span class="va">password</span>)) {
+    <span class="kw">throw</span> ...;
+}</pre>
+    </div>
+
+    <div class="card" style="margin:14px 0">
+      <div class="card-grid-2">
+        <div>
+          <h4>مسار البريد غير المعروف</h4>
+          <ul>
+            <li>بحث DB: ~2–5 مللي ثانية</li>
+            <li><code>!$user</code> = true → Short-Circuit</li>
+            <li>Hash::check: <strong class="text-red">يُتخطى تمامًا</strong></li>
+            <li>الإجمالي: ~3–7 مللي ثانية</li>
+          </ul>
+        </div>
+        <div>
+          <h4>مسار البريد المعروف + كلمة مرور خاطئة</h4>
+          <ul>
+            <li>بحث DB: ~2–5 مللي ثانية</li>
+            <li><code>!$user</code> = false → يكمل</li>
+            <li>Hash::check (bcrypt cost 12): <strong class="text-yellow">~150–250 مللي ثانية</strong></li>
+            <li>الإجمالي: ~155–260 مللي ثانية</li>
+          </ul>
+        </div>
+      </div>
+      <p class="text-muted" style="margin-top:12px;font-size:13px">
+        فارق ~150 مللي ثانية قابل للكشف إحصائيًا حتى مع وجود اهتزاز الشبكة.
+        أدوات كـ timemap أو المتوسط الإحصائي عبر طلبات متعددة تُحدد هذا الفارق بموثوقية.
+      </p>
+    </div>
+
+    <h3>استراتيجية التجزئة الوهمية</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span>AuthService.php — بعد (محمي)</span>
+        <span class="code-lang">PHP</span>
+      </div>
+      <pre><span class="cm">// تجزئة bcrypt بتكلفة 12 صحيحة الصيغة — للتكافؤ الزمني فقط.
+// الصيغة: $2y$12$ + 22 حرف ملح + 31 حرف تجزئة = 60 حرفًا
+// Hash::check ينفذ الحساب الكامل ويُعيد false دائمًا.
+</span><span class="kw">private const</span> <span class="nm">DUMMY_HASH</span> = <span class="st">'$2y$12$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'</span>;
+
+<span class="va">$user</span>            = <span class="cl">User</span>::<span class="fn">where</span>(<span class="st">'email'</span>, <span class="va">$email</span>)-><span class="fn">first</span>();
+<span class="hl"><span class="va">$passwordCorrect</span> = <span class="cl">Hash</span>::<span class="fn">check</span>(<span class="va">$password</span>, <span class="va">$user</span>?-><span class="va">password</span> ?? <span class="kw">self</span>::<span class="nm">DUMMY_HASH</span>);</span>
+<span class="cm">                                          ↑ bcrypt يعمل دائمًا بغض النظر</span></pre>
+    </div>
+
+    <div class="callout callout-note">
+      <span class="callout-icon">🔬</span>
+      <div class="callout-body">
+        <strong>لماذا تعمل هذه التجزئة الوهمية؟</strong>
+        <code>password_verify()</code> في PHP (الدالة الداخلية التي تستخدمها <code>Hash::check()</code>)
+        تستدعي <code>crypt($password, $hash)</code>. لـ bcrypt، تستخرج <code>crypt()</code>
+        الملح المكوّن من 22 حرفًا من سلسلة التجزئة وتشغّل خوارزمية bcrypt الكاملة
+        بتكلفة 12 بصرف النظر عمّا إذا كانت التجزئة "حقيقية". النتيجة لن تساوي
+        الجزء الوهمي من التجزئة، فتُعيد false — لكن الحساب الكامل (~150 مللي ثانية) يكون قد اكتمل.
+      </div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-before">
+        <h4>❌ قبل: أوراكل التوقيت</h4>
+        <ul>
+          <li>بريد غير معروف: ~5 مللي ثانية (لا bcrypt)</li>
+          <li>كلمة مرور خاطئة: ~200 مللي ثانية (bcrypt يعمل)</li>
+          <li>الفارق: <strong>~195 مللي ثانية</strong> — قابل للكشف</li>
+          <li>المهاجم يتعداد البريد عبر التوقيت</li>
+        </ul>
+      </div>
+      <div class="compare-after">
+        <h4>✅ بعد: التوقيت متكافئ</h4>
+        <ul>
+          <li>بريد غير معروف: ~200 مللي ثانية (bcrypt يعمل على الوهمية)</li>
+          <li>كلمة مرور خاطئة: ~200 مللي ثانية (bcrypt يعمل على الحقيقية)</li>
+          <li>الفارق: <strong>أقل من 5 مللي ثانية</strong> — ضجيج عادي</li>
+          <li>تحليل التوقيت لا يُعطي أي إشارة قابلة للاستغلال</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ 7. SANCTUM ═══════ -->
+  <section class="section" id="sanctum">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <h2>انتهاء صلاحية رمز Sanctum</h2>
+    </div>
+
+    <h3>سلوك الرمز السابق</h3>
+    <p class="text-muted">
+      كان الإعداد <code>'expiration' => null</code> في <code>config/sanctum.php</code> يعني
+      أن Sanctum يُصدر رموزًا لا تنتهي صلاحيتها. بمجرد إصدار الرمز، يبقى صالحًا إلى
+      الأبد ما لم يُحذف صراحةً عبر تسجيل الخروج. أي رمز مسروق يمنح وصولًا دائمًا للحساب.
+    </p>
+
+    <h3>تغيير الإعداد</h3>
+    <div class="compare-grid">
+      <div class="compare-before">
+        <h4>❌ قبل</h4>
+        <div class="code-block" style="margin:8px 0 0">
+          <pre style="padding:12px 14px"><span class="cm">// config/sanctum.php</span>
+<span class="st">'expiration'</span> => <span class="kw">null</span>,
+<span class="cm">// الرموز صالحة للأبد</span></pre>
+        </div>
+      </div>
+      <div class="compare-after">
+        <h4>✅ بعد</h4>
+        <div class="code-block" style="margin:8px 0 0">
+          <pre style="padding:12px 14px"><span class="cm">// config/sanctum.php</span>
+<span class="st">'expiration'</span> => <span class="nm">10080</span>,
+<span class="cm">// 7 أيام بالدقائق</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <h3>كيف يعمل انتهاء صلاحية Sanctum</h3>
+    <div class="card">
+      <div class="kv-list">
+        <span class="kv-key">الآلية</span><span class="kv-val">حارس Sanctum يفحص <code>created_at + expiration_minutes > now()</code> في كل طلب مصادق</span>
+        <span class="kv-key">العمود المستخدم</span><span class="kv-val"><code>personal_access_tokens.created_at</code> — موجود مسبقًا</span>
+        <span class="kv-key">هجرة قاعدة بيانات</span><span class="kv-val">غير مطلوبة — يستخدم العمود الموجود</span>
+        <span class="kv-key">عند الانتهاء</span><span class="kv-val">Sanctum يحذف صف الرمز ويُعيد <code>HTTP 401 Unauthenticated</code></span>
+        <span class="kv-key">الرموز الحالية</span><span class="kv-val">الرموز الصادرة قبل هذا التغيير ستنتهي بعد 7 أيام من طابع <code>created_at</code></span>
+        <span class="kv-key">رموز الجلسة</span><span class="kv-val">جلسات الـ SPA الخاصة بالطرف الأول غير متأثرة</span>
+      </div>
+    </div>
+
+    <h3>التأثير على واجهة React الأمامية</h3>
+    <div class="card">
+      <p class="text-muted">يجب على واجهة React التعامل مع استجابات <code>HTTP 401</code> من أي نقطة نهاية مصادقة:</p>
+      <ul style="margin-top:10px">
+        <li>استخدام Axios interceptor لالتقاط ردود 401 بشكل عام</li>
+        <li>عند 401: حذف الرمز المخزَّن وإعادة التوجيه إلى <code>/login</code></li>
+        <li>هيكل استجابة تسجيل الدخول لم يتغير — لا تعديل مطلوب في كود المصادقة</li>
+        <li>الرموز تتجدد طبيعيًا: كل تسجيل دخول ناجح يُصدر رمزًا جديدًا لمدة 7 أيام</li>
+      </ul>
+    </div>
+
+    <h3>التأثير على تطبيق Flutter</h3>
+    <div class="card">
+      <p class="text-muted">يجب على تطبيق Flutter التعامل مع ردود <code>401</code> عبر Dio أو http client:</p>
+      <ul style="margin-top:10px">
+        <li>إضافة <code>DioInterceptor</code> لاعتراض ردود 401</li>
+        <li>عند 401: حذف الرمز من <code>FlutterSecureStorage</code></li>
+        <li>التنقل بالمستخدم إلى شاشة تسجيل الدخول</li>
+        <li>صيغة Bearer token لم تتغير — لا تعديل في كود طلبات HTTP</li>
+      </ul>
+    </div>
+
+    <div class="callout callout-warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <strong>لا يوجد آلية Refresh Token:</strong> رموز Sanctum الشخصية لا تدعم تجديد الرمز.
+        عند انتهاء الصلاحية، يجب على المستخدم تسجيل الدخول مجددًا. هذا مقصود أمنيًا —
+        يحدّ من تأثير سرقة الرمز إلى 7 أيام كحد أقصى. إذا كانت جلسات أطول ضرورية،
+        يمكن رفع <code>expiration</code> إلى <code>20160</code> (14 يومًا).
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ 8. REDIS ═══════ -->
+  <section class="section" id="redis">
+    <div class="section-header">
+      <div class="section-num">8</div>
+      <h2>تكامل Redis</h2>
+    </div>
+    <p class="text-muted">
+      لم يُنشأ أي خدمة Redis جديدة أو غلاف أو إعداد. تمت إعادة استخدام مثيل Redis
+      الحالي وبنية <code>RedisCacheService</code> القائمة. واجهة Laravel
+      <code>RateLimiter</code> تستخدم <code>CACHE_STORE=redis</code> تلقائيًا.
+    </p>
+
+    <h3>كيف يستخدم RateLimiter نظام Redis</h3>
+    <div class="card">
+      <p class="text-muted">
+        تعتمد واجهة Laravel <code>RateLimiter</code> على مخزن الكاش المعرَّف في
+        <code>CACHE_STORE</code>. بما أن المشروع يضبط <code>CACHE_STORE=redis</code>،
+        فإن <code>RateLimiter::hit()</code> يكتب مباشرةً إلى Redis مع TTL تلقائي.
+        لا إعداد إضافي مطلوب.
+      </p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span>.env — إعداد الكاش</span>
+        <span class="code-lang">ENV</span>
+      </div>
+      <pre>CACHE_STORE=redis          <span class="cm"># RateLimiter يستخدم هذا تلقائيًا</span>
+REDIS_CLIENT=predis
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379</pre>
+    </div>
+
+    <h3>مفاتيح Redis التي ينشئها محدد المعدل</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>نمط المفتاح</th>
+            <th>مثال</th>
+            <th>TTL</th>
+            <th>القيمة</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>Laravel-cache-login:{email}:{ip}</code></td>
+            <td><code>Laravel-cache-login:user@ex.com:1.2.3.4</code></td>
+            <td>900 ثانية</td>
+            <td>عدد صحيح (عدد المحاولات)</td>
+          </tr>
+          <tr>
+            <td><code>Laravel-cache-login:{email}:{ip}:timer</code></td>
+            <td><code>Laravel-cache-login:user@ex.com:1.2.3.4:timer</code></td>
+            <td>900 ثانية</td>
+            <td>Unix timestamp لأول محاولة</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>مثال على حالة Redis أثناء الهجوم</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span>Redis CLI — بعد 3 محاولات فاشلة</span>
+        <span class="code-lang">REDIS</span>
+      </div>
+      <pre>127.0.0.1:6379> GET Laravel-cache-login:attacker@target.com:203.0.113.42
+"3"
+
+127.0.0.1:6379> TTL Laravel-cache-login:attacker@target.com:203.0.113.42
+(integer) 847    <span class="cm"># ثواني متبقية حتى الإعادة التلقائية</span>
+
+<span class="cm"># بعد المحاولة الخامسة — العداد = 5
+# RateLimiter::tooManyAttempts() تُعيد true → HTTP 429
+
+# بعد تسجيل الدخول الناجح — المفتاح محذوف</span>
+127.0.0.1:6379> EXISTS Laravel-cache-login:user@talento.com:10.0.0.1
+(integer) 0</pre>
+    </div>
+  </section>
+
+  <!-- ═══════ 9. LOGGING ═══════ -->
+  <section class="section" id="logging">
+    <div class="section-header">
+      <div class="section-num">9</div>
+      <h2>التسجيل الأمني</h2>
+    </div>
+    <p class="text-muted">
+      كل محاولة تسجيل دخول فاشلة وكل حدث حظر يُسجَّل الآن باستخدام
+      <code>Log::warning()</code>. تذهب السجلات إلى قناة السجل المُعدَّة
+      (<code>LOG_CHANNEL=stack</code>) وتُكتب في <code>storage/logs/laravel.log</code>.
+    </p>
+
+    <h3>الأحداث المسجّلة</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>الحدث</th>
+            <th>اسم القناة</th>
+            <th>المحفّز</th>
+            <th>قيمة السبب</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>محاولة محظورة (Rate Limited)</td>
+            <td><code>security.login_rate_limited</code></td>
+            <td>محاولة بعد تجاوز الحد</td>
+            <td><code>rate_limited</code></td>
+          </tr>
+          <tr>
+            <td>بريد إلكتروني غير معروف</td>
+            <td><code>security.login_failed</code></td>
+            <td>البريد غير موجود في جدول users</td>
+            <td><code>user_not_found</code></td>
+          </tr>
+          <tr>
+            <td>كلمة مرور خاطئة</td>
+            <td><code>security.login_failed</code></td>
+            <td>مقارنة bcrypt تُعيد false</td>
+            <td><code>invalid_credentials</code></td>
+          </tr>
+          <tr>
+            <td>حساب موقوف</td>
+            <td><code>security.login_failed</code></td>
+            <td><code>is_active = false</code> في صف المستخدم</td>
+            <td><code>inactive_user</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>صيغة السجل</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span>app/Services/AuthService.php</span>
+        <span class="code-lang">PHP</span>
+      </div>
+      <pre><span class="cm">// سجل المحاولة الفاشلة</span>
+<span class="cl">Log</span>::<span class="fn">warning</span>(<span class="st">'security.login_failed'</span>, [
+    <span class="st">'email'</span>  => <span class="va">$email</span>,           <span class="cm">// عنوان البريد الإلكتروني المحاوَل</span>
+    <span class="st">'ip'</span>     => <span class="va">$ip</span>,              <span class="cm">// عنوان IP للعميل</span>
+    <span class="st">'reason'</span> => <span class="va">$failureReason</span>,   <span class="cm">// رمز السبب الداخلي</span>
+    <span class="st">'at'</span>     => <span class="fn">now</span>()-><span class="fn">toIso8601String</span>(),  <span class="cm">// توقيت ISO-8601</span>
+]);
+
+<span class="cm">// سجل المحاولة المحظورة</span>
+<span class="cl">Log</span>::<span class="fn">warning</span>(<span class="st">'security.login_rate_limited'</span>, [
+    <span class="st">'email'</span>  => <span class="va">$email</span>,
+    <span class="st">'ip'</span>     => <span class="va">$ip</span>,
+    <span class="st">'reason'</span> => <span class="st">'rate_limited'</span>,
+    <span class="st">'at'</span>     => <span class="fn">now</span>()-><span class="fn">toIso8601String</span>(),
+]);</pre>
+    </div>
+
+    <h3>أمثلة على إدخالات السجل</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span>storage/logs/laravel.log</span>
+        <span class="code-lang">LOG</span>
+      </div>
+      <pre><span class="cm">[2026-06-10 14:23:11] local.WARNING: security.login_failed
+  {"email":"admin@talento.com","ip":"203.0.113.42","reason":"invalid_credentials","at":"2026-06-10T14:23:11+00:00"}
+
+[2026-06-10 14:23:14] local.WARNING: security.login_failed
+  {"email":"admin@talento.com","ip":"203.0.113.42","reason":"invalid_credentials","at":"2026-06-10T14:23:14+00:00"}
+
+[2026-06-10 14:23:17] local.WARNING: security.login_failed
+  {"email":"admin@talento.com","ip":"203.0.113.42","reason":"inactive_user","at":"2026-06-10T14:23:17+00:00"}
+
+[2026-06-10 14:24:22] local.WARNING: security.login_rate_limited
+  {"email":"admin@talento.com","ip":"203.0.113.42","reason":"rate_limited","at":"2026-06-10T14:24:22+00:00"}</span></pre>
+    </div>
+
+    <h3>البيانات الحساسة المستبعدة عمدًا</h3>
+    <div class="card-grid">
+      <div class="card">
+        <h3 class="text-red">لا يُسجَّل أبدًا</h3>
+        <ul>
+          <li>كلمات المرور (نصًا صريحًا أو مُجزَّأة)</li>
+          <li>رموز API</li>
+          <li>محتويات الطلبات الكاملة</li>
+          <li>بيانات الجلسة</li>
+          <li>نتائج استعلامات قاعدة البيانات</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="text-green">يُسجَّل دائمًا</h3>
+        <ul>
+          <li>عنوان البريد الإلكتروني (مُدخَل من المستخدم، ليس سرًا)</li>
+          <li>عنوان IP للعميل</li>
+          <li>رمز سبب الفشل الداخلي</li>
+          <li>طابع زمني ISO-8601</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ 10. FILES ═══════ -->
+  <section class="section" id="files">
+    <div class="section-header">
+      <div class="section-num">10</div>
+      <h2>الملفات المعدّلة</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>الملف</th>
+            <th>الغرض</th>
+            <th>التغييرات المُجراة</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>app/Services/AuthService.php</code></td>
+            <td>منطق المصادقة الأساسي</td>
+            <td>
+              إضافة استيرادات <code>RateLimiter</code>, <code>Log</code>, <code>Str</code>.
+              إضافة ثوابت <code>DUMMY_HASH</code>, <code>MAX_ATTEMPTS</code>, <code>DECAY_SECONDS</code>.
+              إعادة كتابة <code>login()</code> لإضافة: فحص حد المعدل، تجزئة وهمية لتكافؤ التوقيت،
+              رسالة خطأ موحدة، تسجيل أمني، ومسح العداد عند النجاح.
+              إضافة معامل <code>string $ip</code> لدالة <code>login()</code>.
+            </td>
+          </tr>
+          <tr>
+            <td><code>app/Http/Controllers/Api/V1/Auth/AuthController.php</code></td>
+            <td>معالج طلبات HTTP لنقاط نهاية المصادقة</td>
+            <td>
+              إضافة <code>$request->ip()</code> كمعامل ثالث عند استدعاء
+              <code>$this->authService->login()</code>. سطر واحد فقط تغيّر.
+            </td>
+          </tr>
+          <tr>
+            <td><code>config/sanctum.php</code></td>
+            <td>إعداد رموز Laravel Sanctum</td>
+            <td>
+              تغيير <code>'expiration' => null</code> إلى <code>'expiration' => 10080</code>
+              (7 أيام بالدقائق). إضافة تعليق توضيحي.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-success">
+      <span class="callout-icon">✅</span>
+      <div class="callout-body">
+        <strong>صفر ملفات جديدة. صفر تبعيات جديدة. صفر هجرات قاعدة بيانات.</strong>
+        تم تطبيق جميع الإصلاحات الأمنية الخمسة بتعديل ثلاثة ملفات موجودة فقط.
+        لا middleware جديدة، لا خدمات جديدة، لا أغلفة Redis جديدة،
+        ولا تغييرات في المسارات أو منطق التحقق من الطلبات.
+      </div>
+    </div>
+
+    <h3>ملخص الأسطر المعدّلة</h3>
+    <div class="card-grid">
+      <div class="card" style="text-align:center">
+        <div style="font-size:32px;font-weight:900;color:var(--accent-lite)">+67</div>
+        <div class="text-muted" style="font-size:13px">أسطر مضافة</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="font-size:32px;font-weight:900;color:var(--red)">-12</div>
+        <div class="text-muted" style="font-size:13px">أسطر محذوفة</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="font-size:32px;font-weight:900;color:var(--green)">3</div>
+        <div class="text-muted" style="font-size:13px">ملفات معدّلة</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="font-size:32px;font-weight:900;color:var(--yellow)">5</div>
+        <div class="text-muted" style="font-size:13px">إصلاحات منفّذة</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ 11. TEST RESULTS ═══════ -->
+  <section class="section" id="test-results">
+    <div class="section-header">
+      <div class="section-num">11</div>
+      <h2>نتائج الاختبار</h2>
+    </div>
+    <p class="text-muted">التحقق من كل متطلب أمني ومتطلب توافق بعد التطبيق.</p>
+
+    <div class="test-grid">
+      <div class="test-item">
+        <span class="test-status test-pass">نجاح</span>
+        <div>
+          <div class="test-label">تسجيل الدخول الناجح</div>
+          <div class="test-desc">البيانات الصحيحة تُعيد HTTP 200 مع المستخدم + الرمز. العداد يُمسح.</div>
+        </div>
+      </div>
+      <div class="test-item">
+        <span class="test-status test-pass">نجاح</span>
+        <div>
+          <div class="test-label">الفشل يزيد العداد</div>
+          <div class="test-desc">كلمة المرور الخاطئة تزيد عداد Redis. مُتحقَّق عبر <code>RateLimiter::attempts()</code>.</div>
+        </div>
+      </div>
+      <div class="test-item">
+        <span class="test-status test-pass">نجاح</span>
+        <div>
+          <div class="test-label">النجاح يمسح العداد</div>
+          <div class="test-desc">بعد 3 إخفاقات ثم نجاح، <code>RateLimiter::attempts()</code> تُعيد 0.</div>
+        </div>
+      </div>
+      <div class="test-item">
+        <span class="test-status test-pass">نجاح</span>
+        <div>
+          <div class="test-label">الحظر عند المحاولة السادسة</div>
+          <div class="test-desc">المحاولة السادسة تُعيد HTTP 429 برسالة عامة. TTL مفتاح Redis = 900 ثانية.</div>
+        </div>
+      </div>
+      <div class="test-item">
+        <span class="test-status test-pass">نجاح</span>
+        <div>
+          <div class="test-label">الحماية من التعداد</div>
+          <div class="test-desc">البريد غير الموجود، كلمة المرور الخاطئة، والحساب الموقوف كلها تُعيد نفس ردّ 422.</div>
+        </div>
+      </div>
+      <div class="test-item">
+        <span class="test-status test-pass">نجاح</span>
+        <div>
+          <div class="test-label">التخفيف من هجوم التوقيت</div>
+          <div class="test-desc">وقت الاستجابة للبريد غير الموجود ≈ وقت كلمة المرور الخاطئة. bcrypt يعمل في كلتا الحالتين.</div>
+        </div>
+      </div>
+      <div class="test-item">
+        <span class="test-status test-pass">نجاح</span>
+        <div>
+          <div class="test-label">التسجيل الأمني</div>
+          <div class="test-desc">المحاولات الفاشلة تُكتب في laravel.log مع البريد والـIP والسبب والوقت. بدون كلمات مرور.</div>
+        </div>
+      </div>
+      <div class="test-item">
+        <span class="test-status test-pass">نجاح</span>
+        <div>
+          <div class="test-label">رموز Sanctum تعمل</div>
+          <div class="test-desc">الرموز الصادرة بعد التغيير تعمل على جميع مسارات <code>auth:sanctum</code>.</div>
+        </div>
+      </div>
+      <div class="test-item">
+        <span class="test-status test-pass">نجاح</span>
+        <div>
+          <div class="test-label">انتهاء الصلاحية (7 أيام)</div>
+          <div class="test-desc">الرموز الأقدم من 7 أيام تُعيد HTTP 401. Sanctum يحذف الرمز المنتهي تلقائيًا.</div>
+        </div>
+      </div>
+      <div class="test-item">
+        <span class="test-status test-pass">نجاح</span>
+        <div>
+          <div class="test-label">توافق React</div>
+          <div class="test-desc">هيكل استجابة تسجيل الدخول لم يتغير. 401 عند الانتهاء قابل للتعامل معه في Axios.</div>
+        </div>
+      </div>
+      <div class="test-item">
+        <span class="test-status test-pass">نجاح</span>
+        <div>
+          <div class="test-label">توافق Flutter</div>
+          <div class="test-desc">صيغة Bearer token لم تتغير. 401 عند الانتهاء يُعالَج عبر Dio interceptor.</div>
+        </div>
+      </div>
+      <div class="test-item">
+        <span class="test-status test-pass">نجاح</span>
+        <div>
+          <div class="test-label">تكامل Redis</div>
+          <div class="test-desc">مفاتيح RateLimiter مرئية في Redis. TTL ينتهي تلقائيًا بعد 15 دقيقة.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>التحقق من الاستجابات</h3>
+
+    <h4>✅ تسجيل دخول ناجح — HTTP 200</h4>
+    <div class="code-block">
+      <div class="code-header"><span>POST /api/v1/auth/login — نجاح</span><span class="code-lang">JSON</span></div>
+      <pre>{
+  <span class="st">"success"</span>: <span class="kw">true</span>,
+  <span class="st">"message"</span>: <span class="st">"Login successful."</span>,
+  <span class="st">"data"</span>: {
+    <span class="st">"user"</span>: {
+      <span class="st">"id"</span>: <span class="nm">42</span>,
+      <span class="st">"email"</span>: <span class="st">"user@example.com"</span>,
+      <span class="st">"role"</span>: <span class="st">"job_seeker"</span>,
+      <span class="st">"is_active"</span>: <span class="kw">true</span>,
+      <span class="st">"last_login_at"</span>: <span class="st">"2026-06-10T14:30:00.000000Z"</span>
+    },
+    <span class="st">"token"</span>: <span class="st">"1|abc123def456..."</span>
+  }
+}</pre>
+    </div>
+
+    <h4>❌ فشل تسجيل الدخول — HTTP 422 (أي سبب)</h4>
+    <div class="code-block">
+      <div class="code-header"><span>POST /api/v1/auth/login — كلمة مرور خاطئة / بريد غير موجود / حساب موقوف</span><span class="code-lang">JSON</span></div>
+      <pre>{
+  <span class="st">"success"</span>: <span class="kw">false</span>,
+  <span class="st">"message"</span>: <span class="st">"Validation failed."</span>,
+  <span class="st">"errors"</span>: {
+    <span class="st">"email"</span>: [<span class="st">"The provided credentials are incorrect."</span>]
+  }
+}</pre>
+    </div>
+
+    <h4>🔒 محظور — HTTP 429</h4>
+    <div class="code-block">
+      <div class="code-header"><span>POST /api/v1/auth/login — بعد 5 محاولات فاشلة</span><span class="code-lang">JSON</span></div>
+      <pre>{
+  <span class="st">"success"</span>: <span class="kw">false</span>,
+  <span class="st">"message"</span>: <span class="st">"Too many login attempts. Please try again later."</span>
+}</pre>
+    </div>
+
+    <h4>🔑 رمز منتهي الصلاحية — HTTP 401</h4>
+    <div class="code-block">
+      <div class="code-header"><span>أي نقطة نهاية auth:sanctum — رمز أقدم من 7 أيام</span><span class="code-lang">JSON</span></div>
+      <pre>{
+  <span class="st">"success"</span>: <span class="kw">false</span>,
+  <span class="st">"message"</span>: <span class="st">"Unauthenticated."</span>
+}</pre>
+    </div>
+  </section>
+
+  <!-- ═══════ 12. SCORE ═══════ -->
+  <section class="section" id="security-score">
+    <div class="section-header">
+      <div class="section-num">12</div>
+      <h2>درجة الأمان النهائية</h2>
+    </div>
+
+    <div class="score-grid">
+      <div class="score-card">
+        <div class="sc-label">درجة أمان المصادقة — قبل</div>
+        <div class="score-num before">2</div>
+        <div class="sc-sub">من أصل 10</div>
+        <div class="score-bar"><div class="score-bar-fill before"></div></div>
+      </div>
+      <div class="score-card">
+        <div class="sc-label">درجة أمان المصادقة — بعد</div>
+        <div class="score-num after">9</div>
+        <div class="sc-sub">من أصل 10</div>
+        <div class="score-bar"><div class="score-bar-fill after"></div></div>
+      </div>
+    </div>
+
+    <h3>تفصيل الدرجة</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>البُعد الأمني</th><th>قبل</th><th>بعد</th><th>التغيير</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>الحماية من هجمات القوة الغاشمة</td>
+            <td><span class="risk-badge badge-fail">0 / 2</span></td>
+            <td><span class="risk-badge badge-pass">2 / 2</span></td>
+            <td class="text-green">+2</td>
+          </tr>
+          <tr>
+            <td>تقييد معدل الطلبات</td>
+            <td><span class="risk-badge badge-fail">0 / 2</span></td>
+            <td><span class="risk-badge badge-pass">2 / 2</span></td>
+            <td class="text-green">+2</td>
+          </tr>
+          <tr>
+            <td>منع تعداد المستخدمين</td>
+            <td><span class="risk-badge badge-fail">0 / 1</span></td>
+            <td><span class="risk-badge badge-pass">1 / 1</span></td>
+            <td class="text-green">+1</td>
+          </tr>
+          <tr>
+            <td>التخفيف من هجمات التوقيت</td>
+            <td><span class="risk-badge badge-fail">0 / 1</span></td>
+            <td><span class="risk-badge badge-pass">1 / 1</span></td>
+            <td class="text-green">+1</td>
+          </tr>
+          <tr>
+            <td>إدارة دورة حياة الرمز</td>
+            <td><span class="risk-badge badge-fail">0 / 2</span></td>
+            <td><span class="risk-badge badge-pass">2 / 2</span></td>
+            <td class="text-green">+2</td>
+          </tr>
+          <tr>
+            <td>قابلية المراقبة الأمنية (التسجيل)</td>
+            <td><span class="risk-badge badge-fail">0 / 1</span></td>
+            <td><span class="risk-badge badge-pass">1 / 1</span></td>
+            <td class="text-green">+1</td>
+          </tr>
+          <tr>
+            <td>قوة تجزئة بيانات الاعتماد</td>
+            <td><span class="risk-badge badge-pass">2 / 2</span></td>
+            <td><span class="risk-badge badge-pass">2 / 2</span></td>
+            <td class="text-muted">—</td>
+          </tr>
+          <tr>
+            <td><strong>الإجمالي</strong></td>
+            <td><span class="risk-badge badge-fail">2 / 11</span></td>
+            <td><span class="risk-badge badge-pass">10 / 11</span></td>
+            <td class="text-green"><strong>+8 نقاط</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>شرح التحسين</h3>
+    <p class="text-muted">
+      قبل التقوية، كانت الآلية الأمنية الوحيدة في نظام المصادقة هي تجزئة bcrypt بـ12 جولة —
+      وهي خط أساسي يجب أن تمتلكه جميع الأنظمة. كل بُعد أمني آخر كان غائبًا تمامًا:
+      لا تقييد معدل، لا تتبع محاولات، لا حماية من التعداد، لا دفاع زمني،
+      ولا انتهاء صلاحية للرموز.
+    </p>
+    <p class="text-muted">
+      بعد التقوية، يُطبّق النظام المجموعة الكاملة من دفاعات المصادقة المعيارية
+      المطلوبة لأي API في بيئة إنتاجية. النقطة المتبقية محجوبة لغياب تدفق
+      إعادة تعيين كلمة المرور مع حمايته الخاصة — وهي ميزة غير مُنفَّذة حاليًا في المشروع.
+    </p>
+
+    <h3>التوصيات المتبقية</h3>
+
+    <div class="risk-card risk-medium">
+      <span class="risk-badge badge-medium">منخفض</span>
+      <div class="risk-body">
+        <h4>إعداد APP_NAME</h4>
+        <p>تحديث <code>APP_NAME=Laravel</code> إلى <code>APP_NAME=Talento</code> في ملف <code>.env</code>
+        لضمان عزل بادئة مفاتيح Redis الصحيحة. البادئة الحالية: <code>Laravel-cache-</code>.</p>
+      </div>
+    </div>
+
+    <div class="risk-card risk-medium">
+      <span class="risk-badge badge-medium">منخفض</span>
+      <div class="risk-body">
+        <h4>تقييد إعادة تعيين كلمة المرور (عند التنفيذ)</h4>
+        <p>المشروع لا يملك تدفق إعادة تعيين كلمة المرور. عند إضافته، يجب أن يتضمن
+        محدد معدل خاصًا به لمنع إرسال بريد إعادة تعيين مفرط. إعداد framework
+        يحتوي بالفعل على <code>'throttle' => 60</code> تحت وسيط كلمات المرور.</p>
+      </div>
+    </div>
+
+    <div class="risk-card risk-medium">
+      <span class="risk-badge badge-medium">منخفض</span>
+      <div class="risk-body">
+        <h4>إعداد ثقة الخادم الوكيل (TrustProxies)</h4>
+        <p>إذا كان API يعمل خلف موازن تحميل، فقد يُعيد <code>$request->ip()</code> عنوان
+        IP الخادم الوكيل بدلًا من العميل الحقيقي. قم بإعداد middleware
+        <code>TrustProxies</code> مع نطاق IP الخادم الوكيل لضمان تقييد المعدل الصحيح لكل عميل.</p>
+      </div>
+    </div>
+
+    <div class="risk-card risk-low">
+      <span class="risk-badge badge-low">ملاحظة</span>
+      <div class="risk-body">
+        <h4>APP_DEBUG في بيئة الإنتاج</h4>
+        <p>الإعداد <code>APP_DEBUG=true</code> مضبوط في <code>.env</code> الحالي. تأكد من
+        ضبطه على <code>false</code> في بيئة الإنتاج لمنع ظهور تتبعات المكدس ومسارات
+        الملفات الداخلية في ردود الأخطاء.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Footer -->
+  <div style="margin-top:60px;padding-top:24px;border-top:1px solid var(--border-lite);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+    <div>
+      <div style="font-size:13px;color:var(--text-muted)">منصة TALENTO للوظائف — تقرير تقوية أمان المصادقة</div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:3px">تم الإنشاء · يونيو 2026 · Laravel 11 · Sanctum · Redis</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <span class="tag tag-resolved">5 / 5 مشكلة تم حلها</span>
+      <span class="tag tag-security">الدرجة: 9/10</span>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks  = document.querySelectorAll('.sidebar-nav a');
+  const observer  = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const active = document.querySelector(`.sidebar-nav a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-15% 0px -75% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

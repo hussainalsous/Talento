@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقرير التدقيق التقني الشامل لنظام البريد الإلكتروني — منصة Talento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#F0FDF4', 100: '#DCFCE7', 200: '#BBF7D0', 300: '#86EFAC',
+                            400: '#4ADE80', 500: '#22C55E', 600: '#16A34A', 700: '#15803D',
+                            800: '#166534', 900: '#14532D',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        body { background-color: #F9FAFB; }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #F1F5F9; }
+        ::-webkit-scrollbar-thumb { background: #16A34A; border-radius: 5px; }
+        pre, code, .ltr { direction: ltr; text-align: left; unicode-bidi: embed; }
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            background: #0F172A; color: #E2E8F0; border-radius: 12px;
+            padding: 20px; overflow-x: auto; font-size: 13px; line-height: 1.7;
+            border: 1px solid #1E293B;
+        }
+        pre .cm { color: #64748B; }      /* comment */
+        pre .kw { color: #C084FC; }      /* keyword */
+        pre .fn { color: #60A5FA; }      /* function */
+        pre .st { color: #86EFAC; }      /* string */
+        pre .nm { color: #FBBF24; }      /* number/const */
+        pre .vr { color: #F8FAFC; }      /* variable */
+        .toc-link { transition: all .15s ease; }
+        .toc-link:hover { background: #DCFCE7; padding-right: 18px; color: #15803D; }
+        .flow-arrow::after {
+            content: "↓"; display: block; text-align: center;
+            color: #16A34A; font-size: 22px; font-weight: 800; margin: 4px 0;
+        }
+        .badge { display:inline-block; padding:2px 10px; border-radius:9999px; font-size:11px; font-weight:700; }
+        table { border-collapse: collapse; }
+        section { scroll-margin-top: 24px; }
+    </style>
+</head>
+<body class="font-sans text-slate-800 leading-relaxed">
+
+    <!-- ══════════════ HERO ══════════════ -->
+    <header class="bg-gradient-to-br from-brand-700 via-brand-600 to-brand-500 text-white">
+        <div class="max-w-5xl mx-auto px-6 py-16">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-2xl font-black">T</div>
+                <div>
+                    <p class="text-3xl font-extrabold tracking-tight">Talento</p>
+                    <p class="text-sm text-white/80">منصة التوظيف الذكية</p>
+                </div>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold leading-snug mb-4">
+                تقرير التدقيق التقني الشامل<br>لنظام البريد الإلكتروني
+            </h1>
+            <p class="text-lg text-white/90 max-w-2xl">
+                تحليل معمّق كامل لتدفّق إرسال الرسائل، ونظام التحقق من البريد، وطابور المهام،
+                والتخزين، وخوارزميات دورة الحياة، والإعدادات — مبني على فحص مباشر للشيفرة المصدرية.
+            </p>
+            <div class="flex flex-wrap gap-3 mt-8 text-sm">
+                <span class="bg-white/15 backdrop-blur px-4 py-2 rounded-lg">Laravel 13 · PHP 8.3</span>
+                <span class="bg-white/15 backdrop-blur px-4 py-2 rounded-lg">قاعدة البيانات: MySQL</span>
+                <span class="bg-white/15 backdrop-blur px-4 py-2 rounded-lg">الطابور: Database Driver</span>
+                <span class="bg-white/15 backdrop-blur px-4 py-2 rounded-lg">البريد: Gmail SMTP</span>
+                <span class="bg-white/15 backdrop-blur px-4 py-2 rounded-lg">التاريخ: 2026-06-13</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-6 py-12">
+
+        <!-- ══════════════ EXECUTIVE SUMMARY ══════════════ -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-10">
+            <h2 class="text-xl font-bold text-brand-700 mb-4 flex items-center gap-2">
+                <span class="w-1.5 h-6 bg-brand-500 rounded"></span> الملخص التنفيذي
+            </h2>
+            <p class="text-slate-600 mb-4">
+                يعتمد نظام البريد في المنصة على <strong>مسارَين منفصلين للإرسال غير المتزامن (Queued)</strong>:
+                إشعار التحقق <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-700 text-sm">VerifyEmailNotification</code>،
+                ومهمة الإرسال العامة <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-700 text-sm">SendEmail</code>.
+                جميع الرسائل تُرسَل عبر <strong>Gmail SMTP</strong>، وتُخزَّن مهام الطابور في
+                جدول <code class="bg-slate-100 px-1.5 py-0.5 rounded text-brand-700 text-sm">jobs</code> داخل MySQL وليس في Redis.
+            </p>
+            <div class="grid md:grid-cols-4 gap-4 mt-6">
+                <div class="bg-brand-50 rounded-xl p-4 text-center border border-brand-100">
+                    <p class="text-3xl font-extrabold text-brand-600">7</p>
+                    <p class="text-xs text-slate-500 mt-1">رسائل فعلية مُفعّلة</p>
+                </div>
+                <div class="bg-brand-50 rounded-xl p-4 text-center border border-brand-100">
+                    <p class="text-3xl font-extrabold text-brand-600">4</p>
+                    <p class="text-xs text-slate-500 mt-1">أصناف Mailable</p>
+                </div>
+                <div class="bg-brand-50 rounded-xl p-4 text-center border border-brand-100">
+                    <p class="text-3xl font-extrabold text-brand-600">2</p>
+                    <p class="text-xs text-slate-500 mt-1">مسارات للطابور</p>
+                </div>
+                <div class="bg-amber-50 rounded-xl p-4 text-center border border-amber-100">
+                    <p class="text-3xl font-extrabold text-amber-600">3</p>
+                    <p class="text-xs text-slate-500 mt-1">ملاحظات تستحق الانتباه</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════ TABLE OF CONTENTS ══════════════ -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-10">
+            <h2 class="text-xl font-bold text-brand-700 mb-5 flex items-center gap-2">
+                <span class="w-1.5 h-6 bg-brand-500 rounded"></span> جدول المحتويات
+            </h2>
+            <ol class="space-y-1">
+                <li><a href="#s1" class="toc-link block py-2 px-3 rounded-lg text-slate-700"><span class="font-bold text-brand-600">1.</span> تدفّق إرسال البريد — كل مصادر التشغيل</a></li>
+                <li><a href="#s2" class="toc-link block py-2 px-3 rounded-lg text-slate-700"><span class="font-bold text-brand-600">2.</span> نظام بريد التحقق (Email Verification)</a></li>
+                <li><a href="#s3" class="toc-link block py-2 px-3 rounded-lg text-slate-700"><span class="font-bold text-brand-600">3.</span> الطابور و Redis (Queue &amp; Redis)</a></li>
+                <li><a href="#s4" class="toc-link block py-2 px-3 rounded-lg text-slate-700"><span class="font-bold text-brand-600">4.</span> الطوابع الزمنية والتخزين</a></li>
+                <li><a href="#s5" class="toc-link block py-2 px-3 rounded-lg text-slate-700"><span class="font-bold text-brand-600">5.</span> خوارزمية ودورة الحياة الكاملة لكل رسالة</a></li>
+                <li><a href="#s6" class="toc-link block py-2 px-3 rounded-lg text-slate-700"><span class="font-bold text-brand-600">6.</span> الإعدادات (Configuration)</a></li>
+                <li><a href="#s7" class="toc-link block py-2 px-3 rounded-lg text-slate-700"><span class="font-bold text-brand-600">7.</span> الملاحظات والمخاطر والتوصيات</a></li>
+            </ol>
+        </div>
+
+        <!-- ══════════════ SECTION 1 ══════════════ -->
+        <section id="s1" class="mb-12">
+            <h2 class="text-2xl font-extrabold text-slate-900 mb-2 flex items-center gap-3">
+                <span class="bg-brand-600 text-white w-9 h-9 rounded-lg flex items-center justify-center text-lg">1</span>
+                تدفّق إرسال البريد
+            </h2>
+            <p class="text-slate-600 mb-6 mr-12">كل موضع في الشيفرة يُطلق إرسال بريد إلكتروني، وما الذي يُشغّله، والصنف المسؤول، والبيانات المُمرّرة.</p>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-brand-600 text-white text-right">
+                                <th class="px-4 py-3 font-semibold">#</th>
+                                <th class="px-4 py-3 font-semibold">الرسالة</th>
+                                <th class="px-4 py-3 font-semibold">المُشغِّل (Trigger)</th>
+                                <th class="px-4 py-3 font-semibold">صنف Mailable / Notification</th>
+                                <th class="px-4 py-3 font-semibold">المسار</th>
+                                <th class="px-4 py-3 font-semibold">يُسجَّل في email_logs؟</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-3 font-bold text-brand-600">1</td>
+                                <td class="px-4 py-3 font-semibold">تحقق بريد الباحث عن عمل</td>
+                                <td class="px-4 py-3 text-slate-600"><code class="ltr text-xs">AuthService::registerJobSeeker()</code></td>
+                                <td class="px-4 py-3"><span class="badge bg-brand-100 text-brand-700">VerifyEmailNotification</span> → <span class="badge bg-slate-100 text-slate-700">VerifyEmailMailable</span></td>
+                                <td class="px-4 py-3"><span class="badge bg-blue-100 text-blue-700">Notification</span></td>
+                                <td class="px-4 py-3"><span class="badge bg-red-100 text-red-700">لا ✗</span></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-3 font-bold text-brand-600">2</td>
+                                <td class="px-4 py-3 font-semibold">استلام طلب تسجيل شركة</td>
+                                <td class="px-4 py-3 text-slate-600"><code class="ltr text-xs">AuthService::submitCompanyRegistrationRequest()</code></td>
+                                <td class="px-4 py-3"><span class="badge bg-slate-100 text-slate-700">SystemNotificationEmail</span></td>
+                                <td class="px-4 py-3"><span class="badge bg-purple-100 text-purple-700">SendEmail Job</span></td>
+                                <td class="px-4 py-3"><span class="badge bg-brand-100 text-brand-700">نعم ✓</span></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-3 font-bold text-brand-600">3</td>
+                                <td class="px-4 py-3 font-semibold">تحقق بريد طلب الشركة</td>
+                                <td class="px-4 py-3 text-slate-600"><code class="ltr text-xs">AuthService::submitCompanyRegistrationRequest()</code></td>
+                                <td class="px-4 py-3"><span class="badge bg-slate-100 text-slate-700">VerifyRegistrationEmailMailable</span></td>
+                                <td class="px-4 py-3"><span class="badge bg-purple-100 text-purple-700">SendEmail Job</span></td>
+                                <td class="px-4 py-3"><span class="badge bg-brand-100 text-brand-700">نعم ✓</span></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-3 font-bold text-brand-600">4</td>
+                                <td class="px-4 py-3 font-semibold">الموافقة على تسجيل شركة</td>
+                                <td class="px-4 py-3 text-slate-600"><code class="ltr text-xs">AdminService::approveRegistrationRequest()</code></td>
+                                <td class="px-4 py-3"><span class="badge bg-slate-100 text-slate-700">SystemNotificationEmail</span></td>
+                                <td class="px-4 py-3"><span class="badge bg-purple-100 text-purple-700">SendEmail Job</span></td>
+                                <td class="px-4 py-3"><span class="badge bg-brand-100 text-brand-700">نعم ✓</span></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-3 font-bold text-brand-600">5</td>
+                                <td class="px-4 py-3 font-semibold">تحقق بريد المالك بعد الموافقة <span class="text-xs text-amber-600">(شرطي)</span></td>
+                                <td class="px-4 py-3 text-slate-600"><code class="ltr text-xs">AdminService::approveRegistrationRequest()</code></td>
+                                <td class="px-4 py-3"><span class="badge bg-brand-100 text-brand-700">VerifyEmailNotification</span> → <span class="badge bg-slate-100 text-slate-700">VerifyEmailMailable</span></td>
+                                <td class="px-4 py-3"><span class="badge bg-blue-100 text-blue-700">Notification</span></td>
+                                <td class="px-4 py-3"><span class="badge bg-red-100 text-red-700">لا ✗</span></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-3 font-bold text-brand-600">6</td>
+                                <td class="px-4 py-3 font-semibold">رفض طلب تسجيل شركة</td>
+                                <td class="px-4 py-3 text-slate-600"><code class="ltr text-xs">AdminService::rejectRegistrationRequest()</code></td>
+                                <td class="px-4 py-3"><span class="badge bg-slate-100 text-slate-700">SystemNotificationEmail</span></td>
+                                <td class="px-4 py-3"><span class="badge bg-purple-100 text-purple-700">SendEmail Job</span></td>
+                                <td class="px-4 py-3"><span class="badge bg-brand-100 text-brand-700">نعم ✓</span></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-3 font-bold text-brand-600">7</td>
+                                <td class="px-4 py-3 font-semibold">إعادة إرسال بريد التحقق</td>
+                                <td class="px-4 py-3 text-slate-600"><code class="ltr text-xs">EmailVerificationController::resend()</code></td>
+                                <td class="px-4 py-3"><span class="badge bg-brand-100 text-brand-700">VerifyEmailNotification</span> → <span class="badge bg-slate-100 text-slate-700">VerifyEmailMailable</span></td>
+                                <td class="px-4 py-3"><span class="badge bg-blue-100 text-blue-700">Notification</span></td>
+                                <td class="px-4 py-3"><span class="badge bg-red-100 text-red-700">لا ✗</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Data passed -->
+            <h3 class="text-lg font-bold text-slate-800 mb-3 mt-8">البيانات المُمرّرة إلى كل قالب</h3>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-white rounded-xl border border-slate-200 p-5">
+                    <p class="font-bold text-brand-700 mb-2 ltr">VerifyEmailMailable</p>
+                    <ul class="text-sm text-slate-600 space-y-1 list-disc pr-5">
+                        <li><code class="ltr">User $user</code> — لاشتقاق الاسم الأول</li>
+                        <li><code class="ltr">string $verificationUrl</code> — رابط موقَّع</li>
+                        <li><code class="ltr">int $expiresInMinutes = 60</code></li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 p-5">
+                    <p class="font-bold text-brand-700 mb-2 ltr">VerifyRegistrationEmailMailable</p>
+                    <ul class="text-sm text-slate-600 space-y-1 list-disc pr-5">
+                        <li><code class="ltr">string $firstName</code></li>
+                        <li><code class="ltr">string $companyName</code></li>
+                        <li><code class="ltr">string $verificationUrl</code> — صلاحية 48 ساعة</li>
+                        <li><code class="ltr">int $expiresInHours = 48</code></li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 p-5">
+                    <p class="font-bold text-brand-700 mb-2 ltr">SystemNotificationEmail</p>
+                    <ul class="text-sm text-slate-600 space-y-1 list-disc pr-5">
+                        <li><code class="ltr">string $title</code> — عنوان الرسالة</li>
+                        <li><code class="ltr">string $message</code> — نص متعدد الأسطر (يُحوَّل عبر <code class="ltr">nl2br</code>)</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 p-5">
+                    <p class="font-bold text-slate-400 mb-2 ltr">CompanyNotificationEmail <span class="badge bg-red-100 text-red-700 mr-1">شيفرة ميتة</span></p>
+                    <ul class="text-sm text-slate-500 space-y-1 list-disc pr-5">
+                        <li>مُعرَّف لكن <strong>لا يُستدعى في أي مكان</strong> داخل المشروع</li>
+                        <li>بنيته مطابقة لـ <code class="ltr">SystemNotificationEmail</code></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border-r-4 border-blue-400 rounded-lg p-4 mt-6">
+                <p class="text-sm text-blue-900"><strong>تنويه مهم:</strong> رسائل «الترحيب» و«تغيير كلمة المرور» و«تفعيل/تعطيل الحساب» وغيرها
+                ليست بريدًا إلكترونيًا — بل <strong>إشعارات داخل التطبيق (In-App)</strong> تُخزَّن عبر
+                <code class="ltr">SupabaseNotificationService</code> في Supabase، وقد استُثنيت من جدول الرسائل أعلاه.</p>
+            </div>
+        </section>
+
+        <!-- ══════════════ SECTION 2 ══════════════ -->
+        <section id="s2" class="mb-12">
+            <h2 class="text-2xl font-extrabold text-slate-900 mb-2 flex items-center gap-3">
+                <span class="bg-brand-600 text-white w-9 h-9 rounded-lg flex items-center justify-center text-lg">2</span>
+                نظام بريد التحقق
+            </h2>
+            <p class="text-slate-600 mb-6 mr-12">آلية التحقق، توليد الرابط الموقَّع وانتهاء صلاحيته، المسارات والمتحكّمات، وما يحدث قبل/بعد التحقق.</p>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+                <h3 class="text-lg font-bold text-brand-700 mb-3">الآلية الأساسية</h3>
+                <p class="text-slate-600 mb-4 text-sm">
+                    يطبّق نموذج <code class="ltr bg-slate-100 px-1.5 rounded">User</code> واجهة <code class="ltr bg-slate-100 px-1.5 rounded">MustVerifyEmail</code>،
+                    لكنه يتجاوز السلوك الافتراضي عبر دالّة مخصّصة تُرسل إشعارًا مُصمَّمًا (Branded) ومُجدوَلًا (Queued):
+                </p>
+                <pre class="ltr"><span class="cm">// app/Models/User.php</span>
+<span class="kw">class</span> <span class="fn">User</span> <span class="kw">extends</span> Authenticatable <span class="kw">implements</span> MustVerifyEmail
+{
+    <span class="kw">public function</span> <span class="fn">sendEmailVerificationNotification</span>(): <span class="kw">void</span>
+    {
+        <span class="vr">$this</span>-&gt;<span class="fn">notify</span>(<span class="kw">new</span> <span class="fn">VerifyEmailNotification</span>());
+    }
+}</pre>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <h3 class="text-lg font-bold text-brand-700 mb-3">توليد الرابط الموقَّع</h3>
+                    <pre class="ltr text-xs"><span class="cm">// VerifyEmailNotification::toMail()</span>
+<span class="vr">$expiresInMinutes</span> = (<span class="kw">int</span>) Config::<span class="fn">get</span>(
+   <span class="st">'auth.verification.expire'</span>, <span class="nm">60</span>);
+
+<span class="vr">$url</span> = URL::<span class="fn">temporarySignedRoute</span>(
+   <span class="st">'api.v1.email.verify'</span>,
+   Carbon::<span class="fn">now</span>()-&gt;<span class="fn">addMinutes</span>(<span class="vr">$expiresInMinutes</span>),
+   [
+     <span class="st">'id'</span>   =&gt; <span class="vr">$notifiable</span>-&gt;<span class="fn">getKey</span>(),
+     <span class="st">'hash'</span> =&gt; <span class="fn">sha1</span>(<span class="vr">$notifiable</span>
+              -&gt;<span class="fn">getEmailForVerification</span>()),
+   ]
+);</pre>
+                    <p class="text-xs text-slate-500 mt-3">توقيع <strong>HMAC-SHA256</strong> باستخدام <code class="ltr">APP_KEY</code>، ويتضمّن الرابط بارامترات <code class="ltr">signature</code> و<code class="ltr">expires</code>.</p>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <h3 class="text-lg font-bold text-brand-700 mb-3">مدد انتهاء الصلاحية</h3>
+                    <table class="w-full text-sm">
+                        <tr class="border-b border-slate-100"><td class="py-2 font-semibold">تحقق المستخدم</td><td class="py-2 text-brand-600 font-bold ltr">60 دقيقة</td></tr>
+                        <tr class="border-b border-slate-100"><td class="py-2 text-slate-500 text-xs">المصدر</td><td class="py-2 text-xs ltr">EMAIL_VERIFY_EXPIRE</td></tr>
+                        <tr class="border-b border-slate-100"><td class="py-2 font-semibold">تحقق طلب الشركة</td><td class="py-2 text-brand-600 font-bold ltr">48 ساعة</td></tr>
+                        <tr><td class="py-2 text-slate-500 text-xs">المصدر</td><td class="py-2 text-xs">ثابت في الكود</td></tr>
+                    </table>
+                    <div class="bg-brand-50 rounded-lg p-3 mt-3">
+                        <p class="text-xs text-brand-800">الرابط لا يحمل التوكن نفسه؛ بل يُعاد اشتقاق <code class="ltr">sha1(email)</code> ومقارنته زمنيًّا ثابتًا عبر <code class="ltr">hash_equals()</code>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold text-slate-800 mb-3">المسارات (Routes)</h3>
+            <pre class="ltr mb-6"><span class="cm">// routes/api.php — Route::prefix('email')->name('email.')</span>
+GET   /api/v1/email/verify/{id}/{hash}              <span class="cm">// signed, بدون مصادقة</span>
+GET   /api/v1/email/verify-registration/{id}/{hash} <span class="cm">// signed, بدون مصادقة</span>
+POST  /api/v1/email/verification-notification        <span class="cm">// auth:sanctum + throttle:6,1</span></pre>
+
+            <h3 class="text-lg font-bold text-slate-800 mb-3">خطوات التحقّق داخل المتحكّم</h3>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+                <div class="space-y-0">
+                    <div class="flow-arrow bg-slate-50 rounded-lg p-3 text-sm"><strong class="text-brand-600">1.</strong> <code class="ltr">hasValidSignature()</code> — يرفض إن كان التوقيع غير صالح أو منتهيًا. عند الفشل يُميّز «منتهٍ» عن «غير صالح» بقراءة <code class="ltr">expires</code> ومقارنته بـ <code class="ltr">time()</code>.</div>
+                    <div class="flow-arrow bg-slate-50 rounded-lg p-3 text-sm"><strong class="text-brand-600">2.</strong> <code class="ltr">User::find($id)</code> — يُرجع 404 إن لم يوجد.</div>
+                    <div class="flow-arrow bg-slate-50 rounded-lg p-3 text-sm"><strong class="text-brand-600">3.</strong> <code class="ltr">hash_equals($hash, sha1($user-&gt;getEmailForVerification()))</code> — مقارنة ثابتة زمنيًّا؛ 403 عند الفشل.</div>
+                    <div class="flow-arrow bg-slate-50 rounded-lg p-3 text-sm"><strong class="text-brand-600">4.</strong> <code class="ltr">hasVerifiedEmail()</code> — إن كان مُتحقّقًا مسبقًا يُعيد رسالة «مُتحقّق سلفًا» دون تغيير.</div>
+                    <div class="bg-brand-50 rounded-lg p-3 text-sm border border-brand-200"><strong class="text-brand-600">5.</strong> <code class="ltr">markEmailAsVerified()</code> — يثبّت <code class="ltr">email_verified_at = now()</code>.</div>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold text-slate-800 mb-3">قبل التحقق وبعده: الحماية (Middleware)</h3>
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+                <div class="bg-white rounded-xl border border-slate-200 p-5">
+                    <p class="font-bold text-slate-800 mb-2">البوابة <code class="ltr text-brand-700">verified</code></p>
+                    <p class="text-sm text-slate-600 mb-2"><code class="ltr">EnsureEmailIsVerified</code> تُعيد:</p>
+                    <pre class="ltr text-xs">{ <span class="st">"success"</span>: <span class="nm">false</span>,
+  <span class="st">"message"</span>: <span class="st">"..."</span>,
+  <span class="st">"email_verified"</span>: <span class="nm">false</span> }  <span class="cm">// 403</span></pre>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 p-5">
+                    <p class="font-bold text-slate-800 mb-2">المسارات المحميّة فقط</p>
+                    <ul class="text-sm text-slate-600 list-disc pr-5 space-y-1">
+                        <li><code class="ltr">cvs.store</code> — رفع السيرة الذاتية</li>
+                        <li><code class="ltr">job-posts.apply</code> — التقدّم لوظيفة</li>
+                    </ul>
+                    <p class="text-xs text-amber-700 bg-amber-50 rounded p-2 mt-3">مسارات الشركات <strong>غير محميّة</strong> بهذه البوابة عمدًا — لأن موافقة المشرف هي بوابة التحقق البديلة.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════ SECTION 3 ══════════════ -->
+        <section id="s3" class="mb-12">
+            <h2 class="text-2xl font-extrabold text-slate-900 mb-2 flex items-center gap-3">
+                <span class="bg-brand-600 text-white w-9 h-9 rounded-lg flex items-center justify-center text-lg">3</span>
+                الطابور و Redis
+            </h2>
+            <p class="text-slate-600 mb-6 mr-12">أيّ الرسائل مُجدوَلة، إعدادات الاتصال، أسماء الطوابير، منطق إعادة المحاولة، والمهام الفاشلة.</p>
+
+            <div class="bg-amber-50 border-r-4 border-amber-400 rounded-lg p-4 mb-6">
+                <p class="text-sm text-amber-900"><strong>تصحيح جوهري:</strong> برغم وجود Redis في المشروع، فإنّ
+                <strong>محرّك الطابور هو <code class="ltr">database</code> وليس Redis</strong>
+                (<code class="ltr">QUEUE_CONNECTION=database</code>). يُستخدم Redis حصرًا لطبقة
+                <strong>التخزين المؤقّت (Cache)</strong> (<code class="ltr">CACHE_STORE=redis</code> عبر عميل <code class="ltr">predis</code>).
+                لذا تُخزَّن مهام البريد المُجدوَلة في جدول <code class="ltr">jobs</code> داخل MySQL، ولا تمرّ عبر Redis إطلاقًا.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <h3 class="text-lg font-bold text-brand-700 mb-3">مُجدوَل مقابل متزامن</h3>
+                    <table class="w-full text-sm">
+                        <thead><tr class="text-right text-slate-500 border-b border-slate-200"><th class="py-2">البيئة</th><th class="py-2">السلوك</th></tr></thead>
+                        <tbody>
+                            <tr class="border-b border-slate-100"><td class="py-2 font-semibold">الإنتاج</td><td class="py-2"><span class="badge bg-brand-100 text-brand-700">database (مُجدوَل)</span></td></tr>
+                            <tr><td class="py-2 font-semibold">الاختبارات</td><td class="py-2"><span class="badge bg-slate-100 text-slate-700">sync (فوري)</span></td></tr>
+                        </tbody>
+                    </table>
+                    <p class="text-xs text-slate-500 mt-3"><strong>جميع</strong> رسائل البريد مُجدوَلة في الإنتاج: المساران
+                    <code class="ltr">SendEmail</code> و<code class="ltr">VerifyEmailNotification</code> يطبّقان <code class="ltr">ShouldQueue</code>.</p>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <h3 class="text-lg font-bold text-brand-700 mb-3">منطق إعادة المحاولة</h3>
+                    <table class="w-full text-sm">
+                        <tr class="border-b border-slate-100"><td class="py-2 text-slate-600 ltr">$tries</td><td class="py-2 font-bold text-brand-600 ltr">3</td></tr>
+                        <tr class="border-b border-slate-100"><td class="py-2 text-slate-600 ltr">$timeout</td><td class="py-2 font-bold text-brand-600 ltr">30s</td></tr>
+                        <tr class="border-b border-slate-100"><td class="py-2 text-slate-600 ltr">$backoff</td><td class="py-2 font-bold text-brand-600 ltr">60s</td></tr>
+                        <tr><td class="py-2 text-slate-600 ltr">retry_after</td><td class="py-2 font-bold text-brand-600 ltr">90s</td></tr>
+                    </table>
+                    <p class="text-xs text-slate-500 mt-3">القيم متطابقة في كلا الصنفين. بعد 3 محاولات فاشلة تنتقل المهمة إلى <code class="ltr">failed_jobs</code>.</p>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold text-slate-800 mb-3">إعداد اتصال الطابور</h3>
+            <pre class="ltr mb-6"><span class="cm">// config/queue.php</span>
+<span class="st">'default'</span> =&gt; <span class="fn">env</span>(<span class="st">'QUEUE_CONNECTION'</span>, <span class="st">'database'</span>),   <span class="cm">// .env => database</span>
+
+<span class="st">'database'</span> =&gt; [
+    <span class="st">'driver'</span>       =&gt; <span class="st">'database'</span>,
+    <span class="st">'table'</span>        =&gt; <span class="st">'jobs'</span>,
+    <span class="st">'queue'</span>        =&gt; <span class="st">'default'</span>,
+    <span class="st">'retry_after'</span>  =&gt; <span class="nm">90</span>,
+    <span class="st">'after_commit'</span> =&gt; <span class="nm">true</span>,   <span class="cm">// لا يُجدوَل إلا بعد إتمام الـ transaction</span>
+],
+
+<span class="st">'failed'</span> =&gt; [
+    <span class="st">'driver'</span>   =&gt; <span class="st">'database-uuids'</span>,
+    <span class="st">'table'</span>    =&gt; <span class="st">'failed_jobs'</span>,
+],</pre>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+                <h3 class="text-lg font-bold text-brand-700 mb-3">بنية حمولة المهمة المُسلسَلة (Payload)</h3>
+                <p class="text-sm text-slate-600 mb-3">يُسلسِل Laravel المهمة إلى JSON ويخزّنها في عمود <code class="ltr">payload</code> بجدول <code class="ltr">jobs</code>. يحوي الكائن المُسلسَل خصائص <code class="ltr">SendEmail</code> العامّة (المُستلِم + الـ Mailable + سجلّ الـ log)، إضافةً إلى <code class="ltr">emailLogId</code> الخاص الثابت:</p>
+                <pre class="ltr text-xs">{
+  <span class="st">"uuid"</span>: <span class="st">"…"</span>,
+  <span class="st">"displayName"</span>: <span class="st">"App\\Jobs\\SendEmail"</span>,
+  <span class="st">"job"</span>: <span class="st">"Illuminate\\Queue\\CallQueuedHandler@call"</span>,
+  <span class="st">"maxTries"</span>: <span class="nm">3</span>, <span class="st">"timeout"</span>: <span class="nm">30</span>, <span class="st">"backoff"</span>: <span class="nm">60</span>,
+  <span class="st">"data"</span>: {
+    <span class="st">"commandName"</span>: <span class="st">"App\\Jobs\\SendEmail"</span>,
+    <span class="st">"command"</span>: <span class="st">"O:18:\"App\\Jobs\\SendEmail\":… (serialized object)"</span>
+  }
+}</pre>
+                <p class="text-xs text-slate-500 mt-3">بفضل <code class="ltr">SerializesModels</code>، تُخزَّن النماذج كمُعرّفات (IDs) وتُسترجَع من قاعدة البيانات عند التنفيذ — وليس ككائنات كاملة.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-white rounded-xl border border-slate-200 p-4 text-center">
+                    <p class="font-bold text-slate-800 ltr">jobs</p>
+                    <p class="text-xs text-slate-500 mt-1">المهام المُعلّقة</p>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 p-4 text-center">
+                    <p class="font-bold text-slate-800 ltr">job_batches</p>
+                    <p class="text-xs text-slate-500 mt-1">دفعات المهام (غير مُستخدَم للبريد)</p>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 p-4 text-center">
+                    <p class="font-bold text-slate-800 ltr">failed_jobs</p>
+                    <p class="text-xs text-slate-500 mt-1">المهام الفاشلة (UUID + exception)</p>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border-r-4 border-blue-400 rounded-lg p-4 mt-6">
+                <p class="text-sm text-blue-900"><strong>Horizon:</strong> غير مُثبَّت (<code class="ltr">config/horizon.php</code> غير موجود).
+                وهو أصلًا يعمل فقط مع محرّك طابور Redis، بينما المشروع يستخدم محرّك <code class="ltr">database</code>.
+                إدارة العمّال تتمّ عبر <code class="ltr">php artisan queue:work</code> التقليدي.</p>
+            </div>
+        </section>
+
+        <!-- ══════════════ SECTION 4 ══════════════ -->
+        <section id="s4" class="mb-12">
+            <h2 class="text-2xl font-extrabold text-slate-900 mb-2 flex items-center gap-3">
+                <span class="bg-brand-600 text-white w-9 h-9 rounded-lg flex items-center justify-center text-lg">4</span>
+                الطوابع الزمنية والتخزين
+            </h2>
+            <p class="text-slate-600 mb-6 mr-12">أين تُخزَّن الطوابع الزمنية المتعلّقة بالبريد، والجداول والأعمدة المعنيّة، وتسجيل أحداث الإرسال.</p>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-brand-600 text-white text-right">
+                                <th class="px-4 py-3">الجدول</th>
+                                <th class="px-4 py-3">العمود</th>
+                                <th class="px-4 py-3">المعنى</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr><td class="px-4 py-3 font-semibold ltr">users</td><td class="px-4 py-3 ltr">email_verified_at</td><td class="px-4 py-3 text-slate-600">طابع تحقّق المستخدم (nullable)</td></tr>
+                            <tr><td class="px-4 py-3 font-semibold ltr">company_registration_requests</td><td class="px-4 py-3 ltr">email_verified_at</td><td class="px-4 py-3 text-slate-600">تحقّق مُسبق للطلب — يُنقَل للمستخدم عند الموافقة (أُضيف 2026-06-13)</td></tr>
+                            <tr><td class="px-4 py-3 font-semibold ltr">email_logs</td><td class="px-4 py-3 ltr">created_at / updated_at</td><td class="px-4 py-3 text-slate-600">وقت التسجيل ووقت تحديث الحالة (بديل sent_at)</td></tr>
+                            <tr><td class="px-4 py-3 font-semibold ltr">email_logs</td><td class="px-4 py-3 ltr">status</td><td class="px-4 py-3 text-slate-600">enum: pending / sent / failed</td></tr>
+                            <tr><td class="px-4 py-3 font-semibold ltr">email_logs</td><td class="px-4 py-3 ltr">error_message</td><td class="px-4 py-3 text-slate-600">رسالة الاستثناء عند الفشل</td></tr>
+                            <tr><td class="px-4 py-3 font-semibold ltr">failed_jobs</td><td class="px-4 py-3 ltr">failed_at / exception</td><td class="px-4 py-3 text-slate-600">طابع الفشل النهائي ونصّ الاستثناء</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold text-slate-800 mb-3">مخطّط جدول <code class="ltr">email_logs</code></h3>
+            <pre class="ltr mb-6"><span class="cm">// 2026_05_23_130716_create_email_logs_table.php</span>
+Schema::<span class="fn">create</span>(<span class="st">'email_logs'</span>, <span class="kw">function</span> (Blueprint <span class="vr">$table</span>) {
+    <span class="vr">$table</span>-&gt;<span class="fn">uuid</span>(<span class="st">'id'</span>)-&gt;<span class="fn">primary</span>();
+    <span class="vr">$table</span>-&gt;<span class="fn">unsignedBigInteger</span>(<span class="st">'sender_id'</span>);  <span class="cm">// أصبح nullable لاحقًا (2026-06-08)</span>
+    <span class="vr">$table</span>-&gt;<span class="fn">string</span>(<span class="st">'subject'</span>);
+    <span class="vr">$table</span>-&gt;<span class="fn">string</span>(<span class="st">'to_email'</span>);
+    <span class="vr">$table</span>-&gt;<span class="fn">text</span>(<span class="st">'body'</span>);
+    <span class="vr">$table</span>-&gt;<span class="fn">enum</span>(<span class="st">'status'</span>, [<span class="st">'sent'</span>,<span class="st">'failed'</span>,<span class="st">'pending'</span>])-&gt;<span class="fn">default</span>(<span class="st">'pending'</span>);
+    <span class="vr">$table</span>-&gt;<span class="fn">text</span>(<span class="st">'error_message'</span>)-&gt;<span class="fn">nullable</span>();
+    <span class="vr">$table</span>-&gt;<span class="fn">timestamps</span>();
+    <span class="vr">$table</span>-&gt;<span class="fn">foreign</span>(<span class="st">'sender_id'</span>)-&gt;<span class="fn">references</span>(<span class="st">'id'</span>)-&gt;<span class="fn">on</span>(<span class="st">'users'</span>)-&gt;<span class="fn">onDelete</span>(<span class="st">'cascade'</span>);
+});</pre>
+
+            <div class="bg-amber-50 border-r-4 border-amber-400 rounded-lg p-4">
+                <p class="text-sm text-amber-900"><strong>فجوة في الرصد:</strong> جدول <code class="ltr">email_logs</code> يُكتب فقط من مسار <code class="ltr">SendEmail</code>.
+                أما رسائل التحقّق المُرسَلة عبر مسار <code class="ltr">VerifyEmailNotification</code> (رسائل ١، ٥، ٧) فلا تُسجَّل فيه.
+                كما لا يوجد تتبّع لـ «تمّ التسليم / ارتداد / فُتحت» لأن إرسال Gmail SMTP لا يوفّر Webhooks.</p>
+            </div>
+        </section>
+
+        <!-- ══════════════ SECTION 5 ══════════════ -->
+        <section id="s5" class="mb-12">
+            <h2 class="text-2xl font-extrabold text-slate-900 mb-2 flex items-center gap-3">
+                <span class="bg-brand-600 text-white w-9 h-9 rounded-lg flex items-center justify-center text-lg">5</span>
+                خوارزمية ودورة الحياة الكاملة
+            </h2>
+            <p class="text-slate-600 mb-6 mr-12">تتبّع خطوة بخطوة لكامل دورة الحياة من التشغيل حتى التسليم، والمنطق الشرطي (عدم التكرار، التقييد، إلخ).</p>
+
+            <!-- Flow A -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+                <h3 class="text-lg font-bold text-brand-700 mb-4">المسار (أ): تحقّق الباحث عن عمل عبر Notification</h3>
+                <div class="space-y-0">
+                    <div class="flow-arrow bg-brand-50 rounded-lg p-3 text-sm border border-brand-100"><strong>تسجيل عبر</strong> <code class="ltr">POST /api/v1/auth/job-seeker/register</code></div>
+                    <div class="flow-arrow bg-slate-50 rounded-lg p-3 text-sm"><code class="ltr">registerJobSeeker()</code> ينشئ <code class="ltr">User</code> + <code class="ltr">JobSeeker</code> داخل <code class="ltr">DB::transaction</code> ويولّد توكن.</div>
+                    <div class="flow-arrow bg-slate-50 rounded-lg p-3 text-sm"><strong>بعد</strong> الـ transaction: <code class="ltr">sendEmailVerificationNotification()</code> (لضمان تثبيت صفّ المستخدم أولًا).</div>
+                    <div class="flow-arrow bg-slate-50 rounded-lg p-3 text-sm"><code class="ltr">VerifyEmailNotification</code> (ShouldQueue) تُسلسَل إلى جدول <code class="ltr">jobs</code>.</div>
+                    <div class="flow-arrow bg-slate-50 rounded-lg p-3 text-sm">العامل (<code class="ltr">queue:work</code>) يلتقطها → <code class="ltr">toMail()</code> يبني الرابط الموقَّع و<code class="ltr">VerifyEmailMailable</code>.</div>
+                    <div class="bg-brand-50 rounded-lg p-3 text-sm border border-brand-200">يُرسَل عبر Gmail SMTP. النقر على الرابط → <code class="ltr">markEmailAsVerified()</code> → إعادة توجيه إلى <code class="ltr">/email-verified</code>.</div>
+                </div>
+            </div>
+
+            <!-- Flow B -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+                <h3 class="text-lg font-bold text-brand-700 mb-4">المسار (ب): رسائل النظام عبر SendEmail Job</h3>
+                <div class="space-y-0">
+                    <div class="flow-arrow bg-brand-50 rounded-lg p-3 text-sm border border-brand-100"><code class="ltr">SendEmail::dispatch(recipient, mailable, log)</code> — يُولَّد <code class="ltr">emailLogId</code> (UUID) في الباني.</div>
+                    <div class="flow-arrow bg-slate-50 rounded-lg p-3 text-sm">تُسلسَل المهمة إلى جدول <code class="ltr">jobs</code> (نفس الـ UUID يُحفَظ داخل الحمولة).</div>
+                    <div class="flow-arrow bg-slate-50 rounded-lg p-3 text-sm"><code class="ltr">handle()</code>: <code class="ltr">EmailLog::firstOrCreate(['id'=&gt;$emailLogId], …)</code> — يمنع التكرار عند إعادة المحاولة.</div>
+                    <div class="flow-arrow bg-slate-50 rounded-lg p-3 text-sm"><code class="ltr">Mail::to($recipient)-&gt;send($mailable)</code> داخل <code class="ltr">try/catch</code>.</div>
+                    <div class="bg-brand-50 rounded-lg p-3 text-sm border border-brand-200">نجاح → <code class="ltr">status = sent</code>. فشل → <code class="ltr">status = failed</code> + <code class="ltr">error_message</code> ثم <code class="ltr">throw</code> لتفعيل إعادة المحاولة.</div>
+                </div>
+            </div>
+
+            <!-- Conditional logic -->
+            <h3 class="text-lg font-bold text-slate-800 mb-3">المنطق الشرطي والحمايات</h3>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-white rounded-xl border border-slate-200 p-5">
+                    <p class="font-bold text-brand-700 mb-1">عدم الإرسال إن كان مُتحقّقًا</p>
+                    <p class="text-sm text-slate-600">كلٌّ من <code class="ltr">resend()</code> و<code class="ltr">verify()</code> يتوقّف مبكّرًا إذا كان البريد مُتحقّقًا سلفًا.</p>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 p-5">
+                    <p class="font-bold text-brand-700 mb-1">تقييد المعدّل (Throttling)</p>
+                    <p class="text-sm text-slate-600"><code class="ltr">throttle:6,1</code> — ٦ طلبات إعادة إرسال كحدّ أقصى في الدقيقة لكل مستخدم.</p>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 p-5">
+                    <p class="font-bold text-brand-700 mb-1">منع تكرار السجلّ (Idempotency)</p>
+                    <p class="text-sm text-slate-600"><code class="ltr">emailLogId</code> ثابت عبر المحاولات + <code class="ltr">firstOrCreate</code> ⇒ صفّ واحد لكل إرسال منطقي.</p>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 p-5">
+                    <p class="font-bold text-brand-700 mb-1">نقل التحقّق المُسبق</p>
+                    <p class="text-sm text-slate-600">عند الموافقة: لا يُرسَل بريد تحقّق إلا إذا لم يكن الطلب مُتحقّقًا سلفًا (<code class="ltr">$alreadyVerified</code>).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════ SECTION 6 ══════════════ -->
+        <section id="s6" class="mb-12">
+            <h2 class="text-2xl font-extrabold text-slate-900 mb-2 flex items-center gap-3">
+                <span class="bg-brand-600 text-white w-9 h-9 rounded-lg flex items-center justify-center text-lg">6</span>
+                الإعدادات
+            </h2>
+            <p class="text-slate-600 mb-6 mr-12">إعداد محرّك البريد، متغيّرات البيئة المُستخدَمة، وأي تكامل مع خدمة بريد خارجية.</p>
+
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <h3 class="text-lg font-bold text-brand-700 mb-3">محرّك البريد (SMTP)</h3>
+                    <table class="w-full text-sm">
+                        <tr class="border-b border-slate-100"><td class="py-2 text-slate-500 ltr">MAIL_MAILER</td><td class="py-2 font-semibold ltr">smtp</td></tr>
+                        <tr class="border-b border-slate-100"><td class="py-2 text-slate-500 ltr">MAIL_HOST</td><td class="py-2 font-semibold ltr">smtp.gmail.com</td></tr>
+                        <tr class="border-b border-slate-100"><td class="py-2 text-slate-500 ltr">MAIL_PORT</td><td class="py-2 font-semibold ltr">587 (TLS)</td></tr>
+                        <tr class="border-b border-slate-100"><td class="py-2 text-slate-500 ltr">MAIL_FROM_ADDRESS</td><td class="py-2 font-semibold ltr text-xs">moyadissa77@gmail.com</td></tr>
+                        <tr><td class="py-2 text-slate-500 ltr">MAIL_FROM_NAME</td><td class="py-2 font-semibold text-xs">Job Platform Notification System</td></tr>
+                    </table>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <h3 class="text-lg font-bold text-brand-700 mb-3">البنية التحتية</h3>
+                    <table class="w-full text-sm">
+                        <tr class="border-b border-slate-100"><td class="py-2 text-slate-500 ltr">QUEUE_CONNECTION</td><td class="py-2 font-semibold ltr">database</td></tr>
+                        <tr class="border-b border-slate-100"><td class="py-2 text-slate-500 ltr">DB_CONNECTION</td><td class="py-2 font-semibold ltr">mysql</td></tr>
+                        <tr class="border-b border-slate-100"><td class="py-2 text-slate-500 ltr">CACHE_STORE</td><td class="py-2 font-semibold ltr">redis (predis)</td></tr>
+                        <tr class="border-b border-slate-100"><td class="py-2 text-slate-500 ltr">EMAIL_VERIFY_EXPIRE</td><td class="py-2 font-semibold ltr">60</td></tr>
+                        <tr><td class="py-2 text-slate-500 ltr">APP_FRONTEND_URL</td><td class="py-2 font-semibold ltr text-xs">localhost:5173</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <h3 class="text-lg font-bold text-brand-700 mb-3">التكامل الخارجي</h3>
+                <p class="text-sm text-slate-600">
+                    لا يوجد تكامل مع خدمة بريد عبر API (مثل SES أو Mailgun أو Postmark). الإرسال يتمّ مباشرةً عبر
+                    <strong>Gmail SMTP</strong> باستخدام كلمة مرور تطبيق (App Password).
+                    قوالب <code class="ltr">ses/postmark/resend</code> موجودة في <code class="ltr">config/mail.php</code> الافتراضي لكنها غير مُفعَّلة.
+                </p>
+            </div>
+        </section>
+
+        <!-- ══════════════ SECTION 7 ══════════════ -->
+        <section id="s7" class="mb-12">
+            <h2 class="text-2xl font-extrabold text-slate-900 mb-2 flex items-center gap-3">
+                <span class="bg-amber-500 text-white w-9 h-9 rounded-lg flex items-center justify-center text-lg">7</span>
+                الملاحظات والمخاطر والتوصيات
+            </h2>
+            <p class="text-slate-600 mb-6 mr-12">نتائج التدقيق التي تستحق الانتباه — مرتّبة حسب الأهمية. لم تُجرَ أي تعديلات على الشيفرة.</p>
+
+            <div class="space-y-4">
+                <div class="bg-white rounded-2xl shadow-sm border-r-4 border-red-400 p-6">
+                    <div class="flex items-start gap-3">
+                        <span class="badge bg-red-100 text-red-700 mt-1">أمني</span>
+                        <div>
+                            <h3 class="font-bold text-slate-900 mb-1">بيانات اعتماد Gmail SMTP في ملف <code class="ltr">.env</code></h3>
+                            <p class="text-sm text-slate-600">يحتوي <code class="ltr">.env</code> على <code class="ltr">MAIL_PASSWORD</code> (كلمة مرور تطبيق Gmail) و<code class="ltr">REDIS_PASSWORD</code>.
+                            <strong>التوصية:</strong> التأكّد من أنّ <code class="ltr">.env</code> ضمن <code class="ltr">.gitignore</code> وعدم رفعه إطلاقًا، وتدوير كلمة المرور إن سبق كشفها.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border-r-4 border-amber-400 p-6">
+                    <div class="flex items-start gap-3">
+                        <span class="badge bg-amber-100 text-amber-700 mt-1">رصد</span>
+                        <div>
+                            <h3 class="font-bold text-slate-900 mb-1">رسائل التحقّق لا تُسجَّل في <code class="ltr">email_logs</code></h3>
+                            <p class="text-sm text-slate-600">مسار <code class="ltr">VerifyEmailNotification</code> يتجاوز <code class="ltr">SendEmail</code> ولا يكتب أي سجلّ.
+                            بالتالي رسائل التحقّق (للباحث، وللمالك بعد الموافقة، وإعادة الإرسال) لا أثر لها في جدول السجلّات.
+                            <strong>التوصية:</strong> توحيد التسجيل أو إضافة قناة رصد لرسائل الإشعارات.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border-r-4 border-slate-300 p-6">
+                    <div class="flex items-start gap-3">
+                        <span class="badge bg-slate-100 text-slate-700 mt-1">نظافة</span>
+                        <div>
+                            <h3 class="font-bold text-slate-900 mb-1">شيفرة ميتة: <code class="ltr">CompanyNotificationEmail</code></h3>
+                            <p class="text-sm text-slate-600">الصنف مُعرَّف بالكامل لكنه <strong>لا يُستدعى في أي موضع</strong>. بنيته نسخة طبق الأصل من <code class="ltr">SystemNotificationEmail</code>.
+                            <strong>التوصية:</strong> حذفه أو استخدامه فعليًّا لرسائل الشركات لتجنّب الالتباس.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border-r-4 border-blue-300 p-6">
+                    <div class="flex items-start gap-3">
+                        <span class="badge bg-blue-100 text-blue-700 mt-1">معلومة</span>
+                        <div>
+                            <h3 class="font-bold text-slate-900 mb-1">لا يوجد تدفّق «استعادة كلمة المرور» عبر البريد</h3>
+                            <p class="text-sm text-slate-600">المسار <code class="ltr">PATCH /auth/password</code> هو تغيير كلمة مرور <strong>لمستخدم مُصادَق</strong> فقط، يُنتج إشعارًا داخل التطبيق دون أي بريد.
+                            لا توجد آلية «نسيت كلمة المرور / إعادة تعيين عبر رابط». <strong>التوصية:</strong> إضافتها إن كانت ضمن المتطلّبات.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border-r-4 border-brand-400 p-6">
+                    <div class="flex items-start gap-3">
+                        <span class="badge bg-brand-100 text-brand-700 mt-1">إيجابي</span>
+                        <div>
+                            <h3 class="font-bold text-slate-900 mb-1">ممارسات سليمة مرصودة</h3>
+                            <ul class="text-sm text-slate-600 list-disc pr-5 space-y-1 mt-1">
+                                <li>تنقية مُدخلات HTML في كل القوالب عبر <code class="ltr">htmlspecialchars()</code>.</li>
+                                <li>مقارنة الهاش الثابتة زمنيًّا عبر <code class="ltr">hash_equals()</code> (مقاومة لهجمات التوقيت).</li>
+                                <li>إرسال غير متزامن بالكامل + إعادة محاولة + idempotency على السجلّ.</li>
+                                <li>عدم تمرير البارامترات الحسّاسة (<code class="ltr">signature/expires/hash</code>) إلى الواجهة عند إعادة التوجيه.</li>
+                                <li>استدعاء إرسال التحقّق <strong>بعد</strong> الـ transaction + خيار <code class="ltr">after_commit</code>.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════ FOOTER ══════════════ -->
+        <footer class="text-center py-10 border-t border-slate-200 mt-12">
+            <div class="flex items-center justify-center gap-2 mb-3">
+                <div class="w-8 h-8 bg-brand-600 text-white rounded-lg flex items-center justify-center font-black">T</div>
+                <span class="font-bold text-slate-700">Talento</span>
+            </div>
+            <p class="text-sm text-slate-500">تقرير تدقيق تقني — نظام البريد الإلكتروني · مبني على فحص مباشر للشيفرة المصدرية</p>
+            <p class="text-xs text-slate-400 mt-1">&copy; 2026 Talento Job Platform. جميع الحقوق محفوظة.</p>
+        </footer>
+
+    </main>
+</body>
+</html>
