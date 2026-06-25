@@ -1,0 +1,1 @@
+{"filter":{"must":[{"key":"candidate_id","match":{"value":"1p_pNgtXCtnzBHsX_ouNr-UFO6_ohNJBG"}}]},"limit":10,"with_payload":true,"with_vectors":false}

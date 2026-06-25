@@ -25,7 +25,8 @@
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/i18n/en.json','utf8'\\)\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('src/i18n/ar.json','utf8'\\)\\); console.log\\('JSON OK'\\)\")",
       "Bash(node -e \"let p=JSON.parse\\(require\\('fs'\\).readFileSync\\(0,'utf8'\\)\\);console.log\\(JSON.stringify\\(p.scripts,null,2\\)\\)\")",
       "Bash(npx vite *)",
-      "Bash(npx eslint *)"
+      "Bash(npx eslint *)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/i18n/en.json','utf8'\\)\\);JSON.parse\\(require\\('fs'\\).readFileSync\\('src/i18n/ar.json','utf8'\\)\\);console.log\\('JSON OK'\\)\")"
     ]
   }
 }

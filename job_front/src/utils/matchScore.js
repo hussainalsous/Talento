@@ -36,3 +36,32 @@ export const MATCH_STATUS_BADGE = {
   auto_shortlisted: 'success',
   rejected:         'danger',
 };
+
+/**
+ * The four CV chunk dimensions the matcher scores, in display order, with the
+ * weight each contributes to the overall score. `i18nKey` resolves the label.
+ */
+export const CHUNK_META = [
+  { key: 'skills',     weight: 40, i18nKey: 'matchBreakdown.skills' },
+  { key: 'experience', weight: 35, i18nKey: 'matchBreakdown.experience' },
+  { key: 'education',  weight: 15, i18nKey: 'matchBreakdown.education' },
+  { key: 'additional', weight: 10, i18nKey: 'matchBreakdown.additional' },
+];
+
+/**
+ * Normalize a raw `score_breakdown` (whatever n8n wrote) into an ordered list of
+ * the chunk dimensions that are actually present with a numeric value.
+ *
+ * The backend stores this JSON verbatim with no shape guarantee — it may be
+ * `{ overall: 0.81 }` (no per-chunk data), the full four-chunk set, or anything
+ * in between. We ignore `overall` (already shown as the headline score) and only
+ * surface known chunk keys, so the UI degrades gracefully to an empty array.
+ *
+ * @returns {Array<{ key, weight, i18nKey, value }>}  value is a 0..1 float
+ */
+export function normalizeBreakdown(breakdown) {
+  if (!breakdown || typeof breakdown !== 'object') return [];
+  return CHUNK_META
+    .filter((c) => breakdown[c.key] != null && Number.isFinite(parseFloat(breakdown[c.key])))
+    .map((c) => ({ ...c, value: parseScore(breakdown[c.key]) }));
+}

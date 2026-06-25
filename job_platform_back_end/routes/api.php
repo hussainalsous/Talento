@@ -267,6 +267,14 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::post('/resumes/embeddings', [ResumeChunkController::class, 'storeEmbedding'])->name('resumes.embeddings.store');
         Route::post('/n8n/log-error',      [N8nController::class, 'logError'])              ->name('n8n.log-error');
     });
+
+    // CV upload routes — job seeker only
+    Route::middleware(['auth:sanctum', 'role:job_seeker'])->group(function () {
+        // Flutter sends PDF binary → Laravel uploads to Drive → triggers n8n cv-ingest
+        Route::post('/resumes/upload',      [CvController::class, 'upload'])     ->name('resumes.upload');
+        // Flutter already uploaded to Drive → sends Drive file ID → triggers n8n cv-match
+        Route::post('/resumes/register-cv', [CvController::class, 'registerCv'])->name('resumes.register-cv');
+    });
 });
 
 /*

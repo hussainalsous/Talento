@@ -1,0 +1,1 @@
+{"drive_file_id":"1p_pNgtXCtnzBHsX_ouNr-UFO6_ohNJBG","candidate_id":"1p_pNgtXCtnzBHsX_ouNr-UFO6_ohNJBG","trigger":"cv_upload","callback":{"match_done":"http://host.docker.internal:8000/api/n8n/match/done","log_error":"http://host.docker.internal:8000/api/n8n/log-error"}}

@@ -37,6 +37,7 @@ class N8nCallbackController extends Controller implements HasMiddleware
             'model'           => ['required', 'string', 'max:255'],
             'dimensions'      => ['required', 'integer'],
             'char_count'      => ['required', 'integer', 'min:0'],
+            'embedded_text'   => ['nullable', 'string'],
         ]);
 
         $meta = JobEmbedMeta::updateOrCreate(
@@ -46,6 +47,7 @@ class N8nCallbackController extends Controller implements HasMiddleware
                 'model'           => $data['model'],
                 'dimensions'      => $data['dimensions'],
                 'char_count'      => $data['char_count'],
+                'embedded_text'   => $data['embedded_text'] ?? null,
                 'status'          => 'embedded',
                 'embedded_at'     => now(),
             ],
@@ -71,7 +73,7 @@ class N8nCallbackController extends Controller implements HasMiddleware
         $data = $request->validate([
             'job_post_id'                  => ['required', 'integer', 'exists:job_posts,id'],
             'trigger'                      => ['required', 'string', 'in:cv_upload,job_publish,scheduled_rerank'],
-            'matches'                      => ['required', 'array'],
+            'matches'                      => ['present', 'array'],
             'matches.*.candidate_id'       => ['required', 'string'],
             'matches.*.match_score'        => ['required', 'numeric', 'between:0,1'],
             'matches.*.score_breakdown'    => ['nullable', 'array'],

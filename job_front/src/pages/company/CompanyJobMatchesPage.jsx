@@ -10,6 +10,7 @@ import { DataTable } from '../../components/tables/DataTable';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { Select } from '../../components/ui/Select';
+import { ScoreBreakdown } from '../../components/ui/ScoreBreakdown';
 import { formatDate, extractPagination } from '../../utils/formatters';
 import { formatScorePercent, scoreTier, MATCH_STATUS_BADGE } from '../../utils/matchScore';
 
@@ -110,16 +111,19 @@ export function CompanyJobMatchesPage() {
     },
     {
       key: 'match_score', label: t('companyJobMatches.colScore'),
-      render: (v) => {
+      render: (v, row) => {
         const { tier, badgeStatus } = scoreTier(v);
         return (
-          <div className="flex items-center gap-2">
-            <span className="font-semibold tabular-nums" style={{ color: 'var(--text-primary)' }}>
-              {formatScorePercent(v)}
-            </span>
-            <Badge status={badgeStatus}>
-              {tier === 'top' ? t('jobSeekerMatches.topMatch') : t('jobSeekerMatches.suggested')}
-            </Badge>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold tabular-nums" style={{ color: 'var(--text-primary)' }}>
+                {formatScorePercent(v)}
+              </span>
+              <Badge status={badgeStatus}>
+                {tier === 'top' ? t('jobSeekerMatches.topMatch') : t('jobSeekerMatches.suggested')}
+              </Badge>
+            </div>
+            <ScoreBreakdown breakdown={row.score_breakdown} />
           </div>
         );
       },

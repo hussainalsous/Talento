@@ -38,7 +38,14 @@ return [
     'n8n' => [
         'job_embed_webhook' => env('N8N_JOB_EMBED_WEBHOOK'),
         'cv_match_webhook'  => env('N8N_CV_MATCH_WEBHOOK'),
+        'cv_ingest_webhook' => env('N8N_CV_INGEST_WEBHOOK', 'http://localhost:5678/webhook/cv-ingest'),
         'webhook_secret'    => env('N8N_WEBHOOK_SECRET'),
+        'callback_base'     => env('N8N_CALLBACK_BASE', 'http://host.docker.internal:8000'),
+    ],
+
+    'google' => [
+        'service_account_json_path' => env('GOOGLE_SERVICE_ACCOUNT_JSON_PATH'),
+        'resume_folder_id'          => env('GOOGLE_RESUME_FOLDER_ID'),
     ],
 
 ];

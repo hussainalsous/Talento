@@ -838,5 +838,11 @@
     "shortlisted": "في القائمة المختصرة",
     "auto_shortlisted": "مُدرج تلقائياً",
     "rejected": "مرفوض"
+  },
+  "matchBreakdown": {
+    "skills": "المهارات",
+    "experience": "الخبرة",
+    "education": "التعليم",
+    "additional": "إضافي"
   }
 }

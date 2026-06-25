@@ -14,6 +14,7 @@ class JobEmbedMeta extends Model
         'model',
         'dimensions',
         'char_count',
+        'embedded_text',
         'qdrant_collection',
         'qdrant_point_id',
         'status',

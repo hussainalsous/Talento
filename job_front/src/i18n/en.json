@@ -838,5 +838,11 @@
     "shortlisted": "Shortlisted",
     "auto_shortlisted": "Auto-shortlisted",
     "rejected": "Rejected"
+  },
+  "matchBreakdown": {
+    "skills": "Skills",
+    "experience": "Experience",
+    "education": "Education",
+    "additional": "Additional"
   }
 }

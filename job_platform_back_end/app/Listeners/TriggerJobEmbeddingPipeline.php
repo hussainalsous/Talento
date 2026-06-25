@@ -5,14 +5,16 @@ namespace App\Listeners;
 use App\Events\JobPostPublished;
 use App\Models\JobEmbedMeta;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\URL;
 use Throwable;
 
 class TriggerJobEmbeddingPipeline implements ShouldQueue
 {
+    use InteractsWithQueue;
+
     /**
      * Number of times the queued listener may be attempted.
      */
@@ -59,9 +61,9 @@ class TriggerJobEmbeddingPipeline implements ShouldQueue
             'published_at'    => Carbon::now()->toIso8601String(),
             'trigger'         => 'job_publish',
             'callback'        => [
-                'embedding_done' => URL::route('n8n.job-embedding.done', [], true),
-                'match_done'     => URL::route('n8n.match.done', [], true),
-                'log_error'      => URL::route('n8n.log-error', [], true),
+                'embedding_done' => config('services.n8n.callback_base') . '/api/n8n/job-embedding/done',
+                'match_done'     => config('services.n8n.callback_base') . '/api/n8n/match/done',
+                'log_error'      => config('services.n8n.callback_base') . '/api/n8n/log-error',
             ],
         ];
 

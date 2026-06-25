@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             CourseSeeder::class,
             PlanSeeder::class,
             AdminSeeder::class,
+            N8nServiceUserSeeder::class,
         ]);
     }
 }

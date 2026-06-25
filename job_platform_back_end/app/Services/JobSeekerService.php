@@ -7,8 +7,11 @@ use App\Models\JobApplication;
 use App\Models\JobPost;
 use App\Models\JobSeeker;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Services\RedisCacheService;
 
@@ -17,6 +20,7 @@ class JobSeekerService
     public function __construct(
         private readonly SupabaseNotificationService $notifications,
         private readonly RedisCacheService $cache,
+        private readonly GoogleDriveService $googleDrive,
     ) {}
 
     // -------------------------------------------------------------------------
@@ -87,6 +91,132 @@ class JobSeekerService
         );
 
         return $updated;
+    }
+
+    // -------------------------------------------------------------------------
+    // CV — Google Drive upload, registration & n8n trigger
+    // -------------------------------------------------------------------------
+
+    /**
+     * Flutter uploads directly to Drive and sends us the file ID.
+     * Persists the mapping and triggers the cv-match webhook (legacy flow).
+     */
+    public function registerCv(User $user, array $data): void
+    {
+        $jobSeeker = $this->getProfileForUser($user);
+        $cv        = $this->persistDriveCv($user, $jobSeeker, $data['google_drive_file_id'], $data['file_name']);
+
+        $this->fireN8nWebhook(
+            webhookKey: 'cv_match_webhook',
+            logTag:     'registerCv',
+            payload:    [
+                'candidate_id' => $data['google_drive_file_id'],
+                'trigger'      => 'cv_upload',
+                'callback'     => $this->n8nCallbacks(['match_done', 'log_error']),
+            ],
+        );
+    }
+
+    /**
+     * Laravel receives the PDF, uploads it to Google Drive, then triggers the
+     * cv-ingest webhook so n8n can OCR + embed + match without polling Drive.
+     *
+     * @return array{ google_drive_file_id: string, cv_id: int }
+     */
+    public function uploadCvToDrive(User $user, UploadedFile $file, ?string $title): array
+    {
+        $jobSeeker = $this->getProfileForUser($user);
+        $filename  = $title
+            ? "{$title}.pdf"
+            : "cv_{$jobSeeker->id}_" . now()->format('YmdHis') . '.pdf';
+
+        $driveFileId = $this->googleDrive->uploadPdf($file, $filename);
+
+        $cv = $this->persistDriveCv($user, $jobSeeker, $driveFileId, $title ?? $filename);
+
+        $this->fireN8nWebhook(
+            webhookKey: 'cv_ingest_webhook',
+            logTag:     'uploadCvToDrive',
+            payload:    [
+                'drive_file_id' => $driveFileId,
+                'candidate_id'  => $driveFileId,
+                'trigger'       => 'cv_upload',
+                'callback'      => $this->n8nCallbacks(['match_done', 'log_error']),
+            ],
+        );
+
+        return [
+            'google_drive_file_id' => $driveFileId,
+            'cv_id'                => $cv->id,
+        ];
+    }
+
+    /**
+     * Persist the Google Drive file ID on the user and create/replace the
+     * primary CV record. Shared by registerCv() and uploadCvToDrive().
+     */
+    private function persistDriveCv(User $user, JobSeeker $jobSeeker, string $driveFileId, string $title): CV
+    {
+        return DB::transaction(function () use ($user, $jobSeeker, $driveFileId, $title) {
+            $user->update(['google_drive_file_id' => $driveFileId]);
+
+            $jobSeeker->cvs()->where('is_primary', true)->update(['is_primary' => false]);
+
+            return CV::create([
+                'job_seeker_id' => $jobSeeker->id,
+                'title'         => $title,
+                'file_path'     => null,
+                'is_primary'    => true,
+                'visibility'    => $jobSeeker->cv_visibility,
+            ]);
+        });
+    }
+
+    /**
+     * Build the standard callback URLs n8n calls back into.
+     * Keys: 'match_done', 'log_error', 'embedding_done'
+     *
+     * @param  list<string>  $keys
+     */
+    private function n8nCallbacks(array $keys): array
+    {
+        $paths = [
+            'match_done'     => '/api/n8n/match/done',
+            'log_error'      => '/api/n8n/log-error',
+            'embedding_done' => '/api/n8n/job-embedding/done',
+        ];
+
+        $base = config('services.n8n.callback_base');
+
+        return array_reduce($keys, function (array $carry, string $key) use ($base, $paths) {
+            $carry[$key] = $base . $paths[$key];
+            return $carry;
+        }, []);
+    }
+
+    /**
+     * POST to an n8n webhook. Logs failures but never throws — the primary
+     * response (CV saved) must not be blocked by n8n availability.
+     */
+    private function fireN8nWebhook(string $webhookKey, string $logTag, array $payload): void
+    {
+        $url = config("services.n8n.{$webhookKey}");
+
+        try {
+            $response = Http::timeout(10)
+                ->withHeaders(['X-N8N-Webhook-Secret' => config('services.n8n.webhook_secret')])
+                ->post($url, $payload);
+
+            Log::info("[{$logTag}] n8n webhook fired", [
+                'url'    => $url,
+                'status' => $response->status(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error("[{$logTag}] failed to reach n8n webhook", [
+                'url'       => $url,
+                'exception' => $e->getMessage(),
+            ]);
+        }
     }
 
     // -------------------------------------------------------------------------
